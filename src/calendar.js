@@ -9,7 +9,7 @@ export function getCalendar(year, month) {
     const result = [];
 
     for (let i = 1; i <= daysInMonth; i += 1) {
-        const date = new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date(year, month, i));
+        const date = new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date(year, month-1, i));
         result.push({weekDay: date, dayOfMonth: i, year: year, month: month});
     }
 
