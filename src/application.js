@@ -11,6 +11,6 @@ const WEEKDAYS = new Map([
 ]);
 
 
-const calendar = getCalendar(2019, 12);
+const calendar = getCalendar(2019, 11);
 console.log(calendar);
 
