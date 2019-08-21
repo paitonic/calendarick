@@ -13,6 +13,23 @@ function getWeekDay(year, month, day) {
 function getWeekdayDiff(weekDayA, weekDayB) {
   new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date(year, month-1, i))
 }
+
+function getNextMonth(year, month) {
+  if (month + 1 > 12) {
+    return [year + 1, 1];
+  } else {
+    return [year, month + 1];
+  }
+}
+
+function getPreviousMonth(year, month) {
+  if (month - 1 === 0) {
+    return [year - 1, 12];
+  } else {
+    return [year, month - 1];
+  }
+}
+
 // getWeekDayDiff('Mon', 'Sun') -> 1
 // getWeekDayDiff('Sun', 'Sun') -> 0
 // getWeekDayDiff('Sun', 'Fri') -> 6
@@ -71,6 +88,7 @@ export function take(n, generator, ...rest) {
   return values;
 }
 
+
 // TODO: enableOutsideDays
 export function getCalendar(year, month, options = {withOutsideDays: false}) {
     // const daysInMonthCount = getDaysInMonth(year, month);
@@ -101,15 +119,16 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
     if (options.withOutsideDays) {
       if (!isFirstDayOfWeek(days[0].weekDay)) {
         const index = getWeekDayIndex(days[0].weekDay);
-        // TODO: handle case when month-1 os December
-        days = [...take(index, () => calendar(year, month-1, {reverseOrder: true})), ...days];
+        const [maybePrevYear, prevMonth] = getPreviousMonth(year, month);
+        days = [...take(index, () => calendar(maybePrevYear, prevMonth, {reverseOrder: true})).reverse(), ...days];
+        // TODO: reverse() solves the issue when days from take() are ordered incorrectly 31 -> 30 -> 29 -> 1 -> 2 ...
       }
 
       if (!isLastDayOfWeek(days[days.length-1].weekDay)) {
         const index = getWeekDayIndex(days[days.length-1].weekDay);
         // week contains 7 days. but we are using zero based indexing. so the Saturday is 6.
-        // TODO: handle case when month+1 is January
-        days = [...days, ...take(6 - index, () => calendar(year, month+1))];
+        const [maybeNextYear, nextMonth] = getNextMonth(year, month);
+        days = [...days, ...take(6 - index, () => calendar(maybeNextYear, nextMonth))];
       }
     }
 
