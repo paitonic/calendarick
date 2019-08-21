@@ -10,7 +10,7 @@ describe('getDaysInMonth', () => {
   });
 });
 
-describe.only('getCalendar', () => {
+describe('getCalendar', () => {
   test('should return calendar', () => {
     const december = getCalendar(2019, 12);
     const [firstDay, lastDay] = [december[0], december[december.length-1]];
@@ -36,8 +36,8 @@ describe.only('getCalendar', () => {
   });
 
   test('should return outside days of current month when withOutsideDays=true', () => {
-    const july = getCalendar(2019, 7, {withOutsideDays: true});
-    const [firstDay, lastDay] = [july[0], july[july.length-1]];
+    const calendar = getCalendar(2019, 7, {withOutsideDays: true});
+    const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
     expect(firstDay.month).toBe(6);
     expect(firstDay.dayOfMonth).toBe(30);

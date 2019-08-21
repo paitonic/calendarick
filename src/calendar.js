@@ -41,8 +41,8 @@ function getDayRepresentation(year, month, day) {
   }
 }
 
-function isFirstDayOfWeek(day) {
-  return day.weekDay === 'Sun';
+function isFirstDayOfWeek(weekDay) {
+  return weekDay === 'Sun';
 }
 
 function isLastDayOfWeek(day) {
@@ -99,15 +99,17 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
     let days = [...calendar(year, month)];
 
     if (options.withOutsideDays) {
-      if (!isFirstDayOfWeek(days[0])) {
+      if (!isFirstDayOfWeek(days[0].weekDay)) {
         const index = getWeekDayIndex(days[0].weekDay);
-        days = [...take(index, () => calendar(year, month)), ...days];
+        // TODO: handle case when month-1 os December
+        days = [...take(index, () => calendar(year, month-1, {reverseOrder: true})), ...days];
       }
 
-      if (!isLastDayOfWeek(days[days.length-1])) {
-        const index = getWeekDayIndex(days[days.length-1]);
+      if (!isLastDayOfWeek(days[days.length-1].weekDay)) {
+        const index = getWeekDayIndex(days[days.length-1].weekDay);
         // week contains 7 days. but we are using zero based indexing. so the Saturday is 6.
-        days = [...days, ...take(6 - index, () => calendar(year, month))];
+        // TODO: handle case when month+1 is January
+        days = [...days, ...take(6 - index, () => calendar(year, month+1))];
       }
     }
 
