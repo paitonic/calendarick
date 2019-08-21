@@ -47,6 +47,36 @@ describe('getCalendar', () => {
     expect(lastDay.dayOfMonth).toBe(3);
     expect(lastDay.weekDay).toBe('Sat');
   });
+
+  test('should return outside days for December calendar', () => {
+    const calendar = getCalendar(2019, 12, {withOutsideDays: true});
+    const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
+
+    expect(firstDay.weekDay).toBe('Sun');
+    expect(firstDay.dayOfMonth).toBe(1);
+    expect(firstDay.month).toBe(12);
+
+    expect(lastDay.weekDay).toBe('Sat');
+    expect(lastDay.dayOfMonth).toBe(4);
+    expect(lastDay.month).toBe(1);
+    expect(lastDay.year).toBe(2020);
+  });
+
+  test('should return outside days for January calendar', () => {
+    const calendar = getCalendar(2020, 1, {withOutsideDays: true});
+    const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
+
+    expect(firstDay.weekDay).toBe('Sun');
+    expect(firstDay.dayOfMonth).toBe(29);
+    expect(firstDay.month).toBe(12);
+    expect(firstDay.year).toBe(2019);
+
+    expect(lastDay.weekDay).toBe('Sat');
+    expect(lastDay.dayOfMonth).toBe(1);
+    expect(lastDay.month).toBe(2);
+    expect(lastDay.year).toBe(2020);
+  });
+
 });
 
 describe('take', () => {
