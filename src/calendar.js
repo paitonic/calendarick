@@ -81,27 +81,34 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
     // }
 
     function* calendar(year, month, options = {reverseOrder: false}) {
+      const dec = (value) => value - 1;
+      const inc = (value) => value + 1;
+
       const daysInMonthCount = getDaysInMonth(year, month);
       // iterate from beginning of the month to the end or from the end to the beginning
-      let [dayOfMonth, end] = options.reverseOrder ? [daysInMonthCount, 1] : [1, daysInMonthCount];
+      let [dayOfMonth, end, next] = options.reverseOrder ?
+        [daysInMonthCount, 0, dec] : // iterate in reverse from daysInMonthCount -> 0 (exclusive)
+        [1, daysInMonthCount+1, inc];  // iterate 1 -> daysInMonthCount+1 (exclusive);
 
       while (dayOfMonth !== end) {
         yield getDayRepresentation(year, month, dayOfMonth);
-        dayOfMonth += 1;
+        dayOfMonth = next(dayOfMonth);
       }
     }
 
     let days = [...calendar(year, month)];
 
-    if (!isFirstDayOfWeek(days[0])) {
-      const index = getWeekDayIndex(days[0].weekDay);
-      days = [...take(index, () => calendar(year, month)), ...days];
-    }
+    if (options.withOutsideDays) {
+      if (!isFirstDayOfWeek(days[0])) {
+        const index = getWeekDayIndex(days[0].weekDay);
+        days = [...take(index, () => calendar(year, month)), ...days];
+      }
 
-    if (!isLastDayOfWeek(days[days.length-1])) {
-      const index = getWeekDayIndex(days[days.length-1]);
-      // week contains 7 days. but we are using zero based indexing. so the Saturday is 6.
-      days = [...days, ...take(6 - index, () => calendar(year, month))];
+      if (!isLastDayOfWeek(days[days.length-1])) {
+        const index = getWeekDayIndex(days[days.length-1]);
+        // week contains 7 days. but we are using zero based indexing. so the Saturday is 6.
+        days = [...days, ...take(6 - index, () => calendar(year, month))];
+      }
     }
 
     return days;

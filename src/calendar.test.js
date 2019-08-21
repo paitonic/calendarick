@@ -10,8 +10,8 @@ describe('getDaysInMonth', () => {
   });
 });
 
-describe('getCalendar', () => {
-  test.only('should return calendar', () => {
+describe.only('getCalendar', () => {
+  test('should return calendar', () => {
     const december = getCalendar(2019, 12);
     const [firstDay, lastDay] = [december[0], december[december.length-1]];
 
