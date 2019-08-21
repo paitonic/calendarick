@@ -34,3 +34,22 @@ jest.config.js:
 npm install @babel/preset-env --save-dev
 
 
+## Jest: ReferenceError: regeneratorRuntime is not defined
+https://jestjs.io/docs/en/getting-started#using-babel
+https://github.com/facebook/jest/issues/3126#issuecomment-521620199
+.babelrc
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ]
+}
+
+```
