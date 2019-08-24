@@ -1,4 +1,4 @@
-import { getCalendar, getDaysInMonth, take } from './calendar';
+import { chunk, getCalendar, getDaysInMonth, groupByWeeks, take } from './calendar';
 
 describe('getDaysInMonth', () => {
   test('should return 31 for January 2019', () => {
@@ -95,5 +95,54 @@ describe('take', () => {
     expect(values[0]).toBe(1);
     expect(values[1]).toBe(2);
     expect(values[2]).toBe(3);
+  });
+});
+
+describe('chunk', () => {
+  test('should return array in chunks', () => {
+    const array = [1, 2, 3, 4, 5];
+    const chunks = chunk(array, 3);
+
+    expect(chunks.length).toBe(2);
+    expect(chunks).toEqual([ [1, 2, 3], [4, 5]]);
+  });
+});
+
+describe.only('groupByWeeks', () => {
+  test('should group days into weeks', () => {
+    // TODO: wrong. it should group by weeks. if `withOutsideDays` false then week can have 7 or less days in it.
+    const october = getCalendar(2019, 10);
+    const grouped = groupByWeeks(october);
+
+    const [firstWeek, lastWeek] = [grouped[0], grouped[grouped.length-1]];
+
+    expect(grouped.length).toBe(5);
+
+    expect(firstWeek.length).toBe(5);
+    expect(firstWeek[0].weekDay).toBe('Tue');
+    expect(firstWeek[0].dayOfMonth).toBe(1);
+
+    expect(lastWeek.length).toBe(5);
+    expect(lastWeek[lastWeek.length-1].weekDay).toBe('Thu');
+    expect(lastWeek[lastWeek.length-1].dayOfMonth).toBe(31);
+  });
+
+  test('should work with outsideDays', () => {
+    const october = getCalendar(2019, 10, {withOutsideDays: true});
+    const grouped = groupByWeeks(october);
+
+    const [firstWeek, lastWeek] = [grouped[0], grouped[grouped.length-1]];
+
+    expect(grouped.length).toBe(5);
+
+    expect(firstWeek.length).toBe(7);
+    expect(firstWeek[0].weekDay).toBe('Sun');
+    expect(firstWeek[0].dayOfMonth).toBe(29);
+    expect(firstWeek[0].month).toBe(9);
+
+    expect(lastWeek.length).toBe(7);
+    expect(lastWeek[lastWeek.length-1].weekDay).toBe('Sat');
+    expect(lastWeek[lastWeek.length-1].dayOfMonth).toBe(2);
+    expect(lastWeek[lastWeek.length-1].month).toBe(11);
   });
 });

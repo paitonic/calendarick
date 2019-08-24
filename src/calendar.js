@@ -1,5 +1,7 @@
 // TODO: make DateTimeFormat accept locale as a parameter
 // TODO: make DateTimeFormat to accept different options
+// TODO: firstDayOfWeek parameter?
+
 export function getDaysInMonth(year, month) {
     // 0 in day returns total days in a previous month
     // month are zero-based.
@@ -148,6 +150,23 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
 
 
     // return days;
+}
+
+export function groupByWeeks(days) {
+  function partition(days, result=[]) {
+    const end = days.findIndex(isLastDayOfWeek);
+    if (days.length === 0) {
+      return result;
+    } else if (end === -1) {
+      // add the remaining days.
+      result.push(days);
+      return result;
+    }
+
+    return partition(days.slice(end+1, days.length), [...result, days.slice(0, end+1)])
+  }
+
+  return partition(days);
 }
 
 /**
