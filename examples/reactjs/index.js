@@ -14,6 +14,14 @@ import {
 } from '../../src/calendar';
 import clsx from 'clsx';
 
+// TODO: date range
+// TODO: add class to mark current day
+// TODO: mark outside days with different class
+// TODO: add option to disable days by condition
+// TODO: year selection (open dropdown to select custom year?)
+// TODO: keyboard navigation
+// TODO: locale configuration
+
 
 function Day(props) {
   return (

@@ -146,7 +146,6 @@ export function take(n, generator, ...rest) {
 }
 
 
-// TODO: enableOutsideDays
 export function getCalendar(year, month, options = {withOutsideDays: false}) {
     // const daysInMonthCount = getDaysInMonth(year, month);
     // let days = [];
@@ -178,7 +177,6 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
         const index = getWeekDayIndex(days[0].weekDay);
         const [maybePrevYear, prevMonth] = getPreviousMonth(year, month);
         days = [...take(index, () => calendar(maybePrevYear, prevMonth, {reverseOrder: true})).reverse(), ...days];
-        // TODO: reverse() solves the issue when days from take() are ordered incorrectly 31 -> 30 -> 29 -> 1 -> 2 ...
       }
 
       if (!isLastDayOfWeek(days[days.length-1].weekDay)) {
@@ -190,21 +188,6 @@ export function getCalendar(year, month, options = {withOutsideDays: false}) {
     }
 
     return days;
-    // const daysToGoback = getWeekDayIndex(result[0].weekDay);
-    // // TODO: what if it starts on Monday?
-    // // TODO: what if month-1 is December of previous year?
-    // if (daysToGoback !== 0) {
-    //
-    // }
-    // const previousMonth = [];
-    // for (;) {
-    //   result.unshift({});
-    // }
-    //
-    // const lastWeekDayOfMonth = result[result.length-1].weekDay;
-
-
-    // return days;
 }
 
 export function groupByWeeks(days) {
