@@ -1,6 +1,7 @@
 // TODO: make DateTimeFormat accept locale as a parameter
 // TODO: make DateTimeFormat to accept different options
 // TODO: firstDayOfWeek parameter?
+// TODO: replace Int.DateFormat with toLocaleString?
 
 export function getDaysInMonth(year, month) {
     // 0 in day returns total days in a previous month
