@@ -2,9 +2,7 @@
   "name": "datepicker",
   "version": "1.0.0",
   "description": "",
-  "main": "src/application.js",
   "scripts": {
-    "start": "parcel src/index.html",
     "test": "jest"
   },
   "author": "",
@@ -14,7 +12,6 @@
     "@babel/core": "7.5.5",
     "babel-jest": "24.9.0",
     "babel-preset-env": "^1.7.0",
-    "jest": "24.9.0",
-    "parcel": "1.12.3"
+    "jest": "24.9.0"
   }
 }
