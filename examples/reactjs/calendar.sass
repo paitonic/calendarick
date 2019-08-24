@@ -1,8 +1,32 @@
-.day
-  display: flex
-  flex-direction: column
-  width: 30px
-  padding: 4px
-  text-align: center
+*, ::before, ::after
+  box-sizing: border-box
 
-//.week
+$width: 50px
+
+body
+  margin: 0
+  font-family: monospace
+
+.day
+  padding: 5px
+  text-align: center
+  height: $width
+  cursor: pointer
+
+  &:hover
+    background-color: #e2e2e2
+
+.day--with-border
+  border: 1px solid #e2e2e2
+
+.day--empty
+  visibility: hidden
+
+.day-name
+  text-align: center
+  padding: 5px
+  width: $width
+
+.month
+  border-spacing: 0
+  border-collapse: collapse
