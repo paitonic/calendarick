@@ -16,7 +16,7 @@ function getWeekdayDiff(weekDayA, weekDayB) {
   new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date(year, month-1, i))
 }
 
-function getNextMonth(year, month) {
+export function getNextMonth(year, month) {
   if (month + 1 > 12) {
     return [year + 1, 1];
   } else {
@@ -24,7 +24,7 @@ function getNextMonth(year, month) {
   }
 }
 
-function getPreviousMonth(year, month) {
+export function getPreviousMonth(year, month) {
   if (month - 1 === 0) {
     return [year - 1, 12];
   } else {
@@ -223,8 +223,18 @@ export function groupByWeeks(days) {
   return partition(days);
 }
 
-export function getMonths() {
 
+const months = new Array(12).fill(0).map((month, index) => {
+  return new Date(1970, index, 1);
+});
+
+export function getMonths() {
+  return months.map((month, index) => {
+    return {
+      monthOfYear: index + 1,
+      month: new Intl.DateTimeFormat('en-US', {month: 'long' /* TODO: make configurable */}).format(month)
+    };
+  });
 }
 
 /**

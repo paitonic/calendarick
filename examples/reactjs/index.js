@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom';
-import React from 'react';
+import React, { useState } from 'react';
 
 import './calendar.sass';
 
-import { getCalendar, getWeekDays, groupByWeeks } from '../../src/calendar';
+import { getCalendar, getMonths, getNextMonth, getWeekDays, groupByWeeks, getPreviousMonth } from '../../src/calendar';
 import clsx from 'clsx';
 
 
@@ -68,20 +68,34 @@ function Month(props) {
 }
 
 function Header(props) {
+  const readableMonth = getMonths().find(month => month.monthOfYear === props.month).month;
   return (
     <div className="header">
-      <span className="header__button-back">‹</span>
-      <span className="header__date">{props.month}, {props.year}</span>
-      <span className="header__button-next">›</span>
+      <span className="header__button-back" onClick={props.onBackClick}>‹</span>
+      <span className="header__date">{readableMonth}, {props.year}</span>
+      <span className="header__button-next" onClick={props.onNextClick}>›</span>
     </div>
   )
 }
 
 function App() {
+  const today = new Date();
+  const [date, setDate] = useState({month: today.getMonth()+1, year: today.getFullYear()});
+
+  function goNextMonth() {
+    const [year, month] = getNextMonth(date.year, date.month);
+    setDate({year, month});
+  }
+
+  function goPreviousMonth() {
+    const [year, month] = getPreviousMonth(date.year, date.month);
+    setDate({year, month});
+  }
+
   return (
     <>
-      <Header year={2019} month={'October'}/>
-      <Month year={2019} month={8}/>
+      <Header year={date.year} month={date.month} onBackClick={goPreviousMonth} onNextClick={goNextMonth}/>
+      <Month year={date.year} month={date.month}/>
     </>
   );
 }
