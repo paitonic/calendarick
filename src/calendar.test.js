@@ -1,4 +1,12 @@
-import { chunk, getCalendar, getDaysInMonth, groupByWeeks, take } from './calendar';
+import {
+  chunk,
+  getCalendar,
+  getDaysInMonth,
+  getWeekDays,
+  groupByWeeks, rotate,
+  take,
+  WEEKDAYS
+} from './calendar';
 
 describe('getDaysInMonth', () => {
   test('should return 31 for January 2019', () => {
@@ -134,5 +142,27 @@ describe('groupByWeeks', () => {
     expect(lastWeek[lastWeek.length-1].weekDay).toBe('Sat');
     expect(lastWeek[lastWeek.length-1].dayOfMonth).toBe(2);
     expect(lastWeek[lastWeek.length-1].month).toBe(11);
+  });
+});
+
+describe('getWeekDays', () => {
+  test('should return week day names', () => {
+    const names = getWeekDays();
+    expect(names).toEqual(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
+  });
+
+  test('should return correct week day names if firstDayOfWeek is specified', () => {
+    const names = getWeekDays({firstDayOfWeek: WEEKDAYS[3] /* wednesday */});
+    expect(names).toEqual(['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue']);
+  });
+});
+
+describe('rotate', () => {
+  test('should rotate the array n indexes left', () => {
+    expect(rotate([0, 1, 2, 3, 4, 5, 6], -2)).toEqual([2, 3, 4, 5, 6, 0, 1]);
+  });
+
+  test('should rotate the array n indexes right', () => {
+    expect(rotate([0, 1, 2, 3, 4, 5, 6], 2)).toEqual([5, 6, 0, 1, 2, 3, 4]);
   });
 });

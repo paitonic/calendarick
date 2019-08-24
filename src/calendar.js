@@ -68,6 +68,60 @@ function isLastDayOfWeek(day) {
   return day.weekDay === 'Sat';
 }
 
+
+// export const WEEKDAY_NAMES = {
+//   sunday: 0,
+//   monday: 1,
+//   tuesday: 2,
+//   wednesday: 3,
+//   thursday: 4,
+//   friday: 5,
+//   saturday: 6
+// };
+
+export const WEEKDAYS = [
+  new Date(1970, 0, 4), // 0 - sunday
+  new Date(1970, 0, 5), // 1 - monday
+  new Date(1970, 0, 6), // 2 - tuesday
+  new Date(1970, 0, 7), // 3 - wednesday
+  new Date(1970, 0, 8), // 4 - thursday
+  new Date(1970, 0, 9), // 5 - friday
+  new Date(1970, 0, 10) // 6 - saturday
+];
+
+// TODO: consider that week day may start from Sunday, Monday and Saturday
+export function getWeekDays(options = {locale: 'en-US', firstDayOfWeek: WEEKDAYS[0]}) {
+  const rotateCount = WEEKDAYS.findIndex(day => day === options.firstDayOfWeek) * -1;
+  return rotate(WEEKDAYS, rotateCount).map((date) => {
+    return new Intl.DateTimeFormat('en-US', {weekday: 'short' /* TODO: make configurable */}).format(date);
+  });
+}
+
+export function rotate(collection, n) {
+  if (n === 0 ) {
+    return collection;
+  }
+
+  const [takeFn, insertFn] = n > 0 ?
+    [Array.prototype.pop, Array.prototype.unshift] :
+    [Array.prototype.shift, Array.prototype.push];
+
+  const count = Math.abs(n);
+
+  function shift(i) {
+    if (i === count) {
+      return collection;
+    }
+
+    const item = takeFn.call(collection);
+    insertFn.call(collection, item);
+
+    return shift(i + 1);
+  }
+
+  return shift(0);
+}
+
 // function* calendar() { yield 1; yield 2; yield 3; yield 4 }
 
 export function take(n, generator, ...rest) {
