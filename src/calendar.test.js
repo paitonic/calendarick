@@ -98,17 +98,7 @@ describe('take', () => {
   });
 });
 
-describe('chunk', () => {
-  test('should return array in chunks', () => {
-    const array = [1, 2, 3, 4, 5];
-    const chunks = chunk(array, 3);
-
-    expect(chunks.length).toBe(2);
-    expect(chunks).toEqual([ [1, 2, 3], [4, 5]]);
-  });
-});
-
-describe.only('groupByWeeks', () => {
+describe('groupByWeeks', () => {
   test('should group days into weeks', () => {
     // TODO: wrong. it should group by weeks. if `withOutsideDays` false then week can have 7 or less days in it.
     const october = getCalendar(2019, 10);
