@@ -104,7 +104,7 @@ function Header(props) {
   )
 }
 
-function App() {
+function Calendar(props) {
   const today = new Date();
   const [date, setDate] = useState({month: today.getMonth()+1, year: today.getFullYear()});
 
@@ -123,6 +123,12 @@ function App() {
       <Header year={date.year} month={date.month} onBackClick={goPreviousMonth} onNextClick={goNextMonth}/>
       <Month year={date.year} month={date.month}/>
     </>
+  );
+}
+
+function App() {
+  return (
+    <Calendar/>
   );
 }
 
