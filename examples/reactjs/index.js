@@ -3,7 +3,15 @@ import React, { useState } from 'react';
 
 import './calendar.sass';
 
-import { getCalendar, getMonths, getNextMonth, getWeekDays, groupByWeeks, getPreviousMonth } from '../../src/calendar';
+import {
+  getCalendar,
+  getMonths,
+  getNextMonth,
+  getWeekDays,
+  groupByWeeks,
+  getPreviousMonth,
+  isFirstDayOfWeek, isLastDayOfWeek
+} from '../../src/calendar';
 import clsx from 'clsx';
 
 
@@ -35,7 +43,25 @@ function WeekDayNames(props) {
 
 function Week(props) {
   const dayNames = getWeekDays();
-  const weekWithPlaceholders = props.week.length === 7 ? props.week : [...new Array(7 - props.week.length).fill({dayOfMonth: null}), ...props.week];
+
+  function addMissingDaysPlaceholders() {
+    if (props.week.length === 7) {
+      return props.week;
+    }
+
+    const missingDaysCount = 7 - props.week.length;
+    const placeholders = new Array(missingDaysCount).fill({dayOfMonth: null});
+
+    if (!isFirstDayOfWeek(props.week[0].weekDay))  {
+      // add placeholders to the start of the week
+      return [...placeholders, ...props.week];
+    } else if (!isLastDayOfWeek(props.week[props.week.length-1].weekDay)) {
+      // add placeholders to the end of the week
+      return [...props.week, ...placeholders];
+    }
+  }
+
+  const weekWithPlaceholders = addMissingDaysPlaceholders();
 
   return (
     <tr className='week'>

@@ -60,11 +60,11 @@ function getDayRepresentation(year, month, day) {
   }
 }
 
-function isFirstDayOfWeek(weekDay) {
+export function isFirstDayOfWeek(weekDay) {
   return weekDay === 'Sun';
 }
 
-function isLastDayOfWeek(day) {
+export function isLastDayOfWeek(day) {
   return day.weekDay === 'Sat';
 }
 
