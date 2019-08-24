@@ -67,18 +67,22 @@ function Month(props) {
   )
 }
 
-/**
+function Header(props) {
+  return (
+    <div className="header">
+      <span className="header__button-back">‹</span>
+      <span className="header__date">{props.month}, {props.year}</span>
+      <span className="header__button-next">›</span>
+    </div>
+  )
+}
 
- <WeekDayNames names={getWeekDays()}/>
-  {
-    getWeekDays(getCalendar(2019, 8)).map((days) => {
-      return <Week key={days[0].dayOfMonth} days={days}/>
-    })
-  }
-**/
 function App() {
   return (
-    <Month year={2019} month={8}/>
+    <>
+      <Header year={2019} month={'October'}/>
+      <Month year={2019} month={8}/>
+    </>
   );
 }
 

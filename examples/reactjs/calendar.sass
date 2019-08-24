@@ -1,7 +1,8 @@
 *, ::before, ::after
   box-sizing: border-box
 
-$width: 50px
+$cell-width: 50px
+$width: 350px
 
 body
   margin: 0
@@ -10,7 +11,7 @@ body
 .day
   padding: 5px
   text-align: center
-  height: $width
+  height: $cell-width
   cursor: pointer
 
   &:hover
@@ -25,8 +26,19 @@ body
 .day-name
   text-align: center
   padding: 5px
-  width: $width
+  width: $cell-width
 
 .month
   border-spacing: 0
   border-collapse: collapse
+
+.header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  max-width: $width
+
+  &__button-next, &__button-back
+    font-size: 26px
+    cursor: pointer
+    padding: 5px

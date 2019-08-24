@@ -223,6 +223,10 @@ export function groupByWeeks(days) {
   return partition(days);
 }
 
+export function getMonths() {
+
+}
+
 /**
 [
     {weekDay: 'Sunday', dayOfMonth: 1, year: 2019, month: 12},

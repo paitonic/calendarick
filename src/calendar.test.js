@@ -1,7 +1,7 @@
 import {
   chunk,
   getCalendar,
-  getDaysInMonth,
+  getDaysInMonth, getMonths,
   getWeekDays,
   groupByWeeks, rotate,
   take,
@@ -164,5 +164,19 @@ describe('rotate', () => {
 
   test('should rotate the array n indexes right', () => {
     expect(rotate([0, 1, 2, 3, 4, 5, 6], 2)).toEqual([5, 6, 0, 1, 2, 3, 4]);
+  });
+});
+
+describe('getMonths', () => {
+  test('should return list of months', () => {
+    const months = getMonths();
+
+    expect(months.length).toBe(12);
+
+    expect(months[0].monthOfYear).toBe(1);
+    expect(months[0].month).toBe('January');
+
+    expect(months[months.length-1].monthOfYear).toBe(12);
+    expect(months[months.length-1].month).toBe('December');
   });
 });
