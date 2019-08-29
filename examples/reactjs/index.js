@@ -102,7 +102,7 @@ function Month(props) {
 }
 
 function Header(props) {
-  const readableMonth = getMonths().find(month => month.monthOfYear === props.month).month;
+  const readableMonth = getMonths().find(month => month.order === props.month).month;
   return (
     <div className="header">
       <span className="header__button-back" onClick={props.onBackClick}>‹</span>

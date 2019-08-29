@@ -1,88 +1,75 @@
 import {
   chunk,
   getCalendar,
-  getDaysInMonth, getMonths,
+  countDaysInMonth, getMonths,
   getWeekDays,
   groupByWeeks, rotate,
   take,
   WEEKDAYS
 } from './calendar';
 
-describe('getDaysInMonth', () => {
+function toArray(date) {
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+
+}
+
+// function toObject(date) {
+//   return {year: date.getFullYear(), month: date.getMonth() + 1, dayOfMonth: date.getDate()};
+// }
+
+describe('countDaysInMonth', () => {
   test('should return 31 for January 2019', () => {
-    expect(getDaysInMonth(2019, 1)).toBe(31);
+    expect(countDaysInMonth(2019, 1)).toBe(31);
   });
 
   test('should work with leap years', () => {
-    expect(getDaysInMonth(2020, 2)).toBe(29);
+    expect(countDaysInMonth(2020, 2)).toBe(29);
   });
 });
 
+// day.weekDay    -> day.getDay()
+// day.dayOfMonth -> day.getDate()
+// day.month      -> day.getMonth()+1
+// day.year       -> day.getFullYear()
 describe('getCalendar', () => {
   test('should return calendar', () => {
     const december = getCalendar(2019, 12);
     const [firstDay, lastDay] = [december[0], december[december.length-1]];
 
-    expect(firstDay.weekDay).toBe('Sun');
-    expect(firstDay.dayOfMonth).toBe(1);
-
-    expect(lastDay.weekDay).toBe('Tue');
-    expect(lastDay.dayOfMonth).toBe(31);
+    expect(toArray(firstDay)).toEqual([2019, 12, 1]);
+    expect(toArray(lastDay)).toEqual([2019, 12, 31]);
   });
 
   test('should not return outside days when withOutsideDays is false (default)', () => {
     const july = getCalendar(2019, 7);
     const [firstDay, lastDay] = [july[0], july[july.length-1]];
 
-    expect(firstDay.month).toBe(7);
-    expect(firstDay.dayOfMonth).toBe(1);
-    expect(firstDay.weekDay).toBe('Mon');
-
-    expect(lastDay.month).toBe(7);
-    expect(lastDay.dayOfMonth).toBe(31);
-    expect(lastDay.weekDay).toBe('Wed');
+    expect(toArray(firstDay)).toEqual([2019, 7, 1]);
+    expect(toArray(lastDay)).toEqual([2019, 7, 31]);
   });
 
   test('should return outside days of current month when withOutsideDays=true', () => {
     const calendar = getCalendar(2019, 7, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(firstDay.month).toBe(6);
-    expect(firstDay.dayOfMonth).toBe(30);
-    expect(firstDay.weekDay).toBe('Sun');
-
-    expect(lastDay.month).toBe(8);
-    expect(lastDay.dayOfMonth).toBe(3);
-    expect(lastDay.weekDay).toBe('Sat');
+    expect(toArray(firstDay)).toEqual([2019, 6, 30]);
+    expect(toArray(lastDay)).toEqual([2019, 8, 3]);
   });
 
   test('should return outside days for December calendar', () => {
     const calendar = getCalendar(2019, 12, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(firstDay.weekDay).toBe('Sun');
-    expect(firstDay.dayOfMonth).toBe(1);
-    expect(firstDay.month).toBe(12);
-
-    expect(lastDay.weekDay).toBe('Sat');
-    expect(lastDay.dayOfMonth).toBe(4);
-    expect(lastDay.month).toBe(1);
-    expect(lastDay.year).toBe(2020);
+    expect(toArray(firstDay)).toEqual([2019, 12, 1]);
+    expect(toArray(lastDay)).toEqual([2020, 1, 4]);
   });
 
   test('should return outside days for January calendar', () => {
     const calendar = getCalendar(2020, 1, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(firstDay.weekDay).toBe('Sun');
-    expect(firstDay.dayOfMonth).toBe(29);
-    expect(firstDay.month).toBe(12);
-    expect(firstDay.year).toBe(2019);
-
-    expect(lastDay.weekDay).toBe('Sat');
-    expect(lastDay.dayOfMonth).toBe(1);
-    expect(lastDay.month).toBe(2);
-    expect(lastDay.year).toBe(2020);
+    expect(toArray(firstDay)).toEqual([2019, 12, 29]);
+    expect(toArray(lastDay)).toEqual([2020, 2, 1]);
   });
 
 });
@@ -99,49 +86,41 @@ describe('take', () => {
     function* days() { yield 1; yield 2; yield 3; yield 4 }
 
     const values = take(3, days);
-    expect(values.length).toBe(3);
-    expect(values[0]).toBe(1);
-    expect(values[1]).toBe(2);
-    expect(values[2]).toBe(3);
+    expect(values).toEqual([1, 2, 3]);
   });
 });
 
 describe('groupByWeeks', () => {
   test('should group days into weeks', () => {
-    // TODO: wrong. it should group by weeks. if `withOutsideDays` false then week can have 7 or less days in it.
     const october = getCalendar(2019, 10);
-    const grouped = groupByWeeks(october);
+    const weeks = groupByWeeks(WEEKDAYS[0], october);
+    const [firstWeek, lastWeek] = [weeks[0], weeks[weeks.length-1]];
+    const firstDayOfMonth = firstWeek[0];
+    const lastDayOfMonth = lastWeek[lastWeek.length-1];
 
-    const [firstWeek, lastWeek] = [grouped[0], grouped[grouped.length-1]];
-
-    expect(grouped.length).toBe(5);
+    expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(5);
-    expect(firstWeek[0].weekDay).toBe('Tue');
-    expect(firstWeek[0].dayOfMonth).toBe(1);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1]);
 
     expect(lastWeek.length).toBe(5);
-    expect(lastWeek[lastWeek.length-1].weekDay).toBe('Thu');
-    expect(lastWeek[lastWeek.length-1].dayOfMonth).toBe(31);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31]);
   });
 
   test('should work with outsideDays', () => {
     const october = getCalendar(2019, 10, {withOutsideDays: true});
-    const grouped = groupByWeeks(october);
+    const weeks = groupByWeeks(WEEKDAYS[0], october);
+    const [firstWeek, lastWeek] = [weeks[0], weeks[weeks.length-1]];
+    const firstDayOfMonth = firstWeek[0];
+    const lastDayOfMonth = lastWeek[lastWeek.length-1];
 
-    const [firstWeek, lastWeek] = [grouped[0], grouped[grouped.length-1]];
-
-    expect(grouped.length).toBe(5);
+    expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(7);
-    expect(firstWeek[0].weekDay).toBe('Sun');
-    expect(firstWeek[0].dayOfMonth).toBe(29);
-    expect(firstWeek[0].month).toBe(9);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29]);
 
     expect(lastWeek.length).toBe(7);
-    expect(lastWeek[lastWeek.length-1].weekDay).toBe('Sat');
-    expect(lastWeek[lastWeek.length-1].dayOfMonth).toBe(2);
-    expect(lastWeek[lastWeek.length-1].month).toBe(11);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2]);
   });
 });
 
@@ -168,15 +147,19 @@ describe('rotate', () => {
 });
 
 describe('getMonths', () => {
+  test('should return total of 12 months', () => {
+    expect(getMonths().length).toEqual(12);
+  });
+
   test('should return list of months', () => {
     const months = getMonths();
+    const firstMonthOfYear = months[0];
+    const lastMonthOfYear = months[months.length-1];
 
-    expect(months.length).toBe(12);
+    expect(firstMonthOfYear.order).toBe(1);
+    expect(firstMonthOfYear.month).toBe('January');
 
-    expect(months[0].monthOfYear).toBe(1);
-    expect(months[0].month).toBe('January');
-
-    expect(months[months.length-1].monthOfYear).toBe(12);
-    expect(months[months.length-1].month).toBe('December');
+    expect(lastMonthOfYear.order).toBe(12);
+    expect(lastMonthOfYear.month).toBe('December');
   });
 });
