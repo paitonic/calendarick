@@ -1,17 +1,9 @@
 import ReactDOM from 'react-dom';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import './calendar.sass';
 
-import {
-  getCalendar,
-  getMonths,
-  getNextMonth,
-  getWeekDays,
-  groupByWeeks,
-  getPreviousMonth,
-  isFirstDayOfWeek, isLastDayOfWeek
-} from '../../src/calendar';
+import { calendar } from '../../src';
 import clsx from 'clsx';
 
 // TODO: date range
@@ -22,16 +14,30 @@ import clsx from 'clsx';
 // TODO: keyboard navigation
 // TODO: locale configuration
 
+// problem with that approach is that, it is not possible to change properties dynamically
+// e.g if calendar has button to toggle between outside days (show/hide), it's not possible to change it in runtime.
+// const {
+//   getCalendar,
+//   getMonths,
+//   getNextMonth,
+//   getWeekDays,
+//   groupByWeeks,
+//   getPreviousMonth,
+//   isFirstDayOfWeek,
+//   isLastDayOfWeek
+// } = calendar();
+
 
 function Day(props) {
   return (
-    <td className={clsx('day', {'day--empty': props.dayOfMonth === null})}>
-      <span>{props.dayOfMonth}</span>
+    <td className={clsx('day', {'day--empty': props.day === null})}>
+      <span>{props.day ? props.day.getDate() : null}</span>
     </td>
   )
 }
 
 function WeekDayNames(props) {
+  const {getWeekDays} = useContext(CalendarContext);
   const dayNames = getWeekDays();
   return (
     <tr className='week-days'>
@@ -50,7 +56,7 @@ function WeekDayNames(props) {
 
 
 function Week(props) {
-  const dayNames = getWeekDays();
+  const {isFirstDayOfWeek, isLastDayOfWeek} = useContext(CalendarContext);
 
   function addMissingDaysPlaceholders() {
     if (props.week.length === 7) {
@@ -58,12 +64,12 @@ function Week(props) {
     }
 
     const missingDaysCount = 7 - props.week.length;
-    const placeholders = new Array(missingDaysCount).fill({dayOfMonth: null});
+    const placeholders = new Array(missingDaysCount).fill(null);
 
-    if (!isFirstDayOfWeek(props.week[0].weekDay))  {
+    if (!isFirstDayOfWeek(props.week[0]))  {
       // add placeholders to the start of the week
       return [...placeholders, ...props.week];
-    } else if (!isLastDayOfWeek(props.week[props.week.length-1].weekDay)) {
+    } else if (!isLastDayOfWeek(props.week[props.week.length-1])) {
       // add placeholders to the end of the week
       return [...props.week, ...placeholders];
     }
@@ -75,7 +81,7 @@ function Week(props) {
     <tr className='week'>
       {
         weekWithPlaceholders.map((day, index) => {
-          return <Day key={index} weekDay={day.weekDay} dayOfMonth={day.dayOfMonth}/>
+          return <Day key={index} day={day}/>
         })
       }
     </tr>
@@ -83,6 +89,7 @@ function Week(props) {
 }
 
 function Month(props) {
+  const {getCalendar, groupByWeeks} = useContext(CalendarContext);
   const month = getCalendar(props.year, props.month);
   const weeks = groupByWeeks(month);
 
@@ -102,6 +109,7 @@ function Month(props) {
 }
 
 function Header(props) {
+  const {getMonths} = useContext(CalendarContext);
   const readableMonth = getMonths().find(month => month.order === props.month).month;
   return (
     <div className="header">
@@ -113,6 +121,7 @@ function Header(props) {
 }
 
 function Calendar(props) {
+  const {getNextMonth, getPreviousMonth} = useContext(CalendarContext);
   const today = new Date();
   const [date, setDate] = useState({month: today.getMonth()+1, year: today.getFullYear()});
 
@@ -134,10 +143,27 @@ function Calendar(props) {
   );
 }
 
+const CalendarContext = React.createContext({});
+
 function App() {
   return (
-    <Calendar/>
+    <CalendarContext.Provider value={calendar()}>
+      <Calendar/>
+    </CalendarContext.Provider>
   );
 }
+
+// function withCalendar(WrappedComponent) {
+//   return function(props) {
+//     return (
+//       <WrappedComponent calendar={calendar()} {...props}/>
+//     )
+//   }
+// }
+
+// hook?
+// function useCalendar(state) {
+//
+// }
 
 ReactDOM.render(<App/>, document.getElementById('root'));

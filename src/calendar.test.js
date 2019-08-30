@@ -1,11 +1,15 @@
 import {
   chunk,
   getCalendar,
-  countDaysInMonth, getMonths,
+  countDaysInMonth,
+  getMonths,
   getWeekDays,
-  groupByWeeks, rotate,
+  groupByWeeks,
+  rotate,
   take,
-  WEEKDAYS
+  WEEKDAYS,
+  isFirstDayOfWeek,
+  isLastDayOfWeek
 } from './calendar';
 
 function toArray(date) {
@@ -161,5 +165,25 @@ describe('getMonths', () => {
 
     expect(lastMonthOfYear.order).toBe(12);
     expect(lastMonthOfYear.month).toBe('December');
+  });
+});
+
+describe('isFirstDayOfWeek', () => {
+  test('should return return true for Sunday', () => {
+    expect(isFirstDayOfWeek(WEEKDAYS[0], new Date(2019, 8-1, 4))).toBe(true);
+  });
+
+  test('should return true for Monday when firstDayOfWeek is Monday', () => {
+    expect(isFirstDayOfWeek(WEEKDAYS[1], new Date(2019, 8-1, 5))).toBe(true);
+  });
+});
+
+describe('isLastDayOfWeek', () => {
+  test('should return return true for Saturday', () => {
+    expect(isLastDayOfWeek(WEEKDAYS[0], new Date(2019, 8-1, 31))).toBe(true);
+  });
+
+  test('should return true for Sunday when firstDayOfWeek is Monday', () => {
+    expect(isLastDayOfWeek(WEEKDAYS[1], new Date(2019, 8-1, 25))).toBe(true);
   });
 });
