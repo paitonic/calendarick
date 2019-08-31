@@ -38,7 +38,9 @@ function Day(props) {
 
 function WeekDayNames(props) {
   const {getWeekDays} = useContext(CalendarContext);
+
   const dayNames = getWeekDays();
+
   return (
     <tr className='week-days'>
       {
@@ -54,33 +56,11 @@ function WeekDayNames(props) {
   )
 }
 
-
 function Week(props) {
-  const {isFirstDayOfWeek, isLastDayOfWeek} = useContext(CalendarContext);
-
-  function addMissingDaysPlaceholders() {
-    if (props.week.length === 7) {
-      return props.week;
-    }
-
-    const missingDaysCount = 7 - props.week.length;
-    const placeholders = new Array(missingDaysCount).fill(null);
-
-    if (!isFirstDayOfWeek(props.week[0]))  {
-      // add placeholders to the start of the week
-      return [...placeholders, ...props.week];
-    } else if (!isLastDayOfWeek(props.week[props.week.length-1])) {
-      // add placeholders to the end of the week
-      return [...props.week, ...placeholders];
-    }
-  }
-
-  const weekWithPlaceholders = addMissingDaysPlaceholders();
-
   return (
     <tr className='week'>
       {
-        weekWithPlaceholders.map((day, index) => {
+        props.week.map((day, index) => {
           return <Day key={index} day={day}/>
         })
       }
@@ -91,7 +71,7 @@ function Week(props) {
 function Month(props) {
   const {getCalendar, groupByWeeks} = useContext(CalendarContext);
   const month = getCalendar(props.year, props.month);
-  const weeks = groupByWeeks(month);
+  const weeks = groupByWeeks(month, {fillMissingDaysWithNull: true});
 
   return (
     <table className='month'>
@@ -108,6 +88,7 @@ function Month(props) {
   )
 }
 
+// TODO: if isRTL=true, change onBackClick handler with onNextClick handler
 function Header(props) {
   const {getMonths} = useContext(CalendarContext);
   const readableMonth = getMonths().find(month => month.order === props.month).month;
@@ -144,11 +125,23 @@ function Calendar(props) {
 }
 
 const CalendarContext = React.createContext({});
+const PreferencesContext = React.createContext({});
 
-function App() {
+function App(props) {
+  const preferences = {
+    calendar: {
+      locale: 'he',
+      weekday: 'narrow',
+      isRTL: true,
+      withOutsideDays: false,
+    }
+  };
+
   return (
-    <CalendarContext.Provider value={calendar()}>
-      <Calendar/>
+    <CalendarContext.Provider value={calendar(preferences.calendar)}>
+      <PreferencesContext.Provider value={preferences}>
+        <Calendar/>
+      </PreferencesContext.Provider>
     </CalendarContext.Provider>
   );
 }

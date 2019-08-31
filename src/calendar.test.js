@@ -9,12 +9,23 @@ import {
   take,
   WEEKDAYS,
   isFirstDayOfWeek,
-  isLastDayOfWeek
+  isLastDayOfWeek, orderWeekDays, getWeekDayIndex
 } from './calendar';
 
-function toArray(date) {
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+// TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
+// https://github.com/nodejs/node/issues/19214
 
+function toArray(date) {
+  if (date instanceof Date) {
+    return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+  } else {
+    return date;
+  }
+}
+
+function fromArray(arr) {
+  const [year, month, day] = arr;
+  return new Date(year, month-1, day);
 }
 
 // function toObject(date) {
@@ -111,6 +122,23 @@ describe('groupByWeeks', () => {
     expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31]);
   });
 
+  test('should group days into weeks with isRTL=true', () => {
+    const october = getCalendar(2019, 10, {isRTL: true});
+    const weeks = groupByWeeks(WEEKDAYS[0], october, {isRTL: true});
+
+    const [firstWeek, lastWeek] = [weeks[0], weeks[weeks.length-1]];
+    const firstDayOfMonth = firstWeek[firstWeek.length-1];
+    const lastDayOfMonth = lastWeek[0];
+
+    expect(weeks.length).toBe(5);
+
+    expect(firstWeek.length).toBe(5);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1]);
+
+    expect(lastWeek.length).toBe(5);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31]);
+  });
+
   test('should work with outsideDays', () => {
     const october = getCalendar(2019, 10, {withOutsideDays: true});
     const weeks = groupByWeeks(WEEKDAYS[0], october);
@@ -126,6 +154,75 @@ describe('groupByWeeks', () => {
     expect(lastWeek.length).toBe(7);
     expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2]);
   });
+
+  test('should work with outsideDays and isRTL=true', () => {
+    const october = getCalendar(2019, 10, {withOutsideDays: true, isRTL: true});
+    const weeks = groupByWeeks(WEEKDAYS[0], october, {isRTL: true});
+    const [firstWeek, lastWeek] = [weeks[0], weeks[weeks.length-1]];
+    const firstDayOfMonth = firstWeek[lastWeek.length-1];
+    const lastDayOfMonth = lastWeek[0];
+
+    expect(weeks.length).toBe(5);
+
+    expect(firstWeek.length).toBe(7);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29]);
+
+    expect(lastWeek.length).toBe(7);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2]);
+  });
+
+  test('should fill missing days in week with null', () => {
+    const august = getCalendar(2019, 10);
+    const weeks = groupByWeeks(WEEKDAYS[0], august, {fillMissingDaysWithNull: true});
+    const firstWeek = weeks[0].map(toArray);
+    const lastWeek = weeks[weeks.length-1].map(toArray);
+
+    expect(firstWeek).toEqual([
+      null,
+      null,
+      [2019, 10, 1],
+      [2019, 10, 2],
+      [2019, 10, 3],
+      [2019, 10, 4],
+      [2019, 10, 5],
+    ]);
+
+    expect(lastWeek).toEqual([
+      [2019, 10, 27],
+      [2019, 10, 28],
+      [2019, 10, 29],
+      [2019, 10, 30],
+      [2019, 10, 31],
+      null,
+      null,
+    ]);
+  });
+
+  test('should fill missing days in week with null when isRTL=true', () => {
+    const august = getCalendar(2019, 10);
+    const weeks = groupByWeeks(WEEKDAYS[0], august, {isRTL: true, fillMissingDaysWithNull: true});
+    const [firstWeek, lastWeek] = [weeks[0].map(toArray), weeks[weeks.length-1].map(toArray)];
+
+    expect(firstWeek).toEqual([
+      [2019, 10, 5],
+      [2019, 10, 4],
+      [2019, 10, 3],
+      [2019, 10, 2],
+      [2019, 10, 1],
+      null,
+      null,
+    ]);
+
+    expect(lastWeek).toEqual([
+      null,
+      null,
+      [2019, 10, 31],
+      [2019, 10, 30],
+      [2019, 10, 29],
+      [2019, 10, 28],
+      [2019, 10, 27],
+    ]);
+  });
 });
 
 describe('getWeekDays', () => {
@@ -137,6 +234,11 @@ describe('getWeekDays', () => {
   test('should return correct week day names if firstDayOfWeek is specified', () => {
     const names = getWeekDays({firstDayOfWeek: WEEKDAYS[3] /* wednesday */});
     expect(names).toEqual(['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue']);
+  });
+
+  test('should return week day names in RTL order', () => {
+    const names = getWeekDays({locale: 'he', firstDayOfWeek: WEEKDAYS[0], isRTL: true});
+    expect(names).toEqual(['Sat', 'Fri', 'Thu', 'Wed', 'Tue', 'Mon', 'Sun']);
   });
 });
 
@@ -170,20 +272,62 @@ describe('getMonths', () => {
 
 describe('isFirstDayOfWeek', () => {
   test('should return return true for Sunday', () => {
-    expect(isFirstDayOfWeek(WEEKDAYS[0], new Date(2019, 8-1, 4))).toBe(true);
+    expect(isFirstDayOfWeek(WEEKDAYS[0], fromArray([2019, 8, 4]))).toBe(true);
   });
 
   test('should return true for Monday when firstDayOfWeek is Monday', () => {
-    expect(isFirstDayOfWeek(WEEKDAYS[1], new Date(2019, 8-1, 5))).toBe(true);
+    expect(isFirstDayOfWeek(WEEKDAYS[1], fromArray([2019, 8, 5]))).toBe(true);
   });
 });
 
 describe('isLastDayOfWeek', () => {
   test('should return return true for Saturday', () => {
-    expect(isLastDayOfWeek(WEEKDAYS[0], new Date(2019, 8-1, 31))).toBe(true);
+    expect(isLastDayOfWeek(WEEKDAYS[0], fromArray([2019, 8, 31]))).toBe(true);
+  });
+
+  test('should return true for Saturday when isRTL=true', () => {
+    expect(isLastDayOfWeek(WEEKDAYS[0], fromArray([2019, 8, 31]), {isRTL: true})).toBe(true);
   });
 
   test('should return true for Sunday when firstDayOfWeek is Monday', () => {
-    expect(isLastDayOfWeek(WEEKDAYS[1], new Date(2019, 8-1, 25))).toBe(true);
+    expect(isLastDayOfWeek(WEEKDAYS[1], fromArray([2019, 8, 25]))).toBe(true);
+  });
+});
+
+describe('orderWeekDays', () => {
+  test('should order week days', () => {
+    expect(orderWeekDays(WEEKDAYS[1])).toEqual([
+      WEEKDAYS[1], // Monday
+      WEEKDAYS[2],
+      WEEKDAYS[3],
+      WEEKDAYS[4],
+      WEEKDAYS[5],
+      WEEKDAYS[6],
+      WEEKDAYS[0] // Sunday
+    ]);
+  });
+
+  test('should order week days in RTL order', () => {
+    expect(orderWeekDays(WEEKDAYS[1], {isRTL: true})).toEqual([
+      WEEKDAYS[0], // Sunday
+      WEEKDAYS[6],
+      WEEKDAYS[5],
+      WEEKDAYS[4],
+      WEEKDAYS[3],
+      WEEKDAYS[2],
+      WEEKDAYS[1] // Monday
+    ]);
+  });
+});
+
+describe('getWeekDayIndex', () => {
+  test('should return correct week day index', () => {
+    expect(getWeekDayIndex(WEEKDAYS[0], WEEKDAYS[1])).toBe(1);
+  });
+
+  test('should return correct week day index if firstDayOfWeek is different from Sunday', () => {
+    // firstDayOfWeek is Monday
+    // Mon - Tue - Wed - Thu - Fri - Sat - Sun
+    expect(getWeekDayIndex(WEEKDAYS[1], WEEKDAYS[0])).toBe(6);
   });
 });

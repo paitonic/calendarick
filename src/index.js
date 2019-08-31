@@ -15,7 +15,9 @@ export function calendar({
                     weekday='short',
                     month='long',
                     firstDayOfWeek=WEEKDAYS[0],
-                    withOutsideDays=false} = {}
+                    withOutsideDays=false,
+                    isRTL=false
+                    } = {}
                   ) {
   return {
     getCalendar(...args) {
@@ -31,11 +33,11 @@ export function calendar({
     },
 
     getWeekDays() {
-      return getWeekDays({locale, firstDayOfWeek, weekday});
+      return getWeekDays({locale, firstDayOfWeek, weekday, isRTL});
     },
 
-    groupByWeeks(...args) {
-      return groupByWeeks(firstDayOfWeek, ...args);
+    groupByWeeks(days, {fillMissingDaysWithNull = false} = {}) {
+      return groupByWeeks(firstDayOfWeek, days, {isRTL, fillMissingDaysWithNull});
     },
 
     getPreviousMonth(...args) {
@@ -47,7 +49,7 @@ export function calendar({
     },
 
     isLastDayOfWeek(...args) {
-      return isLastDayOfWeek(firstDayOfWeek, ...args);
+      return isLastDayOfWeek(firstDayOfWeek, ...args, {isRTL});
     }
   }
 }

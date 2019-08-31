@@ -1,5 +1,11 @@
 // TODO: replace Int.DateFormat with toLocaleString?
 
+/*
+ TODO issues:
+- configuration parameters must be passed to each function that needs them. there is no shared state
+- repetition of defaults (e.g isRTL=false)
+ */
+
 export function countDaysInMonth(year, month) {
     // 0 in day returns total days in a previous month
     // month are zero-based.
@@ -45,13 +51,11 @@ const weekDays = new Map([
   ['Sat', 6]
 ]);
 
-// TODO: depends on firstDayOfWeek
-function getWeekDayIndex(firstDayOfWeek, weekDay) {
+export function getWeekDayIndex(firstDayOfWeek, weekDay) {
   const ordered = orderWeekDays(firstDayOfWeek);
   return ordered.findIndex(day => day.getDay() === weekDay.getDay())
 }
 
-// TODO: depends on locale
 function getDayRepresentation(date, {locale = 'en-US', weekday = 'short'} = {}) {
   return {
     weekDay: new Intl.DateTimeFormat(locale, {weekday}).format(date),
@@ -61,15 +65,13 @@ function getDayRepresentation(date, {locale = 'en-US', weekday = 'short'} = {}) 
   }
 }
 
-// TODO: depends on firstDayOfWeek
 export function isFirstDayOfWeek(firstDayOfWeek, date) {
   return firstDayOfWeek.getDay() === date.getDay();
 }
 
-// TODO: depends on firstDayOfWeek
-export function isLastDayOfWeek(firstDayOfWeek, date) {
-  const ordered = orderWeekDays(firstDayOfWeek);
-  return ordered[ordered.length-1].getDay() === date.getDay();
+export function isLastDayOfWeek(firstDayOfWeek, date, {isRTL=false} = {}) {
+  const ordered = orderWeekDays(firstDayOfWeek, {isRTL});
+  return ordered[isRTL ? 0 : ordered.length-1].getDay() === date.getDay();
 }
 
 
@@ -83,8 +85,6 @@ export function isLastDayOfWeek(firstDayOfWeek, date) {
 //   saturday: 6
 // };
 
-// TODO: depends on the firstDayOfWeek
-
 export const WEEKDAYS = [
   new Date(1970, 0, 4), // 0 - sunday
   new Date(1970, 0, 5), // 1 - monday
@@ -95,19 +95,17 @@ export const WEEKDAYS = [
   new Date(1970, 0, 10) // 6 - saturday
 ];
 
-
-
-// TODO: depends on locale & firstDayOfWeek
-// TODO: consider that week day may start from Sunday, Monday and Saturday
-export function getWeekDays({locale = 'en-US', firstDayOfWeek = WEEKDAYS[0], weekday = 'short'} = {}) {
-  return orderWeekDays(firstDayOfWeek).map((date) => {
-    return new Intl.DateTimeFormat(locale, {weekday: weekday}).format(date);
+export function getWeekDays({locale = 'en-US', firstDayOfWeek = WEEKDAYS[0], weekday = 'short', isRTL = false} = {}) {
+  return orderWeekDays(firstDayOfWeek, {isRTL}).map((date) => {
+    return new Intl.DateTimeFormat(locale, {weekday}).format(date);
   });
 }
 
 export function rotate(collection, n) {
+  const clone = [...collection];
+
   if (n === 0 ) {
-    return collection;
+    return clone;
   }
 
   const [takeFn, insertFn] = n > 0 ?
@@ -118,11 +116,11 @@ export function rotate(collection, n) {
 
   function shift(i) {
     if (i === count) {
-      return collection;
+      return clone;
     }
 
-    const item = takeFn.call(collection);
-    insertFn.call(collection, item);
+    const item = takeFn.call(clone);
+    insertFn.call(clone, item);
 
     return shift(i + 1);
   }
@@ -153,7 +151,7 @@ export function take(n, generator, ...rest) {
 }
 
 
-export function getCalendar(year, month, {locale = 'en-US', weekday = 'short', withOutsideDays = false, firstDayOfWeek = WEEKDAYS[0]} = {}) {
+export function getCalendar(year, month, {locale = 'en-US', weekday = 'short', withOutsideDays = false, firstDayOfWeek = WEEKDAYS[0], isRTL = false} = {}) {
     // const daysInMonthCount = countDaysInMonth(year, month);
     // let days = [];
     //
@@ -186,7 +184,7 @@ export function getCalendar(year, month, {locale = 'en-US', weekday = 'short', w
         days = [...take(index, () => calendar(maybePrevYear, prevMonth, {reverseOrder: true})).reverse(), ...days];
       }
 
-      if (!isLastDayOfWeek(firstDayOfWeek, days[days.length-1])) {
+      if (!isLastDayOfWeek(firstDayOfWeek, days[days.length-1], {isRTL})) {
         const index = getWeekDayIndex(firstDayOfWeek, days[days.length-1]);
         // week contains 7 days. but we are using zero based indexing. so the Saturday is 6.
         const [maybeNextYear, nextMonth] = getNextMonth(year, month);
@@ -201,22 +199,42 @@ export function getCalendar(year, month, {locale = 'en-US', weekday = 'short', w
   return days;
 }
 
-export function groupByWeeks(firstDayOfWeek, days) {
+const DAYS_IN_WEEK = 7;
+export function groupByWeeks(firstDayOfWeek, days, {isRTL = false, fillMissingDaysWithNull = false} = {}) {
   function partition(days, result=[]) {
-    // TODO: list of days is actually contains objects returned by getDayRepresentation(). they are not Date() objects.
-    const end = days.findIndex((day) => isLastDayOfWeek(firstDayOfWeek, day));
     if (days.length === 0) {
-      return result;
-    } else if (end === -1) {
-      // add the remaining days.
-      result.push(days);
       return result;
     }
 
-    return partition(days.slice(end+1, days.length), [...result, days.slice(0, end+1)])
+    const end = days.findIndex((day) => isLastDayOfWeek(firstDayOfWeek, day));
+    if (end === -1) {
+      // add the remaining days.
+      result.push(isRTL ? [...days].reverse() : days);
+      return result;
+    }
+
+    const week = days.slice(0, end+1);
+
+    return partition(days.slice(end+1, days.length), [...result, isRTL ? week.reverse() : week])
   }
 
-  return partition(days);
+  let weeks = partition(days);
+
+  if (fillMissingDaysWithNull) {
+    const firstWeek = weeks[0];
+    if (firstWeek.length < DAYS_IN_WEEK) {
+      const placeholders = new Array(DAYS_IN_WEEK - firstWeek.length).fill(null);
+      weeks[0] = isRTL ? [...firstWeek, ...placeholders] : [...placeholders, ...firstWeek];
+    }
+
+    const lastWeek = weeks[weeks.length-1];
+    if (lastWeek.length < DAYS_IN_WEEK) {
+      const placeholders = new Array(DAYS_IN_WEEK - lastWeek.length).fill(null);
+      weeks[weeks.length-1] = isRTL ? [...placeholders, ...lastWeek] : [...lastWeek, ...placeholders];
+    }
+  }
+
+  return weeks;
 }
 
 
@@ -224,12 +242,13 @@ const months = new Array(12).fill(0).map((month, index) => {
   return new Date(1970, index, 1);
 });
 
-function orderWeekDays(firstDayOfWeek) {
-  const rotateCount = WEEKDAYS.findIndex(day => day === firstDayOfWeek) * -1;
-  return rotate([...WEEKDAYS], rotateCount);
+export function orderWeekDays(firstDayOfWeek, {isRTL = false} = {}) {
+  const weekdays = isRTL ? [...WEEKDAYS].reverse() : [...WEEKDAYS];
+  const index = weekdays.findIndex(day => day === firstDayOfWeek);
+  const rotateCount = isRTL ? (WEEKDAYS.length-1) - index : index * -1;
+  return rotate(weekdays, rotateCount);
 }
 
-// TODO: depends on locale
 export function getMonths({locale =  'en-US', month = 'long'} = {}) {
   return months.map((monthObj, index) => {
     return {
