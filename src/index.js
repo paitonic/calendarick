@@ -6,7 +6,9 @@ import {
   groupByWeeks,
   getPreviousMonth,
   isFirstDayOfWeek,
-  isLastDayOfWeek, WEEKDAYS
+  isLastDayOfWeek,
+  WEEKDAYS,
+  isOutsideMonth
 } from '../src/calendar';
 
 
@@ -50,6 +52,10 @@ export function calendar({
 
     isLastDayOfWeek(...args) {
       return isLastDayOfWeek(firstDayOfWeek, ...args, {isRTL});
+    },
+
+    isOutsideMonth(month, date) {
+      return isOutsideMonth(month, date);
     }
   }
 }

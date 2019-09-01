@@ -9,7 +9,7 @@ import {
   take,
   WEEKDAYS,
   isFirstDayOfWeek,
-  isLastDayOfWeek, orderWeekDays, getWeekDayIndex
+  isLastDayOfWeek, orderWeekDays, getWeekDayIndex, isOutsideMonth
 } from './calendar';
 
 // TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
@@ -329,5 +329,19 @@ describe('getWeekDayIndex', () => {
     // firstDayOfWeek is Monday
     // Mon - Tue - Wed - Thu - Fri - Sat - Sun
     expect(getWeekDayIndex(WEEKDAYS[1], WEEKDAYS[0])).toBe(6);
+  });
+});
+
+describe('isOutsideMonth', () => {
+  test('should return false if given date in the same month', () => {
+    const month =  12;
+    const december = getCalendar(2019, month);
+    expect(isOutsideMonth(month, fromArray([2019, month, 1]))).toBe(false);
+  });
+
+  test('should return true if given date is outside of month', () => {
+    const month = 12;
+    const december = getCalendar(2019, month);
+    expect(isOutsideMonth(month, fromArray([2019, 11, 1]))).toBe(true);
   });
 });

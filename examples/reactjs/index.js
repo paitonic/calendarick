@@ -8,7 +8,6 @@ import clsx from 'clsx';
 
 // TODO: date range
 // TODO: add class to mark current day
-// TODO: mark outside days with different class
 // TODO: add option to disable days by condition
 // TODO: year selection (open dropdown to select custom year?)
 // TODO: keyboard navigation
@@ -30,8 +29,8 @@ import clsx from 'clsx';
 
 function Day(props) {
   return (
-    <td className={clsx('day', {'day--empty': props.day === null})}>
-      <span>{props.day ? props.day.getDate() : null}</span>
+    <td className={clsx('day', {'day--empty': props.day === null, 'day--is-outside-month': props.day.isOutsideMonth})}>
+      <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
 }
@@ -69,9 +68,14 @@ function Week(props) {
 }
 
 function Month(props) {
-  const {getCalendar, groupByWeeks} = useContext(CalendarContext);
+  const {getCalendar, groupByWeeks, isOutsideMonth} = useContext(CalendarContext);
   const month = getCalendar(props.year, props.month);
-  const weeks = groupByWeeks(month, {fillMissingDaysWithNull: true});
+  const weeks = groupByWeeks(month, {fillMissingDaysWithNull: true}).map((week) => {
+    return week.map((day) => {
+      return {date: day, isOutsideMonth: day ? isOutsideMonth(props.month, day) : true};
+    });
+  });
+
 
   return (
     <table className='month'>
@@ -133,7 +137,7 @@ function App(props) {
       locale: 'he',
       weekday: 'narrow',
       isRTL: true,
-      withOutsideDays: false,
+      withOutsideDays: true,
     }
   };
 

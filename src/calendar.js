@@ -257,6 +257,11 @@ export function getMonths({locale =  'en-US', month = 'long'} = {}) {
     };
   });
 }
+
+export function isOutsideMonth(month, date) {
+  return month !== date.getMonth()+1;
+}
+
 /**
 [
     {weekDay: 'Sunday', dayOfMonth: 1, year: 2019, month: 12},
