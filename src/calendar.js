@@ -262,6 +262,71 @@ export function isOutsideMonth(month, date) {
   return month !== date.getMonth()+1;
 }
 
+export function isBefore(date, otherDate) {
+  if (date.getFullYear() < otherDate.getFullYear()) {
+    return true;
+  } else if (date.getMonth() < otherDate.getMonth()) {
+    return true;
+  } else {
+    return date.getDate() < otherDate.getDate();
+  }
+}
+
+export function isAfter(date, otherDate) {
+  return isBefore(otherDate, date);
+}
+
+export function compareDates(date, otherDate) {
+  if (isBefore(date, otherDate)) {
+    return -1;
+  } else if (isAfter(date, otherDate)) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+export function reduceDates(dates, comparisonFn) {
+  return dates.reduce((result, date) => {
+    if (comparisonFn(date, result)) {
+      return date;
+    } else {
+      return result;
+    }
+  }, dates[0]);
+}
+
+export function minDate(dates) {
+  return reduceDates(dates, isBefore);
+}
+
+export function maxDate(dates) {
+  return reduceDates(dates, isAfter);
+}
+
+export function isToday(date) {
+  return isSame(date, new Date());
+}
+
+export function isBetween(date, start, end, inclusive=false) {
+  return isAfter(date, start) && isBefore(date, end) ?
+    true :
+    inclusive && (isSame(date, start) || isSame(date, end));
+}
+
+export function isSame(date, otherDate) {
+  return !isAfter(date, otherDate) && !isBefore(date, otherDate);
+}
+
+export function toArray(date) {
+  return date instanceof Date ? [date.getFullYear(), date.getMonth() + 1, date.getDate()] : date;
+}
+
+export function fromArray(arr) {
+  const [year, month, day] = arr;
+  return new Date(year, month-1, day);
+}
+
 /**
 [
     {weekDay: 'Sunday', dayOfMonth: 1, year: 2019, month: 12},

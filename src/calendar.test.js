@@ -1,5 +1,4 @@
 import {
-  chunk,
   getCalendar,
   countDaysInMonth,
   getMonths,
@@ -9,24 +8,24 @@ import {
   take,
   WEEKDAYS,
   isFirstDayOfWeek,
-  isLastDayOfWeek, orderWeekDays, getWeekDayIndex, isOutsideMonth
+  isLastDayOfWeek,
+  orderWeekDays,
+  getWeekDayIndex,
+  isOutsideMonth,
+  isBefore,
+  isAfter,
+  compareDates,
+  minDate,
+  maxDate,
+  isToday,
+  isBetween,
+  isSame,
+  toArray,
+  fromArray
 } from './calendar';
 
 // TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
 // https://github.com/nodejs/node/issues/19214
-
-function toArray(date) {
-  if (date instanceof Date) {
-    return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
-  } else {
-    return date;
-  }
-}
-
-function fromArray(arr) {
-  const [year, month, day] = arr;
-  return new Date(year, month-1, day);
-}
 
 // function toObject(date) {
 //   return {year: date.getFullYear(), month: date.getMonth() + 1, dayOfMonth: date.getDate()};
@@ -343,5 +342,151 @@ describe('isOutsideMonth', () => {
     const month = 12;
     const december = getCalendar(2019, month);
     expect(isOutsideMonth(month, fromArray([2019, 11, 1]))).toBe(true);
+  });
+});
+
+describe('compareDates', () => {
+  test('should return -1 if first given date is earlier than the second provided date', () => {
+    expect(compareDates(fromArray([2019, 1, 1]), fromArray([2019, 1, 2]))).toEqual(-1); // days
+    expect(compareDates(fromArray([2019, 1, 1]), fromArray([2019, 2, 1]))).toEqual(-1); // months
+    expect(compareDates(fromArray([2019, 1, 1]), fromArray([2020, 1, 1]))).toEqual(-1); // years
+  });
+
+  test('should return 1 if first given date is later than the second provided date', () => {
+    expect(compareDates(fromArray([2019, 1, 2]), fromArray([2019, 1, 1]))).toEqual(1); // days
+    expect(compareDates(fromArray([2019, 2, 1]), fromArray([2019, 1, 1]))).toEqual(1); // months
+    expect(compareDates(fromArray([2019, 1, 1]), fromArray([2018, 1, 1]))).toEqual(1); // years
+  });
+
+  test('should return 0 if dates are equal', () => {
+    const date = fromArray([2019, 1, 1]);
+
+    expect(compareDates(date, date)).toEqual(0);
+  });
+});
+
+describe('minDate', () => {
+  test('should return the earliest of dates', () => {
+    const earliest = fromArray([2019, 9, 1]);
+
+    expect(toArray(minDate([earliest, fromArray([2019, 9, 3]), fromArray([2019, 9, 2])]))).toEqual(toArray(earliest));
+    expect(toArray(minDate([fromArray([2019, 9, 3]), earliest, fromArray([2019, 9, 2])]))).toEqual(toArray(earliest));
+    expect(toArray(minDate([fromArray([2019, 9, 3]), fromArray([2019, 9, 2]), earliest]))).toEqual(toArray(earliest));
+  });
+});
+
+describe('maxDate', () => {
+  test('should return the latest of dates', () => {
+    const latest = fromArray([2019, 9, 3]);
+
+    expect(toArray(maxDate([latest, fromArray([2019, 9, 1]), fromArray([2019, 9, 2])]))).toEqual(toArray(latest));
+    expect(toArray(maxDate([fromArray([2019, 9, 1]), latest, fromArray([2019, 9, 2])]))).toEqual(toArray(latest));
+    expect(toArray(maxDate([fromArray([2019, 9, 1]), fromArray([2019, 9, 2]), latest]))).toEqual(toArray(latest));
+  });
+});
+
+describe('isToday', () => {
+  test('should return true if given date is today', () => {
+    const date = new Date();
+    expect(isToday(date)).toBe(true);
+  });
+
+  test('should return false if given date is different than today', () => {
+    const date = fromArray([2019, 9, 1]);
+    expect(isToday(date)).toBe(false);
+  });
+});
+
+describe('isBefore', () => {
+  test('should return true if first date is earlier than the other', () => {
+    const earlier = fromArray([2019, 9, 1]);
+    const later = fromArray([2019, 9, 3]);
+    expect(isBefore(earlier, later)).toBe(true);
+  });
+
+  test('should return false if first date is later than the other', () => {
+    const earlier = fromArray([2019, 9, 1]);
+    const later = fromArray([2019, 9, 3]);
+    expect(isBefore(later, earlier)).toBe(false);
+  });
+
+  test('should return false if dates are same', () => {
+    const date = fromArray([2019, 1, 1]);
+    const otherDate = fromArray([2019, 1, 1]);
+    expect(isBefore(date, otherDate)).toBe(false);
+  });
+});
+
+describe('isAfter', () => {
+  test('should return true if first date is later than the other', () => {
+    const earlier = fromArray([2019, 9, 1]);
+    const later = fromArray([2019, 9, 3]);
+    expect(isAfter(later, earlier)).toBe(true);
+  });
+
+  test('should return false if first date is earlier than the other', () => {
+    const earlier = fromArray([2019, 9, 1]);
+    const later = fromArray([2019, 9, 3]);
+    expect(isAfter(earlier, later)).toBe(false);
+  });
+
+  test('should return false if dates are same', () => {
+    const date = fromArray([2019, 1, 1]);
+    const otherDate = fromArray([2019, 1, 1]);
+    expect(isAfter(date, otherDate)).toBe(false);
+  });
+});
+
+describe('isBetween', () => {
+  test('should return true if given date is between the two dates (inclusive=false)', () => {
+    const date = fromArray([2019, 9, 2]);
+    const start = fromArray([2019, 9, 1]);
+    const end = fromArray([2019, 9, 3]);
+
+    expect(isBetween(date, start, end)).toBe(true);
+  });
+
+  test('should return false if given date is not between the two dates (inclusive=false)', () => {
+    const date = fromArray([2019, 9, 2]);
+    const start = fromArray([2019, 9, 1]);
+    const end = fromArray([2019, 9, 3]);
+
+    expect(isBetween(date, end, start)).toBe(false);
+  });
+
+  test('should return true if given date is between the two dates (inclusive=true)', () => {
+    const start = fromArray([2019, 9, 1]);
+    const middle = fromArray([2019, 9, 2]);
+    const end = fromArray([2019, 9, 3]);
+
+    expect(isBetween(start, start, end, true)).toBe(true);
+    expect(isBetween(end, start, end, true)).toBe(true);
+    expect(isBetween(middle, start, end, true)).toBe(true);
+  });
+});
+
+describe('isSame', () => {
+  test('should return true if two dates are same', () => {
+    const date = fromArray([2019, 9, 1]);
+    expect(isSame(date, date)).toBe(true);
+  });
+
+  test('should return false if two dates are not the same', () => {
+    const date = fromArray([2019, 9, 1]);
+    const otherDate = fromArray([2020, 9, 1]);
+    expect(isSame(date, otherDate)).toBe(false);
+  });
+});
+
+describe('toArray', () => {
+  test('convert Date object to array [yyyy, mm, dd]', () => {
+    const date = new Date(2019, 9-1, 1);
+    expect(toArray(date)).toEqual([2019, 9, 1]);
+  });
+});
+
+describe('fromArray', () => {
+  test('convert array [yyyy, mm, dd] to Date object', () => {
+    expect(toArray(fromArray([2019, 9, 1]))).toEqual([2019, 9, 1]);
   });
 });
