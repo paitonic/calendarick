@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 
 import './calendar.sass';
 
@@ -131,8 +131,8 @@ function Calendar(props) {
 const CalendarContext = React.createContext({});
 const PreferencesContext = React.createContext({});
 
-function App(props) {
-  const preferences = {
+function Calendarik(props) {
+    const preferences = {
     calendar: {
       locale: 'he',
       weekday: 'narrow',
@@ -147,6 +147,46 @@ function App(props) {
         <Calendar/>
       </PreferencesContext.Provider>
     </CalendarContext.Provider>
+  );
+}
+
+function useClickAway(targetRef) {
+  const [isShown, setIsShown] = useState(false);
+
+  function handleClick(event) {
+    if (isShown && !targetRef.current.contains(event.target)) {
+      setIsShown(false);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleClick);
+
+    return function() {
+      document.removeEventListener('click', handleClick);
+    }
+  }, [isShown]);
+
+  return [isShown, setIsShown]
+}
+
+function App(props) {
+  // const [isShown, setIsShown] = useState(false);
+  const calendarikRef = useRef(null);
+  const [isShown, setIsShown] = useClickAway(calendarikRef);
+
+  return (
+    <>
+    <Calendarik/>
+
+    <input onClick={() => setIsShown(true)}/>
+      {
+        isShown &&
+        <div ref={calendarikRef}>
+          <Calendarik/>
+        </div>
+      }
+    </>
   );
 }
 
