@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import React, { useState, useContext, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 
 import './calendar.sass';
 
@@ -28,8 +29,14 @@ import clsx from 'clsx';
 
 
 function Day(props) {
+  const {onDayClick} = useContext(PreferencesContext);
+
+  function handleClick() {
+    onDayClick(props.day);
+  }
+
   return (
-    <td className={clsx('day', {'day--empty': props.day === null, 'day--is-outside-month': props.day.isOutsideMonth})}>
+    <td className={clsx('day', {'day--empty': props.day === null, 'day--is-outside-month': props.day.isOutsideMonth})} onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
@@ -133,12 +140,13 @@ const PreferencesContext = React.createContext({});
 
 function Calendarik(props) {
     const preferences = {
-    calendar: {
-      locale: 'he',
-      weekday: 'narrow',
-      isRTL: true,
-      withOutsideDays: true,
-    }
+      calendar: {
+        locale: 'he',
+        weekday: 'narrow',
+        isRTL: true,
+        withOutsideDays: true,
+      },
+      onDayClick: props.onDayClick,
   };
 
   return (
@@ -149,6 +157,14 @@ function Calendarik(props) {
     </CalendarContext.Provider>
   );
 }
+
+Calendarik.propTypes = {
+  onDayClick: PropTypes.func,
+};
+
+Calendarik.defaultProps = {
+  onDayClick: () => {},
+};
 
 function useClickAway(targetRef) {
   const [isShown, setIsShown] = useState(false);
@@ -177,7 +193,7 @@ function App(props) {
 
   return (
     <>
-    <Calendarik/>
+    <Calendarik onDayClick={(day) => console.log(day)}/>
 
     <input onClick={() => setIsShown(true)}/>
       {
