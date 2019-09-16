@@ -36,7 +36,11 @@ function Day(props) {
   }
 
   return (
-    <td className={clsx('day', {'day--empty': props.day === null, 'day--is-outside-month': props.day.isOutsideMonth})} onClick={handleClick}>
+    <td className={clsx('day', {
+        'day--empty': props.day === null,
+        'day--is-outside-month': props.day.isOutsideMonth
+    })}
+        onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
