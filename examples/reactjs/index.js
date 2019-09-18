@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
 import './calendar.sass';
@@ -13,7 +13,8 @@ import clsx from 'clsx';
 // TODO: year selection (open dropdown to select custom year?)
 // TODO: keyboard navigation
 // TODO: locale configuration
-
+// TODO: add 'data-test-id' attributes for testing
+// TODO: option - auto close date picker after selection (closeOnSelection)
 // problem with that approach is that, it is not possible to change properties dynamically
 // e.g if calendar has button to toggle between outside days (show/hide), it's not possible to change it in runtime.
 // const {
@@ -30,9 +31,11 @@ import clsx from 'clsx';
 
 function Day(props) {
   const {onDayClick} = useContext(PreferencesContext);
+  const {dispatch} = useContext(StateContext);
 
   function handleClick() {
     onDayClick(props.day);
+    dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
   }
 
   return (
@@ -116,16 +119,68 @@ function Header(props) {
   )
 }
 
-function Calendar(props) {
-  const {getNextMonth, getPreviousMonth} = useContext(CalendarContext);
-  const today = new Date();
-  const [date, setDate] = useState({month: today.getMonth()+1, year: today.getFullYear()});
+/*
+Possible actions
+- CLICK_DAY
+- HOVER_DAY ???
+- CLOSE -- close date picker (only relevant if it can be opened/closed)
+- OPEN -- open date picker (only relevant if it can be opened/closed)
+- CLICK_RIGHT_ARROW - right arrow clicked
+- CLICK_LEFT_ARROW - left arrow clicked
+- VIEW_MONTH - view month
 
+*/
+
+const ACTION_CLICK_DAY = 'CLICK_DAY';
+const ACTION_CLICK_LEFT_ARROW = 'CLICK_LEFT_ARROW';
+const ACTION_CLICK_RIGHT_ARROW = 'CLICK_RIGHT_ARROW';
+
+const initialState = {
+  date: new Date(),
+  selectedDays: {}, // {"2019-01-01": true, "2019-01-02": true} ???
+};
+
+const StateContext = React.createContext(initialState);
+
+function Calendar(props) {
+  // TODO: why reducer called twice first time?
+  function reducer(state, action) {
+    function reduce(state, action) {
+      console.log(action);
+
+      switch (action.type) {
+        case ACTION_CLICK_DAY:
+          return {...state, selectedDays: [action.day]}; // range or single date
+
+        case ACTION_CLICK_LEFT_ARROW:
+          return state;
+
+        case ACTION_CLICK_RIGHT_ARROW:
+          return state;
+
+        default:
+          return state;
+      }
+    }
+
+    const newState = reduce(state, action);
+    const maybeAlteredState = props.stateReducer ? props.stateReducer(newState, action) : newState;
+
+    // merge states
+    return Object.assign({}, newState, maybeAlteredState);
+  }
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {getNextMonth, getPreviousMonth} = useContext(CalendarContext);
+  const [date, setDate] = useState({month: state.date.getMonth()+1, year: state.date.getFullYear()});
+
+  // TODO: replace with () => dispatch({type: ACTION_CLICK_RIGHT_ARROW})
   function goNextMonth() {
     const [year, month] = getNextMonth(date.year, date.month);
     setDate({year, month});
   }
 
+  // TODO: replace with () => dispatch({type: ACTION_CLICK_LEFT_ARROW})
   function goPreviousMonth() {
     const [year, month] = getPreviousMonth(date.year, date.month);
     setDate({year, month});
@@ -133,8 +188,13 @@ function Calendar(props) {
 
   return (
     <>
-      <Header year={date.year} month={date.month} onBackClick={goPreviousMonth} onNextClick={goNextMonth}/>
-      <Month year={date.year} month={date.month}/>
+      <StateContext.Provider value={{state, dispatch}}>
+        <Header year={date.year}
+                month={date.month}
+                onBackClick={goNextMonth}
+                onNextClick={goPreviousMonth}/>
+        <Month year={date.year} month={date.month}/>
+      </StateContext.Provider>
     </>
   );
 }
@@ -156,7 +216,7 @@ function Calendarik(props) {
   return (
     <CalendarContext.Provider value={calendar(preferences.calendar)}>
       <PreferencesContext.Provider value={preferences}>
-        <Calendar/>
+          <Calendar stateReducer={props.stateReducer}/>
       </PreferencesContext.Provider>
     </CalendarContext.Provider>
   );
@@ -195,9 +255,24 @@ function App(props) {
   const calendarikRef = useRef(null);
   const [isShown, setIsShown] = useClickAway(calendarikRef);
 
+  // TODO: implement custom state reducer for the calendar
+  // TODO: see reducer function in Calendar
+  const stateReducer = (state, action) => {
+    switch (action.type) {
+      case ACTION_CLICK_LEFT_ARROW:
+        return {...state, selectedDays: []};
+
+      case ACTION_CLICK_RIGHT_ARROW:
+        return state;
+
+      default:
+        return state;
+    }
+  };
+
   return (
     <>
-    <Calendarik onDayClick={(day) => console.log(day)}/>
+    <Calendarik onDayClick={(day) => console.log(day)} stateReducer={stateReducer}/>
 
     <input onClick={() => setIsShown(true)}/>
       {
