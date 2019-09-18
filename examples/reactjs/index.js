@@ -7,27 +7,6 @@ import './calendar.sass';
 import { calendar } from '../../src';
 import clsx from 'clsx';
 
-// TODO: date range
-// TODO: add class to mark current day
-// TODO: add option to disable days by condition
-// TODO: year selection (open dropdown to select custom year?)
-// TODO: keyboard navigation
-// TODO: locale configuration
-// TODO: add 'data-test-id' attributes for testing
-// TODO: option - auto close date picker after selection (closeOnSelection)
-// problem with that approach is that, it is not possible to change properties dynamically
-// e.g if calendar has button to toggle between outside days (show/hide), it's not possible to change it in runtime.
-// const {
-//   getCalendar,
-//   getMonths,
-//   getNextMonth,
-//   getWeekDays,
-//   groupByWeeks,
-//   getPreviousMonth,
-//   isFirstDayOfWeek,
-//   isLastDayOfWeek
-// } = calendar();
-
 
 function Day(props) {
   const {onDayClick} = useContext(PreferencesContext);
@@ -106,7 +85,6 @@ function Month(props) {
   )
 }
 
-// TODO: if isRTL=true, change onBackClick handler with onNextClick handler
 function Header(props) {
   const {getMonths} = useContext(CalendarContext);
   const readableMonth = getMonths().find(month => month.order === props.month).month;
@@ -137,7 +115,7 @@ const ACTION_CLICK_RIGHT_ARROW = 'CLICK_RIGHT_ARROW';
 
 const initialState = {
   date: new Date(),
-  selectedDays: {}, // {"2019-01-01": true, "2019-01-02": true} ???
+  selectedDays: {}, // TODO: {"2019-01-01": true, "2019-01-02": true} ???
 };
 
 const StateContext = React.createContext(initialState);
@@ -284,18 +262,5 @@ function App(props) {
     </>
   );
 }
-
-// function withCalendar(WrappedComponent) {
-//   return function(props) {
-//     return (
-//       <WrappedComponent calendar={calendar()} {...props}/>
-//     )
-//   }
-// }
-
-// hook?
-// function useCalendar(state) {
-//
-// }
 
 ReactDOM.render(<App/>, document.getElementById('root'));
