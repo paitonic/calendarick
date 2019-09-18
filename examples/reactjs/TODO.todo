@@ -1,0 +1,21 @@
+☐ Date selection functionality 
+    ☐ Add callback ???
+    ☐ Show selected date
+☐ Disable selection of dates conditionally
+☐ Input interaction
+    ☐ On input, update calendar
+    ☐ When calendar 
+☐ open/close calendar as a popup
+☐ Add range selection
+☐ Hover trail (range selection)
+☐ Make style override easy
+☐ Keyboard navigation
+☐ Mark today's day
+☐ Year selection
+☐ Week numbers
+☐ Add `data-test-id` attributes across the component for making it testable
+☐ Locale configuration
+☐ Experiment with state reducer pattern
+☐ Tests
+☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
+    ☐ i.e clicking on left arrow should go forward
