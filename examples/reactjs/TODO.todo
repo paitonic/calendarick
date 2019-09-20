@@ -1,6 +1,6 @@
-☐ Date selection functionality 
-    ☐ Add callback ???
-    ☐ Show selected date
+✔ Date selection functionality @started(19-09-20 10:00) @done(19-09-20 22:03) @lasted(12h3m33s)
+    ✔ Add callback ???s @done(19-09-20 22:03)
+    ✔ Show selected date @done(19-09-20 22:03)
 ☐ Disable selection of dates conditionally
 ☐ Input interaction
     ☐ On input, update calendar
@@ -19,3 +19,4 @@
 ☐ Tests
 ☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
     ☐ i.e clicking on left arrow should go forward
+☐ Multiple calendars

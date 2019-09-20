@@ -10,7 +10,8 @@ import clsx from 'clsx';
 
 function Day(props) {
   const {onDayClick} = useContext(PreferencesContext);
-  const {dispatch} = useContext(StateContext);
+  const {isSame} = useContext(CalendarContext);
+  const {state: {selectedDays}, dispatch} = useContext(StateContext);
 
   function handleClick() {
     onDayClick(props.day);
@@ -20,7 +21,8 @@ function Day(props) {
   return (
     <td className={clsx('day', {
         'day--empty': props.day === null,
-        'day--is-outside-month': props.day.isOutsideMonth
+        'day--is-outside-month': props.day.isOutsideMonth,
+        'day--is-selected': selectedDays.some((selectedDay) => isSame(selectedDay, props.day.date)),
     })}
         onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
@@ -105,8 +107,8 @@ Possible actions
 - OPEN -- open date picker (only relevant if it can be opened/closed)
 - CLICK_RIGHT_ARROW - right arrow clicked
 - CLICK_LEFT_ARROW - left arrow clicked
-- VIEW_MONTH - view month
-
+- CHANGE_MONTH - change current displayed month
+- CLEAR_SELECTED_DAYS - clear selected dates
 */
 
 const ACTION_CLICK_DAY = 'CLICK_DAY';
@@ -115,20 +117,59 @@ const ACTION_CLICK_RIGHT_ARROW = 'CLICK_RIGHT_ARROW';
 
 const initialState = {
   date: new Date(),
-  selectedDays: {}, // TODO: {"2019-01-01": true, "2019-01-02": true} ???
+  /**
+   * One day
+   * selectedDays: [<Date>]
+   *
+   * Multiple selected days
+   * selectedDays: [<Date>, <Date>]
+   *
+   * Range
+   * selectedDays: [ [<Date>, <Date>] ]
+   *
+   * Multiple selected dates with range
+   * selectedDays: [ <Date>, [<Date>, <Date>], <Date> ]
+   */
+  selectedDays: [],
 };
 
 const StateContext = React.createContext(initialState);
 
+function useWatchChanges(fn, dependencies) {
+  const wasCalledAtLeastOnce = useRef(false);
+
+  useEffect(() => {
+    if (wasCalledAtLeastOnce.current) {
+      fn();
+    } else {
+      wasCalledAtLeastOnce.current = true;
+    }
+  }, dependencies);
+}
+
 function Calendar(props) {
+  const {getNextMonth, getPreviousMonth, isSame} = useContext(CalendarContext);
+
   function reducer(state, action) {
     function reduce(state, action) {
-      console.log(action);
+      console.debug(action);
 
       switch (action.type) {
         case ACTION_CLICK_DAY:
-          return {...state, selectedDays: [action.day]}; // range or single date
+          const isSelected = state.selectedDays.some(day => isSame(day, action.day));
 
+          // deselect date
+          if (isSelected) {
+            return {...state, selectedDays: [...state.selectedDays.filter(day => !isSame(day, action.day))]}
+          }
+
+          if (props.selectionMode === 'single') {
+            return {...state, selectedDays: [action.day]};
+          } else if (props.selectionMode === 'multiple') {
+            return isSelected ? state : {...state, selectedDays: [...state.selectedDays, action.day]}
+          } else {
+            return state;
+          }
         case ACTION_CLICK_LEFT_ARROW:
           return state;
 
@@ -141,14 +182,17 @@ function Calendar(props) {
     }
 
     const nextState = reduce(state, action);
-    const stateOverride = props.stateReducer ? props.stateReducer(state, action) : nextState;
+    const stateOverride = props.stateReducer ? props.stateReducer(nextState, action) : nextState;
 
     // merge states
-    return Object.assign({}, nextState, stateOverride);
+    const finalState = Object.assign({}, nextState, stateOverride);
+    console.debug(finalState);
+
+    return finalState;
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const {getNextMonth, getPreviousMonth} = useContext(CalendarContext);
+
   const [date, setDate] = useState({month: state.date.getMonth()+1, year: state.date.getFullYear()});
 
   // TODO: replace with () => dispatch({type: ACTION_CLICK_RIGHT_ARROW})
@@ -162,6 +206,10 @@ function Calendar(props) {
     const [year, month] = getPreviousMonth(date.year, date.month);
     setDate({year, month});
   }
+
+  useWatchChanges(() => {
+    props.onChange(state.selectedDays);
+  }, [state.selectedDays]);
 
   return (
     <>
@@ -193,7 +241,7 @@ function Calendarik(props) {
   return (
     <CalendarContext.Provider value={calendar(preferences.calendar)}>
       <PreferencesContext.Provider value={preferences}>
-          <Calendar stateReducer={props.stateReducer}/>
+          <Calendar stateReducer={props.stateReducer} onChange={props.onChange} selectionMode={props.selectionMode}/>
       </PreferencesContext.Provider>
     </CalendarContext.Provider>
   );
@@ -201,10 +249,14 @@ function Calendarik(props) {
 
 Calendarik.propTypes = {
   onDayClick: PropTypes.func,
+  onChange: PropTypes.func,
+  selectionMode: PropTypes.oneOf(['single', 'multiple'])
 };
 
 Calendarik.defaultProps = {
   onDayClick: () => {},
+  onChange: () => {},
+  selectionMode: 'single',
 };
 
 function useClickAway(targetRef) {
@@ -236,12 +288,6 @@ function App(props) {
   // TODO: see reducer function in Calendar
   const stateReducer = (state, action) => {
     switch (action.type) {
-      case ACTION_CLICK_LEFT_ARROW:
-        return {...state, selectedDays: []};
-
-      case ACTION_CLICK_RIGHT_ARROW:
-        return state;
-
       default:
         return state;
     }
@@ -249,7 +295,11 @@ function App(props) {
 
   return (
     <>
-    <Calendarik onDayClick={(day) => console.log('onDayClick: ', day)} stateReducer={stateReducer}/>
+    <Calendarik onDayClick={(day) => {}}
+                onChange={(day) => {console.log('onChange: ', day)}}
+                stateReducer={stateReducer}
+                selectionMode="single"
+    />
 
     <input onClick={() => setIsShown(true)}/>
       {

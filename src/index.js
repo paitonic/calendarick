@@ -10,6 +10,7 @@ import {
   WEEKDAYS,
   isOutsideMonth
 } from '../src/calendar';
+import { isSame } from './calendar';
 
 
 export function calendar({
@@ -56,6 +57,10 @@ export function calendar({
 
     isOutsideMonth(month, date) {
       return isOutsideMonth(month, date);
+    },
+
+    isSame(...args) {
+      return isSame(...args);
     }
   }
 }
