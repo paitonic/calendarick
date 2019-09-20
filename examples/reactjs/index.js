@@ -121,7 +121,6 @@ const initialState = {
 const StateContext = React.createContext(initialState);
 
 function Calendar(props) {
-  // TODO: why reducer called twice first time?
   function reducer(state, action) {
     function reduce(state, action) {
       console.log(action);
@@ -141,11 +140,11 @@ function Calendar(props) {
       }
     }
 
-    const newState = reduce(state, action);
-    const maybeAlteredState = props.stateReducer ? props.stateReducer(newState, action) : newState;
+    const nextState = reduce(state, action);
+    const stateOverride = props.stateReducer ? props.stateReducer(state, action) : nextState;
 
     // merge states
-    return Object.assign({}, newState, maybeAlteredState);
+    return Object.assign({}, nextState, stateOverride);
   }
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -250,7 +249,7 @@ function App(props) {
 
   return (
     <>
-    <Calendarik onDayClick={(day) => console.log(day)} stateReducer={stateReducer}/>
+    <Calendarik onDayClick={(day) => console.log('onDayClick: ', day)} stateReducer={stateReducer}/>
 
     <input onClick={() => setIsShown(true)}/>
       {
