@@ -6,13 +6,17 @@
     ☐ On input, update calendar
     ☐ When calendar 
 ☐ open/close calendar as a popup
-☐ Add range selection
-☐ Hover trail (range selection)
+☐ Add range selection @started(19-09-21 14:48)
+    ☐ swap start/end if one later than another
+    ☐ write function that takes list of dates (and date ranges) and returns whether date is included (should replace isSelected)
+    ☐ handleClickDay() is too complex
+☐ Hover trail (for range selection)
 ☐ Make style override easy
 ☐ Keyboard navigation
 ☐ Mark today's day
 ☐ Year selection
 ☐ Week numbers
+☐ Week selection
 ☐ Add `data-test-id` attributes across the component for making it testable
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
@@ -20,3 +24,6 @@
 ☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
     ☐ i.e clicking on left arrow should go forward
 ☐ Multiple calendars
+☐ Implement `getNextDay(day)` in calendar.js
+    ☐ function should accept Date object and return Date object representing next day
+☐ Implement `getPreviosDay(day)`

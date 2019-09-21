@@ -399,15 +399,17 @@ describe('isToday', () => {
 
 describe('isBefore', () => {
   test('should return true if first date is earlier than the other', () => {
-    const earlier = fromArray([2019, 9, 1]);
-    const later = fromArray([2019, 9, 3]);
-    expect(isBefore(earlier, later)).toBe(true);
+    expect(isBefore(fromArray([2019, 9, 1]), fromArray([2019, 9, 2]))).toBe(true);
+    expect(isBefore(fromArray([2019, 8, 2]), fromArray([2019, 9, 1]))).toBe(true);
+    expect(isBefore(fromArray([2018, 9, 2]), fromArray([2019, 9, 1]))).toBe(true);
+    expect(isBefore(fromArray([2018, 10, 2]), fromArray([2019, 9, 1]))).toBe(true);
   });
 
   test('should return false if first date is later than the other', () => {
-    const earlier = fromArray([2019, 9, 1]);
-    const later = fromArray([2019, 9, 3]);
-    expect(isBefore(later, earlier)).toBe(false);
+    expect(isBefore(fromArray([2019, 9, 1]), fromArray([2019, 9, 1]))).toBe(false);
+    expect(isBefore(fromArray([2019, 9, 2]), fromArray([2019, 9, 1]))).toBe(false);
+    expect(isBefore(fromArray([2019, 10, 1]), fromArray([2019, 9, 2]))).toBe(false);
+    expect(isBefore(fromArray([2020, 9, 1]), fromArray([2019, 9, 2]))).toBe(false);
   });
 
   test('should return false if dates are same', () => {
@@ -419,15 +421,17 @@ describe('isBefore', () => {
 
 describe('isAfter', () => {
   test('should return true if first date is later than the other', () => {
-    const earlier = fromArray([2019, 9, 1]);
-    const later = fromArray([2019, 9, 3]);
-    expect(isAfter(later, earlier)).toBe(true);
+    expect(isAfter(fromArray([2019, 9, 2]), fromArray([2019, 9, 1]))).toBe(true);
+    expect(isAfter(fromArray([2019, 10, 1]), fromArray([2019, 9, 2]))).toBe(true);
+    expect(isAfter(fromArray([2020, 10, 1]), fromArray([2019, 9, 2]))).toBe(true);
+    expect(isAfter(fromArray([2020, 8, 1]), fromArray([2019, 9, 2]))).toBe(true);
   });
 
   test('should return false if first date is earlier than the other', () => {
-    const earlier = fromArray([2019, 9, 1]);
-    const later = fromArray([2019, 9, 3]);
-    expect(isAfter(earlier, later)).toBe(false);
+    expect(isAfter(fromArray([2019, 9, 1]), fromArray([2019, 9, 1]))).toBe(false);
+    expect(isAfter(fromArray([2019, 9, 1]), fromArray([2019, 9, 2]))).toBe(false);
+    expect(isAfter(fromArray([2018, 8, 2]), fromArray([2019, 9, 1]))).toBe(false);
+    expect(isAfter(fromArray([2018, 10, 2]), fromArray([2019, 9, 1]))).toBe(false);
   });
 
   test('should return false if dates are same', () => {
@@ -462,6 +466,16 @@ describe('isBetween', () => {
     expect(isBetween(start, start, end, true)).toBe(true);
     expect(isBetween(end, start, end, true)).toBe(true);
     expect(isBetween(middle, start, end, true)).toBe(true);
+  });
+
+  test('should return false if given date is not between the two dates (inclusive=true', () => {
+    const start = fromArray([2019, 9, 2]);
+    const end = fromArray([2019, 9, 3]);
+    const before = fromArray([2019, 9, 1]);
+    const after = fromArray([2019, 9, 4]);
+
+    expect(isBetween(before, start, end, true)).toBe(false);
+    expect(isBetween(after, start, end, true)).toBe(false);
   });
 });
 

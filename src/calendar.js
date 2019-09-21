@@ -263,17 +263,11 @@ export function isOutsideMonth(month, date) {
 }
 
 export function isBefore(date, otherDate) {
-  if (date.getFullYear() < otherDate.getFullYear()) {
-    return true;
-  } else if (date.getMonth() < otherDate.getMonth()) {
-    return true;
-  } else {
-    return date.getDate() < otherDate.getDate();
-  }
+  return date.getTime() < otherDate.getTime();
 }
 
 export function isAfter(date, otherDate) {
-  return isBefore(otherDate, date);
+  return date.getTime() > otherDate.getTime();
 }
 
 export function compareDates(date, otherDate) {

@@ -8,9 +8,12 @@ import {
   isFirstDayOfWeek,
   isLastDayOfWeek,
   WEEKDAYS,
-  isOutsideMonth
+  isOutsideMonth,
+  isBetween,
+  isSame,
+  minDate,
+  maxDate
 } from '../src/calendar';
-import { isSame } from './calendar';
 
 
 export function calendar({
@@ -61,6 +64,18 @@ export function calendar({
 
     isSame(...args) {
       return isSame(...args);
+    },
+
+    isBetween(...args) {
+      return isBetween(...args);
+    },
+
+    minDate(...args) {
+      return minDate(...args);
+    },
+
+    maxDate(...args) {
+      return maxDate(...args);
     }
   }
 }

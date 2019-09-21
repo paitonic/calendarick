@@ -9,8 +9,8 @@ import clsx from 'clsx';
 
 
 function Day(props) {
-  const {onDayClick} = useContext(PreferencesContext);
-  const {isSame} = useContext(CalendarContext);
+  const {onDayClick, selectionMode} = useContext(PreferencesContext);
+  const {isSame, isBetween} = useContext(CalendarContext);
   const {state: {selectedDays}, dispatch} = useContext(StateContext);
 
   function handleClick() {
@@ -18,11 +18,31 @@ function Day(props) {
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
   }
 
+  function isSelected(selected, day) {
+    if (selectedDays.length === 0) {
+      return false;
+    }
+
+    if (selectionMode === 'range') {
+      const [start, end] = selectedDays;
+      if (start && end) {
+        return isBetween(day, start, end, true);
+      }
+
+      return isSame(day, start);
+
+    } else if (selectionMode === 'single' || selectionMode === 'multiple') {
+      return selected.some((selectedDay) => { isSame(selectedDay, day) })
+    } else {
+      return false;
+    }
+  }
+
   return (
     <td className={clsx('day', {
         'day--empty': props.day === null,
         'day--is-outside-month': props.day.isOutsideMonth,
-        'day--is-selected': selectedDays.some((selectedDay) => isSame(selectedDay, props.day.date)),
+        'day--is-selected': isSelected(selectedDays, props.day.date),
     })}
         onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
@@ -148,14 +168,14 @@ function useWatchChanges(fn, dependencies) {
 }
 
 function Calendar(props) {
-  const {getNextMonth, getPreviousMonth, isSame} = useContext(CalendarContext);
+  const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
 
   function reducer(state, action) {
     function reduce(state, action) {
       console.debug(action);
 
-      switch (action.type) {
-        case ACTION_CLICK_DAY:
+      function handleClickDay() {
+        if (props.selectionMode === 'single' || props.selectionMode === 'multiple') {
           const isSelected = state.selectedDays.some(day => isSame(day, action.day));
 
           // deselect date
@@ -170,6 +190,22 @@ function Calendar(props) {
           } else {
             return state;
           }
+        } else if (props.selectionMode === 'range') {
+          const [start, end] = state.selectedDays;
+          if (start && !end) {
+            return {...state, selectedDays: [minDate([start, action.day]), maxDate([start, action.day])]};
+          } else {
+            return {...state, selectedDays: [action.day]};
+          }
+        } else {
+          return state;
+        }
+      }
+
+      switch (action.type) {
+        case ACTION_CLICK_DAY:
+          return handleClickDay();
+
         case ACTION_CLICK_LEFT_ARROW:
           return state;
 
@@ -236,6 +272,7 @@ function Calendarik(props) {
         withOutsideDays: true,
       },
       onDayClick: props.onDayClick,
+      selectionMode: props.selectionMode,
   };
 
   return (
@@ -250,7 +287,7 @@ function Calendarik(props) {
 Calendarik.propTypes = {
   onDayClick: PropTypes.func,
   onChange: PropTypes.func,
-  selectionMode: PropTypes.oneOf(['single', 'multiple'])
+  selectionMode: PropTypes.oneOf(['single', 'multiple', 'range'])
 };
 
 Calendarik.defaultProps = {
@@ -298,7 +335,7 @@ function App(props) {
     <Calendarik onDayClick={(day) => {}}
                 onChange={(day) => {console.log('onChange: ', day)}}
                 stateReducer={stateReducer}
-                selectionMode="single"
+                selectionMode="range"
     />
 
     <input onClick={() => setIsShown(true)}/>
