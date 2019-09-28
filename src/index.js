@@ -12,7 +12,8 @@ import {
   isBetween,
   isSame,
   minDate,
-  maxDate
+  maxDate,
+  isIn
 } from '../src/calendar';
 
 
@@ -76,6 +77,10 @@ export function calendar({
 
     maxDate(...args) {
       return maxDate(...args);
+    },
+
+    isIn(...args) {
+      return isIn(...args);
     }
   }
 }

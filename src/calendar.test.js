@@ -21,7 +21,8 @@ import {
   isBetween,
   isSame,
   toArray,
-  fromArray
+  fromArray,
+  isIn
 } from './calendar';
 
 // TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
@@ -502,5 +503,35 @@ describe('toArray', () => {
 describe('fromArray', () => {
   test('convert array [yyyy, mm, dd] to Date object', () => {
     expect(toArray(fromArray([2019, 9, 1]))).toEqual([2019, 9, 1]);
+  });
+});
+
+describe('isIn', () => {
+  const d_2018_01_01 = fromArray([2018, 1, 1]);
+
+  const d_2019_01_01 = fromArray([2019, 1, 1]);
+  const d_2019_01_02 = fromArray([2019, 1, 2]);
+  const d_2019_01_03 = fromArray([2019, 1, 3]);
+  const d_2019_01_04 = fromArray([2019, 1, 4]);
+
+  const d_2019_02_01 = fromArray([2019, 2, 1]);
+  const d_2019_02_02 = fromArray([2019, 2, 2]);
+
+  const d_2020_01_01 = fromArray([2020, 1, 1]);
+
+  it('should return true if date is in the array', () => {
+    expect(isIn(d_2019_01_01, [ d_2019_01_01 ])).toBe(true);
+    expect(isIn(d_2019_01_01, [ d_2019_01_01, d_2019_02_02 ])).toBe(true);
+    expect(isIn(d_2019_01_02, [ d_2019_01_01, d_2019_01_02 ])).toBe(true);
+    expect(isIn(d_2019_01_02, [ [d_2019_01_01, d_2019_01_02] ])).toBe(true);
+    expect(isIn(d_2019_01_02, [ [d_2019_01_01, d_2019_01_03] ])).toBe(true);
+    expect(isIn(d_2019_01_03, [ [d_2019_01_01, d_2019_01_02], d_2019_01_03 ])).toBe(true);
+  });
+
+  it('should return false if date is not in the array', () => {
+    expect(isIn(d_2019_01_01, [ d_2019_01_02 ])).toBe(false);
+    expect(isIn(d_2019_01_01, [ d_2018_01_01, d_2019_02_01, d_2020_01_01 ])).toBe(false);
+    expect(isIn(d_2019_01_02, [ d_2019_01_01, [d_2019_01_03, d_2019_01_04] ])).toBe(false);
+    expect(isIn(d_2019_01_04, [ d_2019_01_03, [d_2019_01_01, d_2019_01_02] ])).toBe(false);
   });
 });

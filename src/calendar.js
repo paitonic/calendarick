@@ -321,6 +321,12 @@ export function fromArray(arr) {
   return new Date(year, month-1, day);
 }
 
+export function isIn(date, listOfDates) {
+  return listOfDates.some((someDate) => {
+    return Array.isArray(someDate) ? isBetween(date, someDate[0], someDate[1], true) : isSame(date, someDate);
+  });
+}
+
 /**
 [
     {weekDay: 'Sunday', dayOfMonth: 1, year: 2019, month: 12},

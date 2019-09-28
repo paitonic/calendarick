@@ -9,8 +9,8 @@ import clsx from 'clsx';
 
 
 function Day(props) {
-  const {onDayClick, selectionMode} = useContext(PreferencesContext);
-  const {isSame, isBetween} = useContext(CalendarContext);
+  const {onDayClick} = useContext(PreferencesContext);
+  const {isIn} = useContext(CalendarContext);
   const {state: {selectedDays}, dispatch} = useContext(StateContext);
 
   function handleClick() {
@@ -18,31 +18,11 @@ function Day(props) {
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
   }
 
-  function isSelected(selected, day) {
-    if (selectedDays.length === 0) {
-      return false;
-    }
-
-    if (selectionMode === 'range') {
-      const [start, end] = selectedDays;
-      if (start && end) {
-        return isBetween(day, start, end, true);
-      }
-
-      return isSame(day, start);
-
-    } else if (selectionMode === 'single' || selectionMode === 'multiple') {
-      return selected.some((selectedDay) => { isSame(selectedDay, day) })
-    } else {
-      return false;
-    }
-  }
-
   return (
     <td className={clsx('day', {
         'day--empty': props.day === null,
         'day--is-outside-month': props.day.isOutsideMonth,
-        'day--is-selected': isSelected(selectedDays, props.day.date),
+        'day--is-selected': isIn(props.day.date, selectedDays),
     })}
         onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
@@ -191,9 +171,13 @@ function Calendar(props) {
             return state;
           }
         } else if (props.selectionMode === 'range') {
-          const [start, end] = state.selectedDays;
+          // selectDays might be [ <Date> ] (only start date selected)
+          // or [ [<Date>, <Date>] ] when start & end selected
+          const [ content ] = state.selectedDays;
+          const [start, end] = Array.isArray(content) ? content : [content, undefined];
+
           if (start && !end) {
-            return {...state, selectedDays: [minDate([start, action.day]), maxDate([start, action.day])]};
+            return {...state, selectedDays: [ [minDate([start, action.day]), maxDate([start, action.day])] ]};
           } else {
             return {...state, selectedDays: [action.day]};
           }

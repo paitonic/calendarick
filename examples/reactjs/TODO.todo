@@ -1,5 +1,5 @@
 ✔ Date selection functionality @started(19-09-20 10:00) @done(19-09-20 22:03) @lasted(12h3m33s)
-    ✔ Add callback ???s @done(19-09-20 22:03)
+    ✔ Add callback ??? @done(19-09-20 22:03)
     ✔ Show selected date @done(19-09-20 22:03)
 ☐ Disable selection of dates conditionally
 ☐ Input interaction
@@ -7,8 +7,12 @@
     ☐ When calendar 
 ☐ open/close calendar as a popup
 ☐ Add range selection @started(19-09-21 14:48)
-    ☐ swap start/end if one later than another
-    ☐ write function that takes list of dates (and date ranges) and returns whether date is included (should replace isSelected)
+    ✔ swap start/end if one later than another @done(19-09-28 15:05)
+    ✔ write function that checks if given date is included in list of dates @started(19-09-28 15:47) @done(19-09-28 21:06) @lasted(5h19m7s)
+        ✔ examples: @done(19-09-28 21:06)
+            ✔ isDateIn(date, [ new Date(2019, 0, 1) ]) @done(19-09-28 21:06)
+            ✔ isDateIn(date, [ new Date(2019, 0, 1), [new Date(2019, 0, 10), new Date(2019, 0, 15)] ]) @done(19-09-28 21:06)
+        ✔ after implemented, replace `isSelected(selected, day)` function with it @done(19-09-28 21:06)
     ☐ handleClickDay() is too complex
 ☐ Hover trail (for range selection)
 ☐ Make style override easy
