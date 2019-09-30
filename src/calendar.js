@@ -6,6 +6,8 @@
 - repetition of defaults (e.g isRTL=false)
  */
 
+const DAY_IN_MS = 60 * 60 * 24 * 1000; // 86,400,000 ms
+
 export function countDaysInMonth(year, month) {
     // 0 in day returns total days in a previous month
     // month are zero-based.
@@ -263,11 +265,22 @@ export function isOutsideMonth(month, date) {
 }
 
 export function isBefore(date, otherDate) {
-  return date.getTime() < otherDate.getTime();
+  return !isSame(date, otherDate) && !isAfter(date, otherDate);
 }
 
 export function isAfter(date, otherDate) {
-  return date.getTime() > otherDate.getTime();
+  const [year, month, day] = toArray(date);
+  const [yearOther, monthOther, dayOther] = toArray(otherDate);
+
+  if (year > yearOther) {
+    return true;
+  } else if (year === yearOther && month > monthOther) {
+    return true;
+  } else if (year === yearOther && month === monthOther && day > dayOther) {
+    return true;
+  }
+
+  return false;
 }
 
 export function compareDates(date, otherDate) {
@@ -309,22 +322,33 @@ export function isBetween(date, start, end, inclusive=false) {
 }
 
 export function isSame(date, otherDate) {
-  return !isAfter(date, otherDate) && !isBefore(date, otherDate);
+  return ['getFullYear', 'getMonth', 'getDate'].every((method) => {
+    return date[method]() === otherDate[method]();
+  });
 }
 
 export function toArray(date) {
   return date instanceof Date ? [date.getFullYear(), date.getMonth() + 1, date.getDate()] : date;
 }
 
-export function fromArray(arr) {
-  const [year, month, day] = arr;
-  return new Date(year, month-1, day);
+export function fromArray(date, time=[0, 0, 0, 0]) {
+  const [year, month, day] = date;
+  const [hour=0, minute=0, second=0, milliseconds=0] = time;
+  return new Date(year, month-1, day, hour, minute, second, milliseconds);
 }
 
 export function isIn(date, listOfDates) {
   return listOfDates.some((someDate) => {
     return Array.isArray(someDate) ? isBetween(date, someDate[0], someDate[1], true) : isSame(date, someDate);
   });
+}
+
+export function nextDayOf(date) {
+  return new Date(date.getTime() + DAY_IN_MS);
+}
+
+export function prevDayOf(date) {
+  return new Date(date.getTime() - DAY_IN_MS);
 }
 
 /**

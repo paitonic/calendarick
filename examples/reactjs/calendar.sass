@@ -14,12 +14,17 @@ $width: 350px
   height: $cell-width
   cursor: pointer
 
-  &:hover
-    background-color: #e2e2e2
+  &:hover:not(&--is-disabled)
+    background-color: #000
+    color: #fff
 
   &--is-selected
-      background-color: #000000
-      color: #ffffff
+      background-color: #000
+      color: #fff
+
+  &--is-disabled
+    cursor: not-allowed
+    background-color: #e2e2e2
 
 .day--with-border
   border: 1px solid #e2e2e2

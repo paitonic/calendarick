@@ -13,7 +13,9 @@ import {
   isSame,
   minDate,
   maxDate,
-  isIn
+  isIn,
+  nextDayOf,
+  prevDayOf
 } from '../src/calendar';
 
 
@@ -81,6 +83,14 @@ export function calendar({
 
     isIn(...args) {
       return isIn(...args);
+    },
+
+    nextDayOf(...args) {
+      return nextDayOf(...args);
+    },
+
+    prevDayOf(...args) {
+      return prevDayOf(...args);
     }
   }
 }

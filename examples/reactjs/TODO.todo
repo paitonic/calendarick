@@ -1,10 +1,13 @@
 ✔ Date selection functionality @started(19-09-20 10:00) @done(19-09-20 22:03) @lasted(12h3m33s)
     ✔ Add callback ??? @done(19-09-20 22:03)
     ✔ Show selected date @done(19-09-20 22:03)
-☐ Disable selection of dates conditionally
+☐ Disable selection of dates conditionally @started(19-09-29 18:55)
+    ☐ How date range selection should behave when there is unselectable date?
+        ☐ Allow selection? 
+            ☐ Represent the range differently e.g two ranges instead of one?
 ☐ Input interaction
-    ☐ On input, update calendar
-    ☐ When calendar 
+    ☐ When user interacts with the input - synchronize the changes with the calendar
+    ☐ When user interacts with the calendar - synchronize the changes with the input
 ☐ open/close calendar as a popup
 ☐ Add range selection @started(19-09-21 14:48)
     ✔ swap start/end if one later than another @done(19-09-28 15:05)
@@ -18,16 +21,25 @@
 ☐ Make style override easy
 ☐ Keyboard navigation
 ☐ Mark today's day
+    ☐ border: 1px dashed #000
 ☐ Year selection
 ☐ Week numbers
 ☐ Week selection
-☐ Add `data-test-id` attributes across the component for making it testable
+☐ Add `data-test-id` attributes where needed (days, navigation arrows) to make the component testable
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
 ☐ Tests
 ☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
     ☐ i.e clicking on left arrow should go forward
 ☐ Multiple calendars
-☐ Implement `getNextDay(day)` in calendar.js
-    ☐ function should accept Date object and return Date object representing next day
-☐ Implement `getPreviosDay(day)`
+✔ Implement `nextDayOf(day)` in calendar.js @done(19-09-30 18:09)
+    ✔ function should accept Date object and return Date object representing next day @done(19-09-30 18:09)
+✔ Implement `prevDayOf(day)` @done(19-09-30 18:09)
+☐ Should `nextDayOf` & `prevDayOf` reset time to 0h 0m 0s 0ms?
+☐ If date is selected, make calendar show the month of the date
+☐ Add ability to control currently viewed month
+☐ Add ability to provide custom Day component (maybe using `dayComponent` as prop name?)
+☐ Make functions to be aware of time?
+    ☐ Change `fromArray` to support time (maybe fromArray([2019, 9, 1], [15, 59, 59])?)
+    ☐ Update `toArray` to support time? e.g return [2019, 9, 1, 18, 30, 0, 0]
+    ☐ Should `isSame` support comparison down to hour / minute / second / millisecond resolutions?

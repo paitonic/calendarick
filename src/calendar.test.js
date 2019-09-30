@@ -22,7 +22,9 @@ import {
   isSame,
   toArray,
   fromArray,
-  isIn
+  isIn,
+  nextDayOf,
+  prevDayOf
 } from './calendar';
 
 // TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
@@ -411,6 +413,10 @@ describe('isBefore', () => {
     expect(isBefore(fromArray([2019, 9, 2]), fromArray([2019, 9, 1]))).toBe(false);
     expect(isBefore(fromArray([2019, 10, 1]), fromArray([2019, 9, 2]))).toBe(false);
     expect(isBefore(fromArray([2020, 9, 1]), fromArray([2019, 9, 2]))).toBe(false);
+    expect(isBefore(
+      fromArray([2019, 9, 1], [18, 59, 59, 999]),
+      fromArray([2019, 9, 1], [19, 0, 0, 0]))
+    ).toBe(false);
   });
 
   test('should return false if dates are same', () => {
@@ -433,6 +439,10 @@ describe('isAfter', () => {
     expect(isAfter(fromArray([2019, 9, 1]), fromArray([2019, 9, 2]))).toBe(false);
     expect(isAfter(fromArray([2018, 8, 2]), fromArray([2019, 9, 1]))).toBe(false);
     expect(isAfter(fromArray([2018, 10, 2]), fromArray([2019, 9, 1]))).toBe(false);
+    expect(isAfter(
+      fromArray([2019, 1, 1], [18, 0, 0]),
+      fromArray([2019, 1, 1], [17, 59, 59, 999]))
+    ).toBe(false);
   });
 
   test('should return false if dates are same', () => {
@@ -483,7 +493,14 @@ describe('isBetween', () => {
 describe('isSame', () => {
   test('should return true if two dates are same', () => {
     const date = fromArray([2019, 9, 1]);
-    expect(isSame(date, date)).toBe(true);
+    const sameDate = fromArray([2019, 9, 1]);
+    expect(isSame(date, sameDate)).toBe(true);
+  });
+
+  test('should ignore time and return true', () => {
+    const day = fromArray([2019, 9, 1], [18, 0, 0]);
+    const sameDayWithDifferentTime = fromArray([2019, 9, 1], [18, 30, 0]);
+    expect(isSame(day, sameDayWithDifferentTime)).toBe(true);
   });
 
   test('should return false if two dates are not the same', () => {
@@ -503,6 +520,17 @@ describe('toArray', () => {
 describe('fromArray', () => {
   test('convert array [yyyy, mm, dd] to Date object', () => {
     expect(toArray(fromArray([2019, 9, 1]))).toEqual([2019, 9, 1]);
+  });
+
+  test('create Date object from [yyyy, mm, dd] and [hh, mm, ss]', () => {
+    const date = fromArray([2019, 9, 1], [18, 1, 2, 3]);
+    expect(date.getFullYear()).toBe(2019);
+    expect(date.getMonth()).toBe(9-1);
+    expect(date.getDate()).toBe(1);
+    expect(date.getHours()).toBe(18);
+    expect(date.getMinutes()).toBe(1);
+    expect(date.getSeconds()).toBe(2);
+    expect(date.getMilliseconds()).toBe(3)
   });
 });
 
@@ -533,5 +561,57 @@ describe('isIn', () => {
     expect(isIn(d_2019_01_01, [ d_2018_01_01, d_2019_02_01, d_2020_01_01 ])).toBe(false);
     expect(isIn(d_2019_01_02, [ d_2019_01_01, [d_2019_01_03, d_2019_01_04] ])).toBe(false);
     expect(isIn(d_2019_01_04, [ d_2019_01_03, [d_2019_01_01, d_2019_01_02] ])).toBe(false);
+  });
+});
+
+
+const d_2019_01_01 = fromArray([2019, 1, 1]);
+const d_2019_01_02 = fromArray([2019, 1, 2]);
+
+const d_2019_09_30 = fromArray([2019, 9, 30]);
+const d_2019_10_01 = fromArray([2019, 10, 1]);
+
+const d_2019_12_31 = fromArray([2019, 12, 31]);
+const d_2020_01_01 = fromArray([2020, 1, 1]);
+
+const d_2019_02_28 = fromArray([2019, 2, 28]);
+const d_2019_03_01 = fromArray([2019, 3, 1]);
+
+const d_2020_02_29 = fromArray([2020, 2, 29]);
+const d_2020_03_01 = fromArray([2020, 3, 1]);
+
+describe('nextDayOf', () => {
+  it('should return next day', () => {
+    expect(isSame(nextDayOf(d_2019_01_01), d_2019_01_02)).toBe(true);
+
+    // end of month
+    expect(isSame(nextDayOf(d_2019_09_30), d_2019_10_01)).toBe(true);
+
+    // end of year
+    expect(isSame(nextDayOf(d_2019_12_31), d_2020_01_01)).toBe(true);
+
+    // non leap year
+    expect(isSame(nextDayOf(d_2019_02_28), d_2019_03_01)).toBe(true);
+
+    // leap year
+    expect(isSame(nextDayOf(d_2020_02_29), d_2020_03_01)).toBe(true);
+  });
+});
+
+describe('prevDayOf', () => {
+  it('should return previous day', () => {
+    expect(isSame(prevDayOf(d_2019_01_02), d_2019_01_01)).toBe(true);
+
+    // end of month
+    expect(isSame(prevDayOf(d_2019_10_01), d_2019_09_30)).toBe(true);
+
+    // end of year
+    expect(isSame(prevDayOf(d_2020_01_01), d_2019_12_31)).toBe(true);
+
+    // non leap year
+    expect(isSame(prevDayOf(d_2019_03_01), d_2019_02_28)).toBe(true);
+
+    // leap year
+    expect(isSame(prevDayOf(d_2020_03_01), d_2020_02_29)).toBe(true);
   });
 });

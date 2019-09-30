@@ -6,10 +6,11 @@ import './calendar.sass';
 
 import { calendar } from '../../src';
 import clsx from 'clsx';
+import { isSame, prevDayOf } from '../../src/calendar';
 
 
 function Day(props) {
-  const {onDayClick} = useContext(PreferencesContext);
+  const {onDayClick, disableDays} = useContext(PreferencesContext);
   const {isIn} = useContext(CalendarContext);
   const {state: {selectedDays}, dispatch} = useContext(StateContext);
 
@@ -23,6 +24,7 @@ function Day(props) {
         'day--empty': props.day === null,
         'day--is-outside-month': props.day.isOutsideMonth,
         'day--is-selected': isIn(props.day.date, selectedDays),
+        'day--is-disabled': disableDays(props.day.date),
     })}
         onClick={handleClick}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
@@ -149,15 +151,19 @@ function useWatchChanges(fn, dependencies) {
 
 function Calendar(props) {
   const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
+  const {disableDays} = useContext(PreferencesContext);
 
   function reducer(state, action) {
     function reduce(state, action) {
       console.debug(action);
 
       function handleClickDay() {
+        if (disableDays(action.day)) {
+          return state;
+        }
+
         if (props.selectionMode === 'single' || props.selectionMode === 'multiple') {
           const isSelected = state.selectedDays.some(day => isSame(day, action.day));
-
           // deselect date
           if (isSelected) {
             return {...state, selectedDays: [...state.selectedDays.filter(day => !isSame(day, action.day))]}
@@ -257,12 +263,16 @@ function Calendarik(props) {
       },
       onDayClick: props.onDayClick,
       selectionMode: props.selectionMode,
+      disableDays: props.disableDays,
   };
 
   return (
     <CalendarContext.Provider value={calendar(preferences.calendar)}>
       <PreferencesContext.Provider value={preferences}>
-          <Calendar stateReducer={props.stateReducer} onChange={props.onChange} selectionMode={props.selectionMode}/>
+          <Calendar stateReducer={props.stateReducer}
+                    onChange={props.onChange}
+                    selectionMode={props.selectionMode}
+                    disableDays={props.disableDays}/>
       </PreferencesContext.Provider>
     </CalendarContext.Provider>
   );
@@ -271,13 +281,15 @@ function Calendarik(props) {
 Calendarik.propTypes = {
   onDayClick: PropTypes.func,
   onChange: PropTypes.func,
-  selectionMode: PropTypes.oneOf(['single', 'multiple', 'range'])
+  selectionMode: PropTypes.oneOf(['single', 'multiple', 'range']),
+  disableDays: PropTypes.func,
 };
 
 Calendarik.defaultProps = {
   onDayClick: () => {},
   onChange: () => {},
   selectionMode: 'single',
+  disableDays: () => {},
 };
 
 function useClickAway(targetRef) {
@@ -314,12 +326,18 @@ function App(props) {
     }
   };
 
+  const yesterday = prevDayOf(new Date());
+  function shouldDayBeDisabled(day) {
+    return isSame(day, yesterday);
+  }
+
   return (
     <>
     <Calendarik onDayClick={(day) => {}}
                 onChange={(day) => {console.log('onChange: ', day)}}
                 stateReducer={stateReducer}
                 selectionMode="range"
+                disableDays={shouldDayBeDisabled}
     />
 
     <input onClick={() => setIsShown(true)}/>
