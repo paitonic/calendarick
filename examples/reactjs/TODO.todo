@@ -16,7 +16,7 @@
             ✔ isDateIn(date, [ new Date(2019, 0, 1) ]) @done(19-09-28 21:06)
             ✔ isDateIn(date, [ new Date(2019, 0, 1), [new Date(2019, 0, 10), new Date(2019, 0, 15)] ]) @done(19-09-28 21:06)
         ✔ after implemented, replace `isSelected(selected, day)` function with it @done(19-09-28 21:06)
-    ☐ handleClickDay() is too complex
+    ☐ handleClickDay() is too complicated
 ☐ Hover trail (for range selection)
 ☐ Make style override easy
 ☐ Keyboard navigation
@@ -25,7 +25,7 @@
 ☐ Year selection
 ☐ Week numbers
 ☐ Week selection
-☐ Add `data-test-id` attributes where needed (days, navigation arrows) to make the component testable
+✔ Add `data-test-id` attributes where needed (days, navigation arrows) to make the component testable @started(19-09-30 18:57) @done(19-09-30 19:07) @lasted(10m2s)
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
 ☐ Tests
@@ -43,3 +43,5 @@
     ☐ Change `fromArray` to support time (maybe fromArray([2019, 9, 1], [15, 59, 59])?)
     ☐ Update `toArray` to support time? e.g return [2019, 9, 1, 18, 30, 0, 0]
     ☐ Should `isSame` support comparison down to hour / minute / second / millisecond resolutions?
+☐ Should selection of dates outside of current month be prevented?
+☐ Time selection

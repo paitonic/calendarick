@@ -9,6 +9,13 @@ import clsx from 'clsx';
 import { isSame, prevDayOf } from '../../src/calendar';
 
 
+function format(date) {
+  const year = date.getFullYear();
+  const month = `${(date.getMonth()+1)}`.padStart(2, '0');
+  const day = `${(date.getDate())}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function Day(props) {
   const {onDayClick, disableDays} = useContext(PreferencesContext);
   const {isIn} = useContext(CalendarContext);
@@ -26,7 +33,8 @@ function Day(props) {
         'day--is-selected': isIn(props.day.date, selectedDays),
         'day--is-disabled': disableDays(props.day.date),
     })}
-        onClick={handleClick}>
+        onClick={handleClick}
+        data-testid={format(props.day.date)}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
@@ -42,7 +50,7 @@ function WeekDayNames(props) {
       {
         dayNames.map((dayName, index) => {
           return (
-              <td key={`${dayName}-${index}`} className='day-name'>
+              <td key={`${dayName}-${index}`} className='day-name' data-test-id={`week-day-${index+1}`}>
                 {dayName}
               </td>
           )
@@ -94,9 +102,11 @@ function Header(props) {
   const readableMonth = getMonths().find(month => month.order === props.month).month;
   return (
     <div className="header">
-      <span className="header__button-back" onClick={props.onBackClick}>‹</span>
-      <span className="header__date">{readableMonth}, {props.year}</span>
-      <span className="header__button-next" onClick={props.onNextClick}>›</span>
+      <span className="header__button-back" onClick={props.onBackClick} data-testid="button-left">‹</span>
+      <span className="header__date">
+        <span data-testid="month">{readableMonth}</span> <span data-testid="year">{props.year}</span>
+      </span>
+      <span className="header__button-next" onClick={props.onNextClick} data-testid="button-right">›</span>
     </div>
   )
 }
