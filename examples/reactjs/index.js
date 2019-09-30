@@ -99,12 +99,13 @@ function Month(props) {
 
 function Header(props) {
   const {getMonths} = useContext(CalendarContext);
-  const readableMonth = getMonths().find(month => month.order === props.month).month;
+  const {month, order} = getMonths().find(month => month.order === props.month);
+
   return (
     <div className="header">
       <span className="header__button-back" onClick={props.onBackClick} data-testid="button-left">‹</span>
       <span className="header__date">
-        <span data-testid="month">{readableMonth}</span> <span data-testid="year">{props.year}</span>
+        <span data-testid={`month-${order}`}>{month}</span> <span data-testid={`year-${props.year}`}>{props.year}</span>
       </span>
       <span className="header__button-next" onClick={props.onNextClick} data-testid="button-right">›</span>
     </div>
