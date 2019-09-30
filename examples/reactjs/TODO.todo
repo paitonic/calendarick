@@ -29,6 +29,8 @@
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
 ☐ Tests
+    ☐ Think of adding UI (knobs, options etc) for controlling calendar properties so they can be tested
+    
 ☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
     ☐ i.e clicking on left arrow should go forward
 ☐ Multiple calendars
