@@ -88,13 +88,13 @@ export function isLastDayOfWeek(firstDayOfWeek, date, {isRTL=false} = {}) {
 // };
 
 export const WEEKDAYS = [
-  new Date(1970, 0, 4), // 0 - sunday
-  new Date(1970, 0, 5), // 1 - monday
-  new Date(1970, 0, 6), // 2 - tuesday
-  new Date(1970, 0, 7), // 3 - wednesday
-  new Date(1970, 0, 8), // 4 - thursday
-  new Date(1970, 0, 9), // 5 - friday
-  new Date(1970, 0, 10) // 6 - saturday
+  new Date(1970, 0, 4, 0, 0, 0, 0), // 0 - sunday
+  new Date(1970, 0, 5, 0, 0, 0, 0), // 1 - monday
+  new Date(1970, 0, 6, 0, 0, 0, 0), // 2 - tuesday
+  new Date(1970, 0, 7, 0, 0, 0, 0), // 3 - wednesday
+  new Date(1970, 0, 8, 0, 0, 0, 0), // 4 - thursday
+  new Date(1970, 0, 9, 0, 0, 0, 0), // 5 - friday
+  new Date(1970, 0, 10, 0, 0, 0, 0) // 6 - saturday
 ];
 
 export function getWeekDays({locale = 'en-US', firstDayOfWeek = WEEKDAYS[0], weekday = 'short', isRTL = false} = {}) {

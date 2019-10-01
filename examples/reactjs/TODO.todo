@@ -3,7 +3,7 @@
     ✔ Show selected date @done(19-09-20 22:03)
 ☐ Disable selection of dates conditionally @started(19-09-29 18:55)
     ☐ How date range selection should behave when there is unselectable date?
-        ☐ Allow selection? 
+        ☐ Allow selection?
             ☐ Represent the range differently e.g two ranges instead of one?
 ☐ Input interaction
     ☐ When user interacts with the input - synchronize the changes with the calendar
@@ -23,17 +23,18 @@
 ☐ Mark today's day
     ☐ border: 1px dashed #000
 ☐ Year selection
-☐ Week numbers
+✘ Week numbers @started(19-10-01 10:43) @cancelled(19-10-01 14:32) @wasted(3h49m20s)
+    ✔ maybe other time @done(19-10-01 14:32)
 ☐ Week selection
 ✔ Add `data-test-id` attributes where needed (days, navigation arrows) to make the component testable @started(19-09-30 18:57) @done(19-09-30 19:07) @lasted(10m2s)
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
 ☐ Tests
     ☐ Think of adding UI (knobs, options etc) for controlling calendar properties so they can be tested
-    
 ☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
     ☐ i.e clicking on left arrow should go forward
-☐ Multiple calendars
+✘ Multiple calendars @started(19-10-01 10:08) @cancelled(19-10-01 10:28) @wasted(20m56s)
+    ✔ meh, one month is good enough. @done(19-10-01 10:28)
 ✔ Implement `nextDayOf(day)` in calendar.js @done(19-09-30 18:09)
     ✔ function should accept Date object and return Date object representing next day @done(19-09-30 18:09)
 ✔ Implement `prevDayOf(day)` @done(19-09-30 18:09)
