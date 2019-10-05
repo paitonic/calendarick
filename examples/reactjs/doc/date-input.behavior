@@ -1,0 +1,24 @@
+# Date Input
+Allow users enter date manually via the input field
+This variation of date picker will contain those elements:
+    - one or two input fields - for entering the date manually
+    - button / link / icon to open the date picker in a popup
+
+- decide on expected input format (e.g YYYY-MM-DD, DD-MM-YYYY etc.)
+- if selection mode is single date
+    - show one input
+- else if selection mode is date range
+    - show two inputs
+    
+- for each input, show "open" link for opening the date picker
+
+- when: user clicks on "open" link
+    - same behavior as in `popup.behavior`
+
+- when: user types inside the input
+    - if value matches the expected input format and it can be represented as a date
+        - create date from it
+        - set the value of the datepicker to this date value
+        - if start date is later than end date
+            - swap between the dates
+

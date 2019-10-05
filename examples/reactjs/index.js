@@ -323,11 +323,52 @@ function useClickAway(targetRef) {
   return [isShown, setIsShown]
 }
 
-function App(props) {
-  // const [isShown, setIsShown] = useState(false);
-  const calendarikRef = useRef(null);
-  const [isShown, setIsShown] = useClickAway(calendarikRef);
 
+function DateInput(props) {
+  return (
+    <input type="text" className="date-input"/>
+  )
+}
+
+function Popup(props) {
+  const popupRef = useRef(null);
+  const [isShown, setIsShown] = useClickAway(popupRef);
+
+  useEffect(() => {
+    props.onChange(isShown);
+  }, [isShown]);
+
+  useEffect(() => {
+    setIsShown(props.isShown);
+  }, [props.isShown]);
+
+  return (
+    <>
+    {
+      <div className={`popup ${isShown ? '' : 'popup--closed'}`} ref={popupRef}>
+        {props.children}
+      </div>
+
+    }
+      {isShown && <div className="popup__backdrop"></div>}
+    </>
+  )
+}
+
+function DatePickerWithPopup(props) {
+  const [isShown, setIsShown] = useState(false);
+
+  return (
+    <>
+      <input onClick={() => setIsShown(true)}/>
+      <Popup isShown={isShown} onChange={(change) => setIsShown(change)}>
+         <Calendarik/>
+      </Popup>
+    </>
+    )
+}
+
+function App(props) {
   // TODO: implement custom state reducer for the calendar
   // TODO: see reducer function in Calendar
   const stateReducer = (state, action) => {
@@ -351,13 +392,11 @@ function App(props) {
                 disableDays={shouldDayBeDisabled}
     />
 
-    <input onClick={() => setIsShown(true)}/>
-      {
-        isShown &&
-        <div ref={calendarikRef}>
-          <Calendarik/>
-        </div>
-      }
+
+    <DatePickerWithPopup/>
+
+
+      {/*<DateInput/>*/}
     </>
   );
 }
