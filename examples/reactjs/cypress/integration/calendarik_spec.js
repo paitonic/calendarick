@@ -1,5 +1,5 @@
 describe(' My First Test', () => {
-  const URL = 'http://localhost:1234/';
+  const URL = 'http://localhost:1234/tests';
 
   it('Open page', () => {
     cy.visit(URL);
