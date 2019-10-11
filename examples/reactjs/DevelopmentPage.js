@@ -166,8 +166,6 @@ function Calendar(props) {
 
   function reducer(state, action) {
     function reduce(state, action) {
-      console.debug(action);
-
       function handleClickDay() {
         if (disableDays(action.day)) {
           return state;
@@ -266,12 +264,7 @@ const PreferencesContext = React.createContext({});
 
 function Calendarik(props) {
     const preferences = {
-      calendar: {
-        locale: 'he',
-        weekday: 'narrow',
-        isRTL: true,
-        withOutsideDays: true,
-      },
+      calendar: props.calendar,
       onDayClick: props.onDayClick,
       selectionMode: props.selectionMode,
       disableDays: props.disableDays,
@@ -295,6 +288,7 @@ Calendarik.propTypes = {
   selectionMode: PropTypes.oneOf(['single', 'multiple', 'range']),
   disableDays: PropTypes.func,
   stateReducer: PropTypes.func,
+  calendar: PropTypes.object
 };
 
 Calendarik.defaultProps = {
@@ -302,14 +296,21 @@ Calendarik.defaultProps = {
   onChange: () => {},
   selectionMode: 'single',
   disableDays: () => {},
+  calendar: {
+    locale: 'he',
+    weekday: 'narrow',
+    isRTL: true,
+    withOutsideDays: true,
+  }
 };
 
-function useClickAway(targetRef) {
+function useClickAway(targetRef, onClickAway = () => {}) {
   const [isShown, setIsShown] = useState(false);
 
   function handleClick(event) {
     if (isShown && !targetRef.current.contains(event.target)) {
       setIsShown(false);
+      onClickAway();
     }
   }
 
@@ -333,7 +334,7 @@ function DateInput(props) {
 
 function Popup(props) {
   const popupRef = useRef(null);
-  const [isShown, setIsShown] = useClickAway(popupRef);
+  const [isShown, setIsShown] = useClickAway(popupRef, props.onClickAway);
 
   useEffect(() => {
     props.onChange(isShown);
@@ -361,20 +362,40 @@ function DatePickerWithPopup(props) {
   // passed explicitly?
   const [isShown, setIsShown] = useState(false);
   const [date, setDate] = useState(props.initialValue);
-  const [draftDate, setDraftDate] = useState(null); // TODO: make copy of initialValue
-  const {shouldClosePopupAfterSelection, ...calendarProps} = props;
+  const [draftDate, setDraftDate] = useState(props.initialValue); // TODO: make copy of initialValue
+  const {isAutoClosed, ...calendarProps} = props;
+
+  function revertChanges() {
+    // TODO: change the date value in Calendarik
+    // setDraftDate(date);
+  }
 
   const calendarStateReducer = (state, action) => {
     switch (action.type) {
       case ACTION_CLICK_DAY:
         if (props.selectionMode === 'single' || !props.selectionMode) {
-          // TODO: side effect
-          setDate(action.day);
-          setIsShown(false);
+          setDraftDate(state.selectedDays);
+
+          if (isAutoClosed) {
+            setIsShown(false);
+            setDate(state.selectedDays);
+          }
           return state;
         } else if (props.selectionMode === 'range') {
+          const days = state.selectedDays;
+          if (days.length === 1 && Array.isArray(days) && Array.isArray(days[0])) {
+            setDraftDate(state.selectedDays);
+
+            if (isAutoClosed) {
+              setIsShown(false);
+              setDate(state.selectedDays);
+            }
+          }
           return state;
         } else if (props.selectionMode === 'multiple') {
+          // isAutoClosed is not compatible with this selection mode.
+          // there is no way to know when popup should be closed.
+          setDraftDate(state.selectedDays);
           return state;
         }
 
@@ -389,8 +410,14 @@ function DatePickerWithPopup(props) {
     // handle single date, multiple dates and range
     if (!date) {
       return '';
-    } else {
+    } else if (date instanceof Date) {
       return format(date);
+    } else if (date.length && date[0].length === 2) {
+      // range
+      return date[0].map(format).join(' - ');
+    } else if (date.length) {
+      // multiple
+      return date.map(format).join(', ');
     }
   }
 
@@ -398,7 +425,7 @@ function DatePickerWithPopup(props) {
     <>
       <input onClick={() => setIsShown(true)} value={representDate(date)} readOnly={true}/>
 
-      <Popup isShown={isShown} onChange={(change) => setIsShown(change)}>
+      <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
                      stateReducer={calendarStateReducer}
                      onChange={(date) => setDraftDate(date)}/>
@@ -432,7 +459,7 @@ export function DevelopmentPage(props) {
     />
 
 
-    <DatePickerWithPopup/>
+    <DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>
 
       {/*<DateInput/>*/}
     </>
