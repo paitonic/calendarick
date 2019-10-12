@@ -127,6 +127,7 @@ Possible actions
 const ACTION_CLICK_DAY = 'CLICK_DAY';
 const ACTION_CLICK_LEFT_ARROW = 'CLICK_LEFT_ARROW';
 const ACTION_CLICK_RIGHT_ARROW = 'CLICK_RIGHT_ARROW';
+const CHANGE_VALUE = 'CHANGE_VALUE';
 
 const initialState = {
   date: new Date(),
@@ -164,8 +165,15 @@ function Calendar(props) {
   const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
   const {disableDays, value} = useContext(PreferencesContext);
 
+  useEffect(() => {
+    if (value !== state.value) {
+      dispatch({type: CHANGE_VALUE, value});
+    }
+  }, [value]);
+
   function reducer(state, action) {
     function reduce(state, action) {
+      console.log(action);
       function handleClickDay() {
         if (disableDays(action.day)) {
           return state;
@@ -210,6 +218,9 @@ function Calendar(props) {
 
         case ACTION_CLICK_RIGHT_ARROW:
           return state;
+
+        case CHANGE_VALUE:
+          return {...state, value: action.value};
 
         default:
           return state;
@@ -304,7 +315,8 @@ Calendarik.defaultProps = {
     weekday: 'narrow',
     isRTL: true,
     withOutsideDays: true,
-  }
+  },
+  value: [],
 };
 
 function useClickAway(targetRef, onClickAway = () => {}) {
@@ -457,12 +469,12 @@ export function DevelopmentPage(props) {
     <Calendarik onDayClick={(day) => {}}
                 onChange={(day) => {console.log('onChange: ', day)}}
                 stateReducer={stateReducer}
-                selectionMode="range"
+                selectionMode="single"
                 disableDays={shouldDayBeDisabled}
     />
 
 
-    <DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>
+    {/*<DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>*/}
 
       {/*<DateInput/>*/}
     </>
