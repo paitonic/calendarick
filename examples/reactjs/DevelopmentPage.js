@@ -143,6 +143,7 @@ const initialState = {
    * Multiple selected dates with range
    * selectedDays: [ <Date>, [<Date>, <Date>], <Date> ]
    */
+  // TODO: change to value
   selectedDays: [],
 };
 
@@ -162,7 +163,7 @@ function useWatchChanges(fn, dependencies) {
 
 function Calendar(props) {
   const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
-  const {disableDays} = useContext(PreferencesContext);
+  const {disableDays, value} = useContext(PreferencesContext);
 
   function reducer(state, action) {
     function reduce(state, action) {
@@ -217,6 +218,7 @@ function Calendar(props) {
     }
 
     const nextState = reduce(state, action);
+    // TODO: change it to pass: current state, next state and an action
     const stateOverride = props.stateReducer ? props.stateReducer(nextState, action) : nextState;
 
     // merge states
@@ -226,7 +228,7 @@ function Calendar(props) {
     return finalState;
   }
 
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, {...initialState, selectedDays: value || initialState.selectedDays});
 
   const [date, setDate] = useState({month: state.date.getMonth()+1, year: state.date.getFullYear()});
 
@@ -268,6 +270,7 @@ function Calendarik(props) {
       onDayClick: props.onDayClick,
       selectionMode: props.selectionMode,
       disableDays: props.disableDays,
+      value: props.value,
   };
 
   return (
@@ -288,7 +291,8 @@ Calendarik.propTypes = {
   selectionMode: PropTypes.oneOf(['single', 'multiple', 'range']),
   disableDays: PropTypes.func,
   stateReducer: PropTypes.func,
-  calendar: PropTypes.object
+  calendar: PropTypes.object,
+  value: PropTypes.array,
 };
 
 Calendarik.defaultProps = {
