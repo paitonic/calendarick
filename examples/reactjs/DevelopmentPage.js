@@ -19,7 +19,7 @@ function format(date) {
 function Day(props) {
   const {onDayClick, disableDays} = useContext(PreferencesContext);
   const {isIn} = useContext(CalendarContext);
-  const {state: {selectedDays}, dispatch} = useContext(StateContext);
+  const {state: {value}, dispatch} = useContext(StateContext);
 
   function handleClick() {
     onDayClick(props.day);
@@ -30,7 +30,7 @@ function Day(props) {
     <td className={clsx('day', {
         'day--empty': props.day === null,
         'day--is-outside-month': props.day.isOutsideMonth,
-        'day--is-selected': isIn(props.day.date, selectedDays),
+        'day--is-selected': isIn(props.day.date, value),
         'day--is-disabled': disableDays(props.day.date),
     })}
         onClick={handleClick}
@@ -132,19 +132,18 @@ const initialState = {
   date: new Date(),
   /**
    * One day
-   * selectedDays: [<Date>]
+   * value: [<Date>]
    *
    * Multiple selected days
-   * selectedDays: [<Date>, <Date>]
+   * value: [<Date>, <Date>]
    *
    * Range
-   * selectedDays: [ [<Date>, <Date>] ]
+   * value: [ [<Date>, <Date>] ]
    *
    * Multiple selected dates with range
-   * selectedDays: [ <Date>, [<Date>, <Date>], <Date> ]
+   * value: [ <Date>, [<Date>, <Date>], <Date> ]
    */
-  // TODO: change to value
-  selectedDays: [],
+  value: [],
 };
 
 const StateContext = React.createContext(initialState);
@@ -173,29 +172,29 @@ function Calendar(props) {
         }
 
         if (props.selectionMode === 'single' || props.selectionMode === 'multiple') {
-          const isSelected = state.selectedDays.some(day => isSame(day, action.day));
+          const isSelected = state.value.some(day => isSame(day, action.day));
           // deselect date
           if (isSelected) {
-            return {...state, selectedDays: [...state.selectedDays.filter(day => !isSame(day, action.day))]}
+            return {...state, value: [...state.value.filter(day => !isSame(day, action.day))]}
           }
 
           if (props.selectionMode === 'single') {
-            return {...state, selectedDays: [action.day]};
+            return {...state, value: [action.day]};
           } else if (props.selectionMode === 'multiple') {
-            return isSelected ? state : {...state, selectedDays: [...state.selectedDays, action.day]}
+            return isSelected ? state : {...state, value: [...state.value, action.day]}
           } else {
             return state;
           }
         } else if (props.selectionMode === 'range') {
           // selectDays might be [ <Date> ] (only start date selected)
           // or [ [<Date>, <Date>] ] when start & end selected
-          const [ content ] = state.selectedDays;
+          const [ content ] = state.value;
           const [start, end] = Array.isArray(content) ? content : [content, undefined];
 
           if (start && !end) {
-            return {...state, selectedDays: [ [minDate([start, action.day]), maxDate([start, action.day])] ]};
+            return {...state, value: [ [minDate([start, action.day]), maxDate([start, action.day])] ]};
           } else {
-            return {...state, selectedDays: [action.day]};
+            return {...state, value: [action.day]};
           }
         } else {
           return state;
@@ -228,7 +227,7 @@ function Calendar(props) {
     return finalState;
   }
 
-  const [state, dispatch] = useReducer(reducer, {...initialState, selectedDays: value || initialState.selectedDays});
+  const [state, dispatch] = useReducer(reducer, {...initialState, value: value || initialState.value});
 
   const [date, setDate] = useState({month: state.date.getMonth()+1, year: state.date.getFullYear()});
 
@@ -245,8 +244,8 @@ function Calendar(props) {
   }
 
   useWatchChanges(() => {
-    props.onChange(state.selectedDays);
-  }, [state.selectedDays]);
+    props.onChange(state.value);
+  }, [state.value]);
 
   return (
     <>
@@ -378,28 +377,28 @@ function DatePickerWithPopup(props) {
     switch (action.type) {
       case ACTION_CLICK_DAY:
         if (props.selectionMode === 'single' || !props.selectionMode) {
-          setDraftDate(state.selectedDays);
+          setDraftDate(state.value);
 
           if (isAutoClosed) {
             setIsShown(false);
-            setDate(state.selectedDays);
+            setDate(state.value);
           }
           return state;
         } else if (props.selectionMode === 'range') {
-          const days = state.selectedDays;
+          const days = state.value;
           if (days.length === 1 && Array.isArray(days) && Array.isArray(days[0])) {
-            setDraftDate(state.selectedDays);
+            setDraftDate(state.value);
 
             if (isAutoClosed) {
               setIsShown(false);
-              setDate(state.selectedDays);
+              setDate(state.value);
             }
           }
           return state;
         } else if (props.selectionMode === 'multiple') {
           // isAutoClosed is not compatible with this selection mode.
           // there is no way to know when popup should be closed.
-          setDraftDate(state.selectedDays);
+          setDraftDate(state.value);
           return state;
         }
 
