@@ -229,7 +229,7 @@ function Calendar(props) {
 
     const nextState = reduce(state, action);
     // TODO: change it to pass: current state, next state and an action
-    const stateOverride = props.stateReducer ? props.stateReducer(nextState, action) : nextState;
+    const stateOverride = props.stateReducer ? props.stateReducer(action, state, nextState) : nextState;
 
     // merge states
     const finalState = Object.assign({}, nextState, stateOverride);
@@ -392,39 +392,39 @@ function DatePickerWithPopup(props) {
     setDraftDate(date);
   }
 
-  const calendarStateReducer = (state, action) => {
+  const calendarStateReducer = (action, previousState, nextState) => {
     switch (action.type) {
       case ACTION_CLICK_DAY:
         if (props.selectionMode === 'single' || !props.selectionMode) {
-          setDraftDate(state.value);
+          setDraftDate(nextState.value);
 
           if (isAutoClosed) {
             setIsShown(false);
-            setDate(state.value);
+            setDate(nextState.value);
           }
-          return state;
+          return nextState;
         } else if (props.selectionMode === 'range') {
-          const days = state.value;
+          const days = nextState.value;
           if (days.length === 1 && Array.isArray(days) && Array.isArray(days[0])) {
-            setDraftDate(state.value);
+            setDraftDate(nextState.value);
 
             if (isAutoClosed) {
               setIsShown(false);
-              setDate(state.value);
+              setDate(nextState.value);
             }
           }
-          return state;
+          return nextState;
         } else if (props.selectionMode === 'multiple') {
           // isAutoClosed is not compatible with this selection mode.
           // there is no way to know when popup should be closed.
-          setDraftDate(state.value);
-          return state;
+          setDraftDate(nextState.value);
+          return nextState;
         }
 
-        return state;
+        return nextState;
 
       default:
-        return state;
+        return nextState;
     }
   };
 
@@ -481,10 +481,10 @@ export function DevelopmentPage(props) {
 
   // TODO: implement custom state reducer for the calendar
   // TODO: see reducer function in Calendar
-  const stateReducer = (state, action) => {
+  const stateReducer = (action, previousState, nextState) => {
     switch (action.type) {
       default:
-        return state;
+        return nextState;
     }
   };
 
