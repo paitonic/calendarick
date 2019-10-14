@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect, useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
-import { TestsPage } from './TestsPage';
 import './calendar.sass';
 
 import { calendar } from '../../src';
 import clsx from 'clsx';
-import { isSame, prevDayOf } from '../../src/calendar';
+import { isSame, prevDayOf, clone, nextDayOf } from '../../src/calendar';
 
 
 function format(date) {
@@ -166,6 +165,7 @@ function Calendar(props) {
   const {disableDays, value} = useContext(PreferencesContext);
 
   useEffect(() => {
+    // TODO: investigate. when using DatePickerWithPopup, CHANGE_VALUE is dispatched even though dates are equal
     if (value !== state.value) {
       dispatch({type: CHANGE_VALUE, value});
     }
@@ -372,13 +372,21 @@ function Popup(props) {
   )
 }
 
+// TODO: write useDraftValue hook that handles the draft
+// TODO: Idea for hook that reverts last action or series of actions? (undo)
+
 function DatePickerWithPopup(props) {
   // TODO: DatePickerWithPopup is not aware of the default properties of Calendarik. Should the properties be
   // passed explicitly?
   const [isShown, setIsShown] = useState(false);
-  const [date, setDate] = useState(props.initialValue);
-  const [draftDate, setDraftDate] = useState(props.initialValue); // TODO: make copy of initialValue
+  const [date, setDate] = useState(props.value);
+  const [draftDate, setDraftDate] = useState(clone(props.value));
   const {isAutoClosed, ...calendarProps} = props;
+
+  useEffect(() => {
+    setDate(props.value);
+    setDraftDate(props.value);
+  }, [props.value]);
 
   function revertChanges() {
     setDraftDate(date);
@@ -435,6 +443,11 @@ function DatePickerWithPopup(props) {
     }
   }
 
+  function handleChange(date) {
+    setDraftDate(date);
+    props.onChange(date);
+  }
+
   return (
     <>
       <input onClick={() => setIsShown(true)} value={representDate(date)} readOnly={true}/>
@@ -442,14 +455,30 @@ function DatePickerWithPopup(props) {
       <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
                      stateReducer={calendarStateReducer}
-                     onChange={(date) => setDraftDate(date)}
+                     onChange={(date) => handleChange(date)}
                      value={draftDate}/>
       </Popup>
     </>
     )
 }
 
+DatePickerWithPopup.propTypes = {
+  onChange: PropTypes.func.isRequired,
+};
+
 export function DevelopmentPage(props) {
+  const today = new Date();
+  const tomorrow = nextDayOf(today);
+
+  // single select
+  const [date, setDate] = useState([ today ]);
+
+  // multi select
+  // const [date, setDate] = useState([today, tomorrow]);
+
+  // range
+  // const [date, setDate] = useState([ [today, tomorrow] ]);
+
   // TODO: implement custom state reducer for the calendar
   // TODO: see reducer function in Calendar
   const stateReducer = (state, action) => {
@@ -464,6 +493,10 @@ export function DevelopmentPage(props) {
     return isSame(day, yesterday);
   }
 
+  function handleChange(date) {
+    setDate(date);
+  }
+
   return (
     <>
     <Calendarik onDayClick={(day) => {}}
@@ -474,7 +507,11 @@ export function DevelopmentPage(props) {
     />
 
 
-    <DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>
+    <DatePickerWithPopup selectionMode="single"
+                         isAutoClosed={true}
+                         value={date}
+                         onChange={handleChange}
+    />
 
       {/*<DateInput/>*/}
     </>
