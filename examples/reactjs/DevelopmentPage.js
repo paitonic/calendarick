@@ -381,8 +381,7 @@ function DatePickerWithPopup(props) {
   const {isAutoClosed, ...calendarProps} = props;
 
   function revertChanges() {
-    // TODO: change the date value in Calendarik
-    // setDraftDate(date);
+    setDraftDate(date);
   }
 
   const calendarStateReducer = (state, action) => {
@@ -443,7 +442,8 @@ function DatePickerWithPopup(props) {
       <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
                      stateReducer={calendarStateReducer}
-                     onChange={(date) => setDraftDate(date)}/>
+                     onChange={(date) => setDraftDate(date)}
+                     value={draftDate}/>
       </Popup>
     </>
     )
@@ -469,12 +469,12 @@ export function DevelopmentPage(props) {
     <Calendarik onDayClick={(day) => {}}
                 onChange={(day) => {console.log('onChange: ', day)}}
                 stateReducer={stateReducer}
-                selectionMode="single"
+                selectionMode="range"
                 disableDays={shouldDayBeDisabled}
     />
 
 
-    {/*<DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>*/}
+    <DatePickerWithPopup selectionMode="range" isAutoClosed={true}/>
 
       {/*<DateInput/>*/}
     </>
