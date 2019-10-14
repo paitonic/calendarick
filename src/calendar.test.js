@@ -24,7 +24,7 @@ import {
   fromArray,
   isIn,
   nextDayOf,
-  prevDayOf
+  prevDayOf, clone
 } from './calendar';
 
 // TODO: Note on internationalization (Int.DateTimeFormat(), toLocaleString()) in Node:
@@ -613,5 +613,52 @@ describe('prevDayOf', () => {
 
     // leap year
     expect(isSame(prevDayOf(d_2020_03_01), d_2020_02_29)).toBe(true);
+  });
+});
+
+describe('clone', () => {
+  it('should clone the date', () => {
+    let date = fromArray([2019, 1, 1, 0, 0, 0, 0]);
+    const clone_d_2019_01_01 = clone(date);
+
+    expect(clone_d_2019_01_01).not.toBe(date);
+    expect(clone_d_2019_01_01.getTime()).toEqual(date.getTime());
+  });
+
+  it('should clone: [Date, Date]', () => {
+    let d_2019_01_01 = fromArray([2019, 1, 1, 0, 0, 0, 0]);
+    let d_2019_01_02 = fromArray([2019, 1, 2, 0, 0, 0, 0]);
+    const arrayOfDates = [d_2019_01_01, d_2019_01_02];
+    const clonedArrayOfDates = clone(arrayOfDates);
+
+    expect(clonedArrayOfDates.length).toBe(2);
+    expect(arrayOfDates).not.toBe(clonedArrayOfDates);
+
+    expect(clonedArrayOfDates[0].getTime()).toBe(arrayOfDates[0].getTime());
+    expect(clonedArrayOfDates[1].getTime()).toBe(arrayOfDates[1].getTime());
+
+    expect(clonedArrayOfDates[0]).not.toBe(arrayOfDates[0]);
+    expect(clonedArrayOfDates[1]).not.toBe(arrayOfDates[1]);
+  });
+
+  it('should clone: [ [Date, Date], Date ]', () => {
+    let d_2019_01_01 = fromArray([2019, 1, 1, 0, 0, 0, 0]);
+    let d_2019_01_02 = fromArray([2019, 1, 2, 0, 0, 0, 0]);
+    let d_2019_01_03 = fromArray([2019, 1, 3, 0, 0, 0, 0]);
+    const arrayOfDates = [ [d_2019_01_01, d_2019_01_02], d_2019_01_03 ];
+    const clonedArrayOfDates = clone(arrayOfDates);
+
+    expect(clonedArrayOfDates.length).toBe(2);
+    expect(Array.isArray(clonedArrayOfDates[0])).toBe(true);
+    expect(clonedArrayOfDates[0]).not.toBe(arrayOfDates[0]);
+    expect(clonedArrayOfDates[1] instanceof Date).toBe(true);
+
+    expect(clonedArrayOfDates[0][0].getTime()).toBe(arrayOfDates[0][0].getTime());
+    expect(clonedArrayOfDates[0][1].getTime()).toBe(arrayOfDates[0][1].getTime());
+    expect(clonedArrayOfDates[1].getTime()).toBe(arrayOfDates[1].getTime());
+
+    expect(clonedArrayOfDates[0][0]).not.toBe(arrayOfDates[0][0]);
+    expect(clonedArrayOfDates[0][1]).not.toBe(arrayOfDates[0][1]);
+    expect(clonedArrayOfDates[1]).not.toBe(arrayOfDates[1]);
   });
 });

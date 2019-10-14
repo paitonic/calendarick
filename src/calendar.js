@@ -380,3 +380,13 @@ const calendar = calendar('en-US')
 calendar.getMonth()
 
  */
+
+export function clone(date) {
+  if (date instanceof Date) {
+    return new Date(date.getTime());
+  } else if (Array.isArray(date)) {
+    return date.map(clone);
+  } else {
+    return date;
+  }
+}

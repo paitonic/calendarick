@@ -15,7 +15,8 @@ import {
   maxDate,
   isIn,
   nextDayOf,
-  prevDayOf
+  prevDayOf,
+  clone
 } from '../src/calendar';
 
 
@@ -91,6 +92,10 @@ export function calendar({
 
     prevDayOf(...args) {
       return prevDayOf(...args);
+    },
+
+    clone(...args) {
+      return clone(...args);
     }
   }
 }
