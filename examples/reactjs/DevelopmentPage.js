@@ -19,9 +19,13 @@ function Day(props) {
   const {onDayClick, disableDays} = useContext(PreferencesContext);
   const {isIn} = useContext(CalendarContext);
   const {state: {value}, dispatch} = useContext(StateContext);
+  const isDisabled = disableDays(props.day.date);
 
-  // TODO: fix - disabled days should be unclickable
   function handleClick() {
+    if (isDisabled) {
+      return;
+    }
+
     onDayClick(props.day);
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
   }
