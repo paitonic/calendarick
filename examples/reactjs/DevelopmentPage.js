@@ -20,6 +20,7 @@ function Day(props) {
   const {isIn} = useContext(CalendarContext);
   const {state: {value}, dispatch} = useContext(StateContext);
 
+  // TODO: fix - disabled days should be unclickable
   function handleClick() {
     onDayClick(props.day);
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
@@ -374,10 +375,7 @@ function Popup(props) {
 
 // TODO: write useDraftValue hook that handles the draft
 // TODO: Idea for hook that reverts last action or series of actions? (undo)
-
 function DatePickerWithPopup(props) {
-  // TODO: DatePickerWithPopup is not aware of the default properties of Calendarik. Should the properties be
-  // passed explicitly?
   const [isShown, setIsShown] = useState(false);
   const [date, setDate] = useState(props.value);
   const [draftDate, setDraftDate] = useState(clone(props.value));
@@ -389,7 +387,7 @@ function DatePickerWithPopup(props) {
   }, [props.value]);
 
   function revertChanges() {
-    setDraftDate(date);
+    setDraftDate(clone(date));
   }
 
   const calendarStateReducer = (action, previousState, nextState) => {
@@ -401,6 +399,7 @@ function DatePickerWithPopup(props) {
           if (isAutoClosed) {
             setIsShown(false);
             setDate(nextState.value);
+            props.onChange(nextState.value);
           }
           return nextState;
         } else if (props.selectionMode === 'range') {
@@ -411,6 +410,7 @@ function DatePickerWithPopup(props) {
             if (isAutoClosed) {
               setIsShown(false);
               setDate(nextState.value);
+              props.onChange(nextState.value);
             }
           }
           return nextState;
@@ -430,7 +430,7 @@ function DatePickerWithPopup(props) {
 
   function representDate(date) {
     // handle single date, multiple dates and range
-    if (!date) {
+    if (!date || date && date.length === 0) {
       return '';
     } else if (date instanceof Date) {
       return format(date);
@@ -443,20 +443,40 @@ function DatePickerWithPopup(props) {
     }
   }
 
-  function handleChange(date) {
-    setDraftDate(date);
-    props.onChange(date);
+  function handleChange(newDate) {
+    setDraftDate(newDate);
+  }
+
+  function confirm() {
+    setDate(clone(draftDate));
+    setIsShown(false);
+  }
+
+  function cancel() {
+    revertChanges();
+    setIsShown(false);
+  }
+
+  function isFooterShown() {
+    return !isAutoClosed || props.selectionMode === 'multiple';
   }
 
   return (
     <>
-      <input onClick={() => setIsShown(true)} value={representDate(date)} readOnly={true}/>
+      <input onClick={() => setIsShown(true)} value={representDate(draftDate)} readOnly={true}/>
 
       <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
                      stateReducer={calendarStateReducer}
-                     onChange={(date) => handleChange(date)}
+                     onChange={(newDate) => handleChange(newDate)}
                      value={draftDate}/>
+        {
+          isFooterShown() &&
+           <div className="popup__footer">
+             <span className="popup__action popup__action--ok" onClick={confirm}>OK</span>
+             <span className="popup__action popup__action--cancel" onClick={cancel}>Cancel</span>
+           </div>
+        }
       </Popup>
     </>
     )
