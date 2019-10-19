@@ -20,6 +20,19 @@ export const Index = () => {
   )
 };
 
+export const WithURLProps = (Component) => {
+  const queryProps = new URLSearchParams(location.search).get('props');
+  let urlProps = {};
+  if (queryProps) {
+    urlProps = JSON.parse(decodeURIComponent(queryProps));
+  }
+
+  return (props) => {
+    const overriddenProps = {...props, ...urlProps};
+    return <Component {...overriddenProps}/>
+  }
+};
+
 export const VariationPage = () => {
   const match = useRouteMatch();
 
@@ -32,7 +45,7 @@ export const VariationPage = () => {
 
         {
           mapVariations((variation) => {
-            const Variation = Variations[variation];
+            const Variation = WithURLProps(Variations[variation]);
 
             return (
               <Route path={`${match.path}/${variation}`} key={variation}>
