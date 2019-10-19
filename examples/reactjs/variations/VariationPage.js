@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import * as Variations from './Variations';
+import { decodeProps } from '../../../src/testUtils';
 
 
 const mapVariations = (fn) => Object.keys(Variations).map(fn);
@@ -24,7 +25,7 @@ export const WithURLProps = (Component) => {
   const queryProps = new URLSearchParams(location.search).get('props');
   let urlProps = {};
   if (queryProps) {
-    urlProps = JSON.parse(decodeURIComponent(queryProps));
+    urlProps = decodeProps(queryProps);
   }
 
   return (props) => {
