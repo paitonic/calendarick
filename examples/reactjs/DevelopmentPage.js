@@ -279,7 +279,7 @@ function Calendar(props) {
 const CalendarContext = React.createContext({});
 const PreferencesContext = React.createContext({});
 
-function Calendarik(props) {
+export function Calendarik(props) {
     const preferences = {
       calendar: props.calendar,
       onDayClick: props.onDayClick,
@@ -379,7 +379,7 @@ function Popup(props) {
 
 // TODO: write useDraftValue hook that handles the draft
 // TODO: Idea for hook that reverts last action or series of actions? (undo)
-function DatePickerWithPopup(props) {
+export function DatePickerWithPopup(props) {
   const [isShown, setIsShown] = useState(false);
   const [date, setDate] = useState(props.value);
   const [draftDate, setDraftDate] = useState(clone(props.value));

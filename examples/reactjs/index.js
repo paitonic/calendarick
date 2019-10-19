@@ -1,32 +1,42 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-import { TestsPage } from './TestsPage';
 import { DevelopmentPage } from './DevelopmentPage';
+import { VariationPage } from './variations/VariationPage';
 
-function App(props) {
+function Index(props) {
   return (
     <ul>
       <li>
-        <a href="development">Development</a>
+        <Link to="/development">Development</Link>
       </li>
 
       <li>
-        <a href="tests">Tests</a>
+        <Link to="/variations">Variations</Link>
       </li>
     </ul>
   )
 }
 
-const routes = {
-  "/": <App/>,
-  "/development": <DevelopmentPage/>,
-  "/tests": <TestsPage/>,
+const Playground = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" exact={true}>
+          <Index/>
+        </Route>
+
+        <Route path="/development">
+          <DevelopmentPage/>
+        </Route>
+
+        <Route path="/variations">
+          <VariationPage/>
+        </Route>
+      </Switch>
+    </Router>
+  )
 };
 
-const matchRoute = () => {
-  return routes[location.pathname];
-};
-
-
-ReactDOM.render(matchRoute(), document.getElementById('root'));
+ReactDOM.render(<Playground/>, document.getElementById('root'));
