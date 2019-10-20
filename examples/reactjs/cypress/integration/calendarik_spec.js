@@ -39,20 +39,22 @@ function format(date) {
   return `${year}-${month}-${day}`;
 }
 
+const tid = (testId) => `[data-testid="${testId}"]`;
+
 describe('InlineDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
 
   beforeEach(() => {
     today = new Date();
     [today_year, today_month, today_day] = [today.getFullYear(), today.getMonth()+1, today.getDate()];
-    todayTestId = `[data-testid="${today_year}-${today_month}-${today_day}"]`;
+    todayTestId = tid(`${today_year}-${today_month}-${today_day}`);
   });
 
   it('should display current month and year by default', () => {
     visit('/InlineDatePicker', defaultProps);
     const monthName = today.toLocaleString(defaultProps.calendar.locale, {month: 'long'});
-    cy.get(`[data-testid="month-${today_month}"]`).should('have.text', monthName);
-    cy.get(`[data-testid="year-${today_year}"]`).should('have.text', String(today_year));
+    cy.get(tid('month-' + today_month)).should('have.text', monthName);
+    cy.get(tid('year-' + today_year)).should('have.text', String(today_year));
   });
 
   it('should change the style of the day when mouse is over', () => {
@@ -72,18 +74,18 @@ describe('InlineDatePicker', () => {
 
   it.skip('should show correct month and year when value props is given', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
-    const test_id_2020_01_01 = `[data-testid="${format(d_2020_01_01)}"]`;
+    const test_id_2020_01_01 = tid(format(d_2020_01_01));
     visit('/InlineDatePickerWithValue', {...defaultProps, value: [ d_2020_01_01 ]});
 
     cy.get(test_id_2020_01_01).should('have.class', 'day--is-selected');
-    cy.get(`[data-testid="month-1"]`).should('have.text', 'January');
-    cy.get(`[data-testid="year-2020"]`).should('have.text', '2020');
+    cy.get(tid('month-1')).should('have.text', 'January');
+    cy.get(tid('year-2020')).should('have.text', '2020');
   });
 
   it.skip('should not select disabled day', () => {
     visit('/InlineDatePickerWithDisabledDays');
     const d_2020_01_02 = fromArray([2020, 1, 2]);
-    const test_id_2020_01_02 = `[data-testid="${format(d_2020_01_02)}"]`;
+    const test_id_2020_01_02 = tid(d_2020_01_02);
 
     cy.get(test_id_2020_01_02).should('not.have.class', 'day--is-selected');
     cy.get(test_id_2020_01_02).should('have.class', 'day--is-disabled');
