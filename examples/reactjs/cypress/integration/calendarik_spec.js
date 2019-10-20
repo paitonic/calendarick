@@ -1,8 +1,6 @@
 import { fromArray } from '../../../../src/calendar';
 import { encodeProps } from '../../../../src/testUtils';
 
-const BASE_URL = 'http://localhost:1234/variations';
-
 const visit = (url, props) => {
   if (props) {
     cy.visit(`${url}?props=${encodeProps(props)}`);
@@ -44,8 +42,6 @@ function format(date) {
 describe('InlineDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
 
-  const visitInlineDatePicker = (url=`${BASE_URL}/InlineDatePicker`, props=defaultProps) => visit(`${BASE_URL}/InlineDatePicker`, props);
-
   beforeEach(() => {
     today = new Date();
     [today_year, today_month, today_day] = [today.getFullYear(), today.getMonth()+1, today.getDate()];
@@ -53,14 +49,14 @@ describe('InlineDatePicker', () => {
   });
 
   it('should display current month and year by default', () => {
-    visitInlineDatePicker();
+    visit('/InlineDatePicker', defaultProps);
     const monthName = today.toLocaleString(defaultProps.calendar.locale, {month: 'long'});
     cy.get(`[data-testid="month-${today_month}"]`).should('have.text', monthName);
     cy.get(`[data-testid="year-${today_year}"]`).should('have.text', String(today_year));
   });
 
   it('should change the style of the day when mouse is over', () => {
-    visitInlineDatePicker();
+    visit('/InlineDatePicker', defaultProps);
     // transparent
     cy.get(todayTestId).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
@@ -68,7 +64,7 @@ describe('InlineDatePicker', () => {
   });
 
   it('should select date', () => {
-    visitInlineDatePicker();
+    visit('/InlineDatePicker', defaultProps);
     cy.get(todayTestId);
     cy.get(todayTestId).should('not.have.class', 'day--is-selected');
     cy.get(todayTestId).click().should('have.class', 'day--is-selected');
@@ -77,7 +73,7 @@ describe('InlineDatePicker', () => {
   it.skip('should show correct month and year when value props is given', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
     const test_id_2020_01_01 = `[data-testid="${format(d_2020_01_01)}"]`;
-    visit(`${BASE_URL}/InlineDatePickerWithValue`, {...defaultProps, value: [ d_2020_01_01 ]});
+    visit('/InlineDatePickerWithValue', {...defaultProps, value: [ d_2020_01_01 ]});
 
     cy.get(test_id_2020_01_01).should('have.class', 'day--is-selected');
     cy.get(`[data-testid="month-1"]`).should('have.text', 'January');
@@ -85,7 +81,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should not select disabled day', () => {
-    visit(`${BASE_URL}/InlineDatePickerWithDisabledDays`);
+    visit('/InlineDatePickerWithDisabledDays');
     const d_2020_01_02 = fromArray([2020, 1, 2]);
     const test_id_2020_01_02 = `[data-testid="${format(d_2020_01_02)}"]`;
 
@@ -98,7 +94,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should hide days outside of month', () => {
-    visitInlineDatePicker({...defaultProps, withOutsideDays: false});
+    visit('/InlineDatePicker', {...defaultProps, withOutsideDays: false});
   });
 
   it.skip('should navigate month back when clicking on left arrow', () => {});
@@ -114,7 +110,7 @@ describe('InlineDatePicker', () => {
 
 describe('InlineDateRangePicker', function () {
   beforeEach(() => {
-    cy.visit(`${BASE_URL}/InlineRangeDatePicker`);
+    visit('/InlineRangeDatePicker');
   });
 
   it.skip('should select range', () => {

@@ -9,7 +9,6 @@ export const InlineDatePicker = (props) => {
   )
 };
 export const InlineDatePickerWithValue = (props) => {
-  console.log('props.value: ', props.value);
   return (
     <Calendarik {...{selectionMode: 'single', ...props}} value={props.value}/>
   )
