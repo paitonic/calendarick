@@ -3,18 +3,19 @@ import { Calendarik, DatePickerWithPopup } from '../DevelopmentPage';
 import { fromArray, isSame, nextDayOf } from '../../../src/calendar';
 
 
-export const InlineDatePicker = (props) => {
+export const StaticDatePicker = (props) => {
   return (
     <Calendarik {...{selectionMode: 'single', ...props}}/>
   )
 };
-export const InlineDatePickerWithValue = (props) => {
+
+export const StaticDatePickerWithValue = (props) => {
   return (
     <Calendarik {...{selectionMode: 'single', ...props}} value={props.value}/>
   )
 };
 
-export const InlineDatePickerWithDisabledDays = (props) => {
+export const StaticDatePickerWithDisabledDays = (props) => {
   const d_2020_01_01 = fromArray([2020, 1, 1]);
   const d_2020_01_02 = fromArray([2020, 1, 2]);
 
@@ -25,13 +26,13 @@ export const InlineDatePickerWithDisabledDays = (props) => {
   )
 };
 
-export const InlineRangeDatePicker = (props) => {
+export const StaticRangeDatePicker = (props) => {
   return (
     <Calendarik {...{selectionMode: 'range', ...props}}/>
   );
 };
 
-export const InlineMultiSelectDatePicker = (props) => {
+export const StaticMultiSelectDatePicker = (props) => {
   return (
     <Calendarik {...{selectionMode: 'multiple', ...props}}/>
   )

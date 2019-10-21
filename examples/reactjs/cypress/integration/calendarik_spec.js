@@ -41,7 +41,7 @@ function format(date) {
 
 const tid = (testId) => `[data-testid="${testId}"]`;
 
-describe('InlineDatePicker', () => {
+describe('StaticDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
 
   beforeEach(() => {
@@ -51,14 +51,14 @@ describe('InlineDatePicker', () => {
   });
 
   it('should display current month and year by default', () => {
-    visit('/InlineDatePicker', defaultProps);
+    visit('/StaticDatePicker', defaultProps);
     const monthName = today.toLocaleString(defaultProps.calendar.locale, {month: 'long'});
     cy.get(tid('month-' + today_month)).should('have.text', monthName);
     cy.get(tid('year-' + today_year)).should('have.text', String(today_year));
   });
 
   it('should change the style of the day when mouse is over', () => {
-    visit('/InlineDatePicker', defaultProps);
+    visit('/StaticDatePicker', defaultProps);
     // transparent
     cy.get(todayTestId).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
@@ -66,12 +66,12 @@ describe('InlineDatePicker', () => {
   });
 
   it('should not select any day', () => {
-    visit('/InlineDatePicker', defaultProps);
+    visit('/StaticDatePicker', defaultProps);
     cy.get('.day--is-selected').should('not.exist')
   });
 
   it('should select date', () => {
-    visit('/InlineDatePicker', defaultProps);
+    visit('/StaticDatePicker', defaultProps);
     cy.get(todayTestId);
     cy.get(todayTestId).should('not.have.class', 'day--is-selected');
     cy.get(todayTestId).click().should('have.class', 'day--is-selected');
@@ -80,7 +80,7 @@ describe('InlineDatePicker', () => {
   it.skip('should show correct month and year when value props is given', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
     const test_id_2020_01_01 = tid(format(d_2020_01_01));
-    visit('/InlineDatePickerWithValue', {...defaultProps, value: [ d_2020_01_01 ]});
+    visit('/StaticDatePickerWithValue', {...defaultProps, value: [ d_2020_01_01 ]});
 
     cy.get(test_id_2020_01_01).should('have.class', 'day--is-selected');
     cy.get(tid('month-1')).should('have.text', 'January');
@@ -88,7 +88,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should not select disabled day', () => {
-    visit('/InlineDatePickerWithDisabledDays');
+    visit('/StaticDatePickerWithDisabledDays');
     const d_2020_01_02 = fromArray([2020, 1, 2]);
     const test_id_2020_01_02 = tid(d_2020_01_02);
 
@@ -101,7 +101,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should hide days outside of month', () => {
-    visit('/InlineDatePickerWithValue', {
+    visit('/StaticDatePickerWithValue', {
       ...defaultProps,
       value: [ [fromArray([2020, 1, 1])] ],
       withOutsideDays: false
@@ -114,7 +114,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should navigate month back when clicking on left arrow', () => {
-    visit('/InlineDatePickerWithValue', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    visit('/StaticDatePickerWithValue', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
 
     cy.get(tid('month-1')).should('have.text', 'January');
     cy.get(tid('year-2020')).should('have.text', '2020');
@@ -126,7 +126,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should navigate month forward when clicking on right arrow', () => {
-    visit('/InlineDatePickerWithValue', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    visit('/StaticDatePickerWithValue', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
 
     cy.get(tid('month-1')).should('have.text', 'January');
     cy.get(tid('year-2020')).should('have.text', '2020');
@@ -138,7 +138,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should navigate month back when clicking on right arrow (isRTL=true)', () => {
-    visit('/InlineDatePickerWithValue', {
+    visit('/StaticDatePickerWithValue', {
       ...defaultProps,
       value: [ fromArray([2020, 1, 1]) ],
       calendar: {...defaultProps.calendar, isRTL: true,}
@@ -154,7 +154,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should navigate month forward when clicking on left arrow (isRTL=true)', () => {
-    visit('/InlineDatePickerWithValue', {
+    visit('/StaticDatePickerWithValue', {
       ...defaultProps,
       value: [fromArray([2020, 1, 1])],
       calendar: {...defaultProps.calendar, isRTL: true}
@@ -170,7 +170,7 @@ describe('InlineDatePicker', () => {
   });
 
   it.skip('should reverse order of week day names when isRTL=true (last day of week should be left-most)', () => {
-    visit('/InlineDatePickerWithValue', {
+    visit('/StaticDatePickerWithValue', {
       ...defaultProps,
       value: [fromArray([2020, 1, 1])],
       calendar: {...defaultProps.calendar, isRTL: true}
@@ -180,9 +180,9 @@ describe('InlineDatePicker', () => {
   });
 });
 
-describe('InlineDateRangePicker', function () {
+describe('StaticDateRangePicker', function () {
   beforeEach(() => {
-    visit('/InlineRangeDatePicker');
+    visit('/StaticRangeDatePicker');
   });
 
   it.skip('should select range', () => {
