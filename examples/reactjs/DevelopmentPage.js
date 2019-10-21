@@ -38,7 +38,7 @@ function Day(props) {
         'day--is-disabled': disableDays(props.day.date),
     })}
         onClick={handleClick}
-        data-testid={format(props.day.date)}>
+        data-test-id={format(props.day.date)}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
@@ -107,11 +107,11 @@ function Header(props) {
 
   return (
     <div className="header">
-      <span className="header__button-back" onClick={props.onBackClick} data-testid="button-left">‹</span>
+      <span className="header__button-back" onClick={props.onBackClick} data-test-id="button-left">‹</span>
       <span className="header__date">
-        <span data-testid={`month-${order}`}>{month}</span> <span data-testid={`year-${props.year}`}>{props.year}</span>
+        <span data-test-id={`month-${order}`}>{month}</span> <span data-test-id={`year-${props.year}`}>{props.year}</span>
       </span>
-      <span className="header__button-next" onClick={props.onNextClick} data-testid="button-right">›</span>
+      <span className="header__button-next" onClick={props.onNextClick} data-test-id="button-right">›</span>
     </div>
   )
 }
@@ -367,7 +367,7 @@ function Popup(props) {
   return (
     <>
     {
-      <div className={`popup ${isShown ? '' : 'popup--closed'}`} ref={popupRef}>
+      <div className={`popup ${isShown ? '' : 'popup--closed'}`} ref={popupRef} data-test-id="popup">
         {props.children}
       </div>
 
@@ -467,7 +467,7 @@ export function DatePickerWithPopup(props) {
 
   return (
     <>
-      <input onClick={() => setIsShown(true)} value={representDate(draftDate)} readOnly={true}/>
+      <input onClick={() => setIsShown(true)} value={representDate(draftDate)} readOnly={true} data-test-id="popup__date-input"/>
 
       <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
@@ -476,9 +476,9 @@ export function DatePickerWithPopup(props) {
                      value={draftDate}/>
         {
           isFooterShown() &&
-           <div className="popup__footer">
-             <span className="popup__action popup__action--ok" onClick={confirm}>OK</span>
-             <span className="popup__action popup__action--cancel" onClick={cancel}>Cancel</span>
+           <div className="popup__footer" data-test-id="popup__footer">
+             <span className="popup__action popup__action--ok" onClick={confirm} data-test-id="popup__action--ok">OK</span>
+             <span className="popup__action popup__action--cancel" onClick={cancel} data-test-id="popup__action--cancel">Cancel</span>
            </div>
         }
       </Popup>

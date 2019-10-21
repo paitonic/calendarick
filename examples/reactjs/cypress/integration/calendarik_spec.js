@@ -10,7 +10,7 @@ const defaultProps = {
   }
 };
 
-const open = (variationName, props=defaultProps) => {
+const render = (variationName, props=defaultProps) => {
   if (props) {
     cy.visit(`/${variationName}?props=${encodeProps(props)}`);
   } else {
@@ -41,7 +41,7 @@ function format(date) {
 
 const tid = (testId) => {
   const str = testId instanceof Date ? format(testId) : testId;
-  return `[data-testid="${str}"]`;
+  return `[data-test-id="${str}"]`;
 };
 
 const today = new Date();
@@ -68,14 +68,14 @@ describe('StaticDatePicker', () => {
   });
 
   it('should display current month and year by default', () => {
-    open('StaticDatePicker', defaultProps);
+    render('StaticDatePicker', defaultProps);
     const monthName = today.toLocaleString(defaultProps.calendar.locale, {month: 'long'});
     cy.get(tid('month-' + today_month)).should('have.text', monthName);
     cy.get(tid('year-' + today_year)).should('have.text', String(today_year));
   });
 
   it('should change the style of the day when mouse is over', () => {
-    open('StaticDatePicker', defaultProps);
+    render('StaticDatePicker', defaultProps);
     // transparent
     cy.get(todayTestId).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
@@ -83,12 +83,12 @@ describe('StaticDatePicker', () => {
   });
 
   it('should no be selected days', () => {
-    open('StaticDatePicker', defaultProps);
+    render('StaticDatePicker', defaultProps);
     cy.get('.day--is-selected').should('not.exist')
   });
 
   it('should select date', () => {
-    open('StaticDatePicker', defaultProps);
+    render('StaticDatePicker', defaultProps);
     cy.get(todayTestId);
     cy.get(todayTestId).should('not.have.class', 'day--is-selected');
     cy.get(todayTestId).click().should('have.class', 'day--is-selected');
@@ -97,7 +97,7 @@ describe('StaticDatePicker', () => {
   it.skip('should show initially selected day', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
     const test_id_2020_01_01 = tid(format(d_2020_01_01));
-    open('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
+    render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
     cy.get(test_id_2020_01_01).should('have.class', 'day--is-selected');
     cy.get(tid('month-1')).should('have.text', 'January');
@@ -105,7 +105,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should not select disabled day', () => {
-    open('StaticDatePickerWithDisabledDays');
+    render('StaticDatePickerWithDisabledDays');
     const d_2020_01_02 = fromArray([2020, 1, 2]);
     const test_id_2020_01_02 = tid(d_2020_01_02);
 
@@ -118,7 +118,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should hide days outside of month', () => {
-    open('StaticDatePicker', {
+    render('StaticDatePicker', {
       ...defaultProps,
       value: [ [fromArray([2020, 1, 1])] ],
       withOutsideDays: false
@@ -131,7 +131,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should navigate month back when clicking on left arrow', () => {
-    open('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    render('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
 
     cy.get(tid('month-1')).should('have.text', 'January');
     cy.get(tid('year-2020')).should('have.text', '2020');
@@ -143,7 +143,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should navigate month forward when clicking on right arrow', () => {
-    open('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    render('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
 
     cy.get(tid('month-1')).should('have.text', 'January');
     cy.get(tid('year-2020')).should('have.text', '2020');
@@ -155,7 +155,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should navigate month back when clicking on right arrow (isRTL=true)', () => {
-    open('StaticDatePicker', {
+    render('StaticDatePicker', {
       ...defaultProps,
       value: [ fromArray([2020, 1, 1]) ],
       calendar: {...defaultProps.calendar, isRTL: true,}
@@ -171,7 +171,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should navigate month forward when clicking on left arrow (isRTL=true)', () => {
-    open('StaticDatePicker', {
+    render('StaticDatePicker', {
       ...defaultProps,
       value: [fromArray([2020, 1, 1])],
       calendar: {...defaultProps.calendar, isRTL: true}
@@ -187,7 +187,7 @@ describe('StaticDatePicker', () => {
   });
 
   it.skip('should reverse order of week day names when isRTL=true (last day of week should be left-most)', () => {
-    open('StaticDatePicker', {
+    render('StaticDatePicker', {
       ...defaultProps,
       value: [fromArray([2020, 1, 1])],
       calendar: {...defaultProps.calendar, isRTL: true}
@@ -199,7 +199,7 @@ describe('StaticDatePicker', () => {
 
 describe('StaticDateRangePicker', () => {
   it('should select range', () => {
-    open('StaticRangeDatePicker');
+    render('StaticRangeDatePicker');
     cy.get(tid_01).should('not.have.class', 'day--is-selected');
     cy.get(tid_02).should('not.have.class', 'day--is-selected');
     cy.get(tid_03).should('not.have.class', 'day--is-selected');
@@ -211,7 +211,7 @@ describe('StaticDateRangePicker', () => {
   });
 
   it('should show initially selected range', () => {
-    open('StaticRangeDatePicker', {
+    render('StaticRangeDatePicker', {
       ...defaultProps,
       value: [ [d_01, d_03] ]
     });
@@ -222,7 +222,7 @@ describe('StaticDateRangePicker', () => {
   });
 
   it('should change initially selected range', () => {
-    open('StaticRangeDatePicker', {
+    render('StaticRangeDatePicker', {
       ...defaultProps,
       value: [ [d_01, d_03] ]
     });
@@ -237,7 +237,7 @@ describe('StaticDateRangePicker', () => {
   });
 
   it('should not select disabled day', () => {
-    open('StaticRangeDatePickerWithDisabledDays');
+    render('StaticRangeDatePickerWithDisabledDays');
 
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
     cy.get(tid_03).click().should('not.have.class', 'day--is-selected');
@@ -245,14 +245,14 @@ describe('StaticDateRangePicker', () => {
   });
 
   it('should allow selecting range if there are disabled days in between', () => {
-    open('StaticRangeDatePickerWithDisabledDays');
+    render('StaticRangeDatePickerWithDisabledDays');
 
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
     cy.get(tid_04).click().should('have.class', 'day--is-selected');
   });
 
   it('should allow selecting late date before early date (e.g first 2020-01-03, then 2020-01-01)', () => {
-    open('StaticRangeDatePicker');
+    render('StaticRangeDatePicker');
 
     cy.get(tid_03).click().should('have.class', 'day--is-selected');
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
@@ -261,7 +261,7 @@ describe('StaticDateRangePicker', () => {
   });
 
   it('should select range of one day', () => {
-    open('StaticRangeDatePicker');
+    render('StaticRangeDatePicker');
 
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
@@ -275,7 +275,7 @@ describe('StaticDateRangePicker', () => {
 
 describe('StaticMultiSelectDatePicker', () => {
   it('should select multiple days', () => {
-    open('StaticMultiSelectDatePicker');
+    render('StaticMultiSelectDatePicker');
 
     cy.get(tid_01).click().should('have.class', 'day--is-selected');
     cy.get(tid_03).click().should('have.class', 'day--is-selected');
@@ -283,7 +283,7 @@ describe('StaticMultiSelectDatePicker', () => {
   });
 
   it('should not select disable day', () => {
-    open('StaticMultiSelectDatePickerWithDisabledDays');
+    render('StaticMultiSelectDatePickerWithDisabledDays');
 
     cy.get(tid_02).should('have.class', 'day--is-disabled');
     cy.get(tid_02).should('not.have.class', 'day--is-selected');
@@ -293,24 +293,164 @@ describe('StaticMultiSelectDatePicker', () => {
   });
 
   it('should show multiple initially selected days', () => {
-    open('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
+    render('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
 
     cy.get(tid_01).should('have.class', 'day--is-selected');
     cy.get(tid_02).should('have.class', 'day--is-selected');
   });
 
   it('should deselect day', () => {
-    open('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
+    render('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
 
     cy.get(tid_01).click().should('not.have.class', 'day--is-selected');
     cy.get(tid_02).should('have.class', 'day--is-selected');
   });
 
   it('should change selected days', () => {
-    open('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
+    render('StaticMultiSelectDatePicker', {...defaultProps, value: [ d_01, d_02 ]});
 
     cy.get(tid_03).click().should('have.class', 'day--is-selected');
     cy.get(tid_01).should('have.class', 'day--is-selected');
     cy.get(tid_02).should('have.class', 'day--is-selected');
+  });
+});
+
+describe('PopupDatePicker', () => {
+  // let dateInput, okButton, cancelButton, popup;
+  //   popup = cy.get(tid('popup'));
+  //   okButton = cy.get(tid('popup__action--ok'));
+  //   cancelButton = cy.get(tid('popup__action--cancel'));
+  //   dateInput = cy.get(tid('popup__date-input'));
+  //   footer = cy.get(tid('popup__footer'));
+
+  const tid_popup = tid('popup');
+  const tid_okButton = tid('popup__action--ok');
+  const tid_cancelButton = tid('popup__action--cancel');
+  const tid_dateInput = tid('popup__date-input');
+  const tid_footer = tid('popup__footer');
+
+  const clickDateInput = () => cy.get(tid_dateInput).click({force: true});
+  const ok = () => cy.get(tid_okButton).click();
+  const cancel = () => cy.get(tid_cancelButton).click();
+  const chooseDay = (day) => cy.get(tid(format(day))).click();
+
+  const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup--closed');
+  const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
+  const assertInputIsEmpty = () => cy.get(tid_dateInput).should('have.value', '');
+  const assertInputIs = (value) => cy.get(tid_dateInput).should('have.value', value);
+
+
+  it('should render popup closed on start', () => {
+    render('PopupDatePicker');
+
+    assertPopupIsClosed();
+  });
+
+  it('should render input empty on start', () => {
+    render('PopupDatePicker');
+
+    assertInputIsEmpty();
+  });
+
+  it('should open popup', () => {
+    render('PopupDatePicker');
+
+    clickDateInput();
+    assertPopupIsOpen();
+  });
+
+  it('should close popup when clicking on cancel button', () => {
+    render('PopupDatePicker');
+
+    clickDateInput();
+    assertPopupIsOpen();
+    cancel();
+    assertPopupIsClosed();
+  });
+
+  it('should select date, close popup and show the date in the input field', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: true});
+
+    clickDateInput();
+    chooseDay(d_01);
+
+    assertPopupIsClosed();
+    assertInputIs(format(d_01));
+  });
+
+  it('should select date and save changes when OK is clicked', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+
+    clickDateInput();
+    chooseDay(d_01);
+    assertPopupIsOpen();
+
+    ok();
+    assertPopupIsClosed();
+    assertInputIs(format(d_01));
+  });
+
+  it('should overwrite previous date', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+
+    clickDateInput();
+    chooseDay(d_01);
+    ok();
+
+    clickDateInput();
+    chooseDay(d_02);
+    ok();
+
+    assertPopupIsClosed();
+    assertInputIs(format(d_02));
+  });
+
+  it('should cancel selection', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+
+    clickDateInput();
+    chooseDay(d_01);
+
+    cancel();
+    assertPopupIsClosed();
+    assertInputIsEmpty();
+  });
+
+  it('should revert to previous date on cancel', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+
+    clickDateInput();
+    chooseDay(d_01);
+    ok();
+
+    clickDateInput();
+    chooseDay(d_02);
+    cancel();
+
+    assertPopupIsClosed();
+    assertInputIs(format(d_01));
+  });
+
+  it('should render footer', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+
+    clickDateInput();
+    cy.get(tid_footer);
+  });
+
+  it('should hide footer', () => {
+    render('PopupDatePicker', {...defaultProps, isAutoClosed: true});
+
+    clickDateInput();
+    cy.get(tid_footer).should('not.exist');
+  });
+
+  it('should exit popup on click away', () => {
+    render('PopupDatePicker');
+
+    clickDateInput();
+    cy.get('body').click();
+
+    assertPopupIsClosed();
   });
 });
