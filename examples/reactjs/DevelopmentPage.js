@@ -30,9 +30,13 @@ function Day(props) {
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
   }
 
+  // props.day.date might be null if groupByWeeks called with fillMissingDaysWithNull=true
+  if (props.day.date === null) {
+    return <td className='day--placeholder'></td>
+  }
+
   return (
     <td className={clsx('day', {
-        'day--empty': props.day === null,
         'day--is-outside-month': props.day.isOutsideMonth,
         'day--is-selected': isIn(props.day.date, value),
         'day--is-disabled': disableDays(props.day.date),

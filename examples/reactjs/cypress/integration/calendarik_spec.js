@@ -162,13 +162,12 @@ describe('StaticDatePicker', () => {
     });
   });
 
-  // TODO: this test fails because of withOutsideDays
-  it.skip('should hide days outside of month', () => {
+  it('should hide days outside of month', () => {
     render('StaticDatePicker', {
       ...defaultProps,
       value: [ fromArray([2020, 1, 1]) ],
       calendar: {
-        withOutsideDays: false // TODO: causes bug
+        withOutsideDays: false
       }
     });
 
