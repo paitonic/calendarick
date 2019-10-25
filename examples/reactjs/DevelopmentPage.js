@@ -452,9 +452,10 @@ export function DatePickerWithPopup(props) {
   }
 
   function confirm() {
-    setDate(clone(draftDate));
+    const newDate = clone(draftDate);
+    setDate(newDate);
+    props.onChange(newDate);
     setIsShown(false);
-    // TODO: BUG. when isAutoclose=false, props.onChange is not called.
   }
 
   function cancel() {

@@ -82,7 +82,13 @@ const assertDayIs = (expectation, value, ...days) => {
 const assertDayIsChosen = (...days) => assertDayIs('have.class', 'day--is-selected', ...days);
 const assertDayIsNotChosen = (...days) => assertDayIs('not.have.class', 'day--is-selected', ...days);
 
-const getJSON = (element) => JSON.parse(element.text());
+const getJSON = (element) => {
+  try {
+    return JSON.parse(element.text());
+  } catch (error) {
+    return undefined;
+  }
+};
 
 describe('StaticDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
@@ -484,7 +490,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 });
 
-describe.skip('PopupDatePicker: range selection', () => {
+describe('PopupDatePicker: range selection', () => {
   it('should select range of dates', () => {
     render('PopupDatePicker', {...defaultProps, selectionMode: 'range'});
 
@@ -521,13 +527,13 @@ describe.skip('PopupDatePicker: range selection', () => {
 
     // assertDebugValueIsEmpty?
     cy.get(tid_debug_pane).should((element) => {
-      const value = toDate(getJSON(element));
-      expect(value.length === 0).to.eq(true);
+      const value = getJSON(element);
+      expect(value).to.eq(undefined);
     });
   });
 });
 
-describe.skip('PopupDatePicker: multi selection', () => {
+describe('PopupDatePicker: multi selection', () => {
   it('should select multiple dates', () => {
     render('PopupDatePicker', {...defaultProps, selectionMode: 'multiple'});
     clickDateInput();
@@ -560,8 +566,8 @@ describe.skip('PopupDatePicker: multi selection', () => {
     assertInputIsEmpty();
 
     cy.get(tid_debug_pane).should((element) => {
-      const value = toDate(getJSON(element));
-      expect(value.length === 0).to.eq(true);
+      const value = getJSON(element);
+      expect(value).to.eq(undefined);
     });
   });
 });
