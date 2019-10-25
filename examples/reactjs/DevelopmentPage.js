@@ -372,7 +372,7 @@ function Popup(props) {
       </div>
 
     }
-      {isShown && <div className="popup__backdrop"></div>}
+      {isShown && <div className="popup__backdrop" data-test-id="popup__backdrop"></div>}
     </>
   )
 }
@@ -454,6 +454,7 @@ export function DatePickerWithPopup(props) {
   function confirm() {
     setDate(clone(draftDate));
     setIsShown(false);
+    // TODO: BUG. when isAutoclose=false, props.onChange is not called.
   }
 
   function cancel() {

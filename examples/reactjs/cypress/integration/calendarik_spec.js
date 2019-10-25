@@ -58,6 +58,25 @@ const tid_03 = tid(d_03);
 const tid_04 = tid(d_04);
 const tid_05 = tid(d_05);
 
+const tid_popup = tid('popup');
+const tid_okButton = tid('popup__action--ok');
+const tid_cancelButton = tid('popup__action--cancel');
+const tid_dateInput = tid('popup__date-input');
+const tid_footer = tid('popup__footer');
+const tid_debug_pane = tid('debug-pane');
+
+const clickDateInput = () => cy.get(tid_dateInput).click({force: true});
+const ok = () => cy.get(tid_okButton).click();
+const cancel = () => cy.get(tid_cancelButton).click();
+const chooseDay = (day) => cy.get(tid(format(day))).click();
+
+const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup--closed');
+const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
+const assertInputIsEmpty = () => cy.get(tid_dateInput).should('have.value', '');
+const assertInputIs = (value) => cy.get(tid_dateInput).should('have.value', value);
+
+const getJSON = (element) => JSON.parse(element.text());
+
 describe('StaticDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
 
@@ -316,30 +335,6 @@ describe('StaticMultiSelectDatePicker', () => {
 });
 
 describe('PopupDatePicker', () => {
-  // let dateInput, okButton, cancelButton, popup;
-  //   popup = cy.get(tid('popup'));
-  //   okButton = cy.get(tid('popup__action--ok'));
-  //   cancelButton = cy.get(tid('popup__action--cancel'));
-  //   dateInput = cy.get(tid('popup__date-input'));
-  //   footer = cy.get(tid('popup__footer'));
-
-  const tid_popup = tid('popup');
-  const tid_okButton = tid('popup__action--ok');
-  const tid_cancelButton = tid('popup__action--cancel');
-  const tid_dateInput = tid('popup__date-input');
-  const tid_footer = tid('popup__footer');
-
-  const clickDateInput = () => cy.get(tid_dateInput).click({force: true});
-  const ok = () => cy.get(tid_okButton).click();
-  const cancel = () => cy.get(tid_cancelButton).click();
-  const chooseDay = (day) => cy.get(tid(format(day))).click();
-
-  const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup--closed');
-  const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
-  const assertInputIsEmpty = () => cy.get(tid_dateInput).should('have.value', '');
-  const assertInputIs = (value) => cy.get(tid_dateInput).should('have.value', value);
-
-
   it('should render popup closed on start', () => {
     render('PopupDatePicker');
 
@@ -449,8 +444,35 @@ describe('PopupDatePicker', () => {
     render('PopupDatePicker');
 
     clickDateInput();
-    cy.get('body').click();
+    cy.get('body').click({force: true});
 
     assertPopupIsClosed();
+  });
+
+  it('should extract date from debug pane', () => {
+    render('PopupDatePicker', {...defaultProps, value: [ today ]});
+
+    cy.get(tid_debug_pane).should((element) => {
+      const date = new Date(getJSON(element));
+      expect(format(date)).to.eql(format(today));
+    });
+  });
+
+  it('should call onChange callback', () => {
+    render('PopupDatePicker', {...defaultProps, value: [ d_01 ]});
+
+    cy.get(tid_debug_pane).should((element) => {
+      const date = new Date(getJSON(element));
+      expect(format(date)).to.eql(format(d_01));
+    });
+
+    clickDateInput();
+    chooseDay(d_02);
+    ok();
+
+    cy.get(tid_debug_pane).should((element) => {
+      const date = new Date(getJSON(element));
+      expect(format(date)).to.eql(format(d_02));
+    });
   });
 });

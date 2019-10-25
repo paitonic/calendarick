@@ -8,13 +8,11 @@ import { decodeProps } from '../../../src/testUtils';
 const mapVariations = (fn) => Object.keys(Variations).map(fn);
 
 export const Index = () => {
-  const match = useRouteMatch();
-
   return (
     <ul>
       {
         mapVariations((variation) => {
-          return <li key={variation}><Link to={`${match.url}/${variation}`}>{variation}</Link></li>
+          return <li key={variation}><Link to={variation}>{variation}</Link></li>
         })
       }
     </ul>
@@ -34,6 +32,29 @@ export const WithURLProps = (Component) => {
   }
 };
 
+export const WithPropsDebug = (Component) => {
+  return (props) => {
+    return (
+      <>
+        <Component {...props}/>
+        <pre>{JSON.stringify(props, null, 3)}</pre>
+      </>
+    )
+  }
+};
+
+export const WithComponentSourceCode = (Component) => {
+  // TODO: experiment with replacing prop names in component source code with the actual props
+  return (props) => {
+    return (
+      <>
+        <Component {...props}/>
+        <pre>{Component.toString()}</pre>
+      </>
+    )
+  }
+};
+
 export const VariationPage = () => {
   const match = useRouteMatch();
 
@@ -46,7 +67,7 @@ export const VariationPage = () => {
 
         {
           mapVariations((variation) => {
-            const Variation = WithURLProps(Variations[variation]);
+            const Variation = WithURLProps(WithPropsDebug(WithComponentSourceCode(Variations[variation])));
 
             return (
               <Route path={`${match.path}/${variation}`} key={variation}>
