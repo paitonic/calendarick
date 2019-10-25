@@ -51,6 +51,7 @@ const d_02 = fromArray([today.getFullYear(), today.getMonth()+1, 2]);
 const d_03 = fromArray([today.getFullYear(), today.getMonth()+1, 3]);
 const d_04 = fromArray([today.getFullYear(), today.getMonth()+1, 4]);
 const d_05 = fromArray([today.getFullYear(), today.getMonth()+1, 5]);
+const d_2020_01_01 = fromArray([2020, 1, 1]);
 
 const tid_01 = tid(d_01);
 const tid_02 = tid(d_02);
@@ -69,6 +70,8 @@ const clickDateInput = () => cy.get(tid_dateInput).click({force: true});
 const ok = () => cy.get(tid_okButton).click();
 const cancel = () => cy.get(tid_cancelButton).click();
 const chooseDay = (day) => cy.get(tid(format(day))).click();
+const clickLeftArrow = () => cy.get(tid('button-left')).click();
+const clickRightArrow = () => cy.get(tid('button-right')).click();
 
 const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup--closed');
 const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
@@ -81,6 +84,10 @@ const assertDayIs = (expectation, value, ...days) => {
 };
 const assertDayIsChosen = (...days) => assertDayIs('have.class', 'day--is-selected', ...days);
 const assertDayIsNotChosen = (...days) => assertDayIs('not.have.class', 'day--is-selected', ...days);
+const assertDayIsDisabled = (...days) => assertDayIs('have.class', 'day--is-disabled', ...days);
+const assertMonthIs = (monthNumber) => cy.get(tid('month-' + monthNumber));
+const assertYearIs = (year) => cy.get(tid('year-' + year)).should('have.text', String(year));
+const assertDayDoesNotExist = (...days) => assertDayIs('not.exist', null, ...days);
 
 const getJSON = (element) => {
   try {
@@ -89,6 +96,8 @@ const getJSON = (element) => {
     return undefined;
   }
 };
+
+// TODO: make function that accepts a value and compares it to the value in the debug pane
 
 describe('StaticDatePicker', () => {
   let today, today_year, today_month, today_day, todayTestId;
@@ -126,102 +135,123 @@ describe('StaticDatePicker', () => {
     cy.get(todayTestId).click().should('have.class', 'day--is-selected');
   });
 
+  // TODO: this test fails because date picker always show current month
   it.skip('should show initially selected day', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
-    const test_id_2020_01_01 = tid(format(d_2020_01_01));
     render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
-    cy.get(test_id_2020_01_01).should('have.class', 'day--is-selected');
-    cy.get(tid('month-1')).should('have.text', 'January');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertDayIsChosen(d_2020_01_01);
+    assertMonthIs(1).should('have.text', 'January');
+    assertYearIs(2020);
   });
 
-  it.skip('should not select disabled day', () => {
+  it('should not select disabled day', () => {
     render('StaticDatePickerWithDisabledDays');
-    const d_2020_01_02 = fromArray([2020, 1, 2]);
-    const test_id_2020_01_02 = tid(d_2020_01_02);
 
-    cy.get(test_id_2020_01_02).should('not.have.class', 'day--is-selected');
-    cy.get(test_id_2020_01_02).should('have.class', 'day--is-disabled');
+    assertDayIsNotChosen(d_02);
+    assertDayIsDisabled(d_02);
 
-    cy.get(test_id_2020_01_02)
-      .click()
-      .should('not.have.class', 'day--is-selected');
+    chooseDay(d_02);
+    assertDayIsNotChosen(d_02);
+
+    cy.get(tid_debug_pane).should((element) => {
+      const value = toDate(getJSON(element));
+      expect(value.length !== 0).to.eq(true);
+
+      const [ date ] = value;
+      expect(format(date)).to.eql(format(d_01));
+    });
   });
 
+  // TODO: this test fails because date picker always show current month
   it.skip('should hide days outside of month', () => {
     render('StaticDatePicker', {
       ...defaultProps,
-      value: [ [fromArray([2020, 1, 1])] ],
+      value: [ fromArray([2020, 1, 1]) ],
       withOutsideDays: false
     });
 
-    const d_2019_12_31 = fromArray([2019, 12, 31]);
-    const tid_2019_12_31 = tid(d_2019_12_31);
+    assertYearIs(2020);
+    assertMonthIs(1);
 
-    cy.get(tid_2019_12_31).should('not.exist');
+    assertDayDoesNotExist(
+      fromArray([2019, 12, 31]),
+      fromArray([2019, 12, 30]),
+      fromArray([2019, 12, 29]),
+      fromArray([2020, 2, 1])
+    );
   });
 
   it.skip('should navigate month back when clicking on left arrow', () => {
-    render('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
-    cy.get(tid('month-1')).should('have.text', 'January');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(1);
+    assertYearIs(2020);
 
-    cy.get(tid('button-left')).click();
+    clickLeftArrow();
 
-    cy.get(tid('month-12')).should('have.text', 'December');
-    cy.get(tid('year-2019')).should('have.text', '2019');
+    assertMonthIs(12);
+    assertYearIs(2019);
   });
 
   it.skip('should navigate month forward when clicking on right arrow', () => {
-    render('StaticDatePicker', {...defaultProps, value: [ fromArray([2020, 1, 1]) ]});
+    render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
-    cy.get(tid('month-1')).should('have.text', 'January');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(1);
+    assertYearIs(2020);
 
-    cy.get(tid('button-right')).click();
+    clickRightArrow();
 
-    cy.get(tid('month-2')).should('have.text', 'February');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(2);
+    assertYearIs(2020);
   });
 
   it.skip('should navigate month back when clicking on right arrow (isRTL=true)', () => {
     render('StaticDatePicker', {
       ...defaultProps,
-      value: [ fromArray([2020, 1, 1]) ],
+      value: [ d_2020_01_01 ],
       calendar: {...defaultProps.calendar, isRTL: true,}
     });
 
-    cy.get(tid('month-1')).should('have.text', 'January');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(1);
+    assertYearIs(2020);
 
-    cy.get(tid('button-right')).click();
+    clickRightArrow();
 
-    cy.get(tid('month-12')).should('have.text', 'December');
-    cy.get(tid('year-2019')).should('have.text', '2019');
+    assertMonthIs(12);
+    assertYearIs(2019);
   });
 
   it.skip('should navigate month forward when clicking on left arrow (isRTL=true)', () => {
     render('StaticDatePicker', {
       ...defaultProps,
-      value: [fromArray([2020, 1, 1])],
+      value: [ d_2020_01_01 ],
       calendar: {...defaultProps.calendar, isRTL: true}
     });
 
-    cy.get(tid('month-1')).should('have.text', 'January');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(1);
+    assertYearIs(2020);
 
-    cy.get(tid('button-left')).click();
+    clickLeftArrow();
 
-    cy.get(tid('month-2')).should('have.text', 'February');
-    cy.get(tid('year-2020')).should('have.text', '2020');
+    assertMonthIs(2);
+    assertYearIs(2020);
   });
 
-  it.skip('should reverse order of week day names when isRTL=true (last day of week should be left-most)', () => {
+  it('should order of week day names properly (Saturday-last)', () => {
     render('StaticDatePicker', {
       ...defaultProps,
-      value: [fromArray([2020, 1, 1])],
+      value: [ d_01 ],
+      calendar: {...defaultProps.calendar, isRTL: false}
+    });
+
+    cy.get(tid('week-day-7')).should('have.text', 'Sat');
+  });
+
+  it('should reverse order of week day names when isRTL=true (last day of week should be left-most)', () => {
+    render('StaticDatePicker', {
+      ...defaultProps,
+      value: [ d_01 ],
       calendar: {...defaultProps.calendar, isRTL: true}
     });
 

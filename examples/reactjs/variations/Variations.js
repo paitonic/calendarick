@@ -3,6 +3,7 @@ import { Calendarik, DatePickerWithPopup } from '../DevelopmentPage';
 import { fromArray, isSame, nextDayOf } from '../../../src/calendar';
 
 const today = new Date();
+const d_01 = fromArray([today.getFullYear(), today.getMonth()+1, 1]);
 const d_02 = fromArray([today.getFullYear(), today.getMonth()+1, 2]);
 const d_03 = fromArray([today.getFullYear(), today.getMonth()+1, 3]);
 
@@ -32,13 +33,11 @@ export const StaticDatePickerWithValue = (props) =>
   <Calendarik {...{selectionMode: 'single', ...props}} value={props.value}/>;
 
 export const StaticDatePickerWithDisabledDays = (props) => {
-  const d_2020_01_01 = fromArray([2020, 1, 1]);
-  const d_2020_01_02 = fromArray([2020, 1, 2]);
-
-  const disableDays = (day) => isSame(day, d_2020_01_02);
+  const [date, setDate] = useStateDebug([ d_01 ]);
+  const disableDays = (day) => isSame(day, d_02);
 
   return (
-    <Calendarik {...{selectionMode: 'single', disableDays: disableDays, ...props}} value={[ d_2020_01_01 ]}/>
+    <Calendarik {...{selectionMode: 'single', disableDays: disableDays, ...props}} value={date}/>
   )
 };
 
