@@ -176,6 +176,16 @@ function Calendar(props) {
     }
   }, [value]);
 
+  const getStartDate = (value) => {
+    if (!value || value.length === 0) {
+      return new Date();
+    }
+
+    const [obj] = value;
+
+    return Array.isArray(obj) ? obj[0] : obj;
+  };
+
   function reducer(state, action) {
     function reduce(state, action) {
       console.log(action);
@@ -245,7 +255,10 @@ function Calendar(props) {
 
   const [state, dispatch] = useReducer(reducer, {...initialState, value: value || initialState.value});
 
-  const [date, setDate] = useState({month: state.date.getMonth()+1, year: state.date.getFullYear()});
+  const [date, setDate] = useState({
+    month: getStartDate(state.value).getMonth()+1,
+    year: getStartDate(state.value).getFullYear(),
+  });
 
   // TODO: replace with () => dispatch({type: ACTION_CLICK_RIGHT_ARROW})
   function goNextMonth() {

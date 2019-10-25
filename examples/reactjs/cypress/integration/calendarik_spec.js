@@ -135,8 +135,7 @@ describe('StaticDatePicker', () => {
     cy.get(todayTestId).click().should('have.class', 'day--is-selected');
   });
 
-  // TODO: this test fails because date picker always show current month
-  it.skip('should show initially selected day', () => {
+  it('should show initially selected day', () => {
     const d_2020_01_01 = fromArray([2020, 1, 1]);
     render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
@@ -163,12 +162,14 @@ describe('StaticDatePicker', () => {
     });
   });
 
-  // TODO: this test fails because date picker always show current month
+  // TODO: this test fails because of withOutsideDays
   it.skip('should hide days outside of month', () => {
     render('StaticDatePicker', {
       ...defaultProps,
       value: [ fromArray([2020, 1, 1]) ],
-      withOutsideDays: false
+      calendar: {
+        withOutsideDays: false // TODO: causes bug
+      }
     });
 
     assertYearIs(2020);
