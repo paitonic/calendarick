@@ -22,3 +22,11 @@ export const decodeProps = (str) => {
   const decoded = decodeURIComponent(str);
   return JSON.parse(decoded, reviver);
 };
+
+export const toDate = (strDate) => {
+  if (typeof strDate === 'string') {
+    return new Date(strDate);
+  } if (Array.isArray(strDate)) {
+    return strDate.map(toDate);
+  }
+};

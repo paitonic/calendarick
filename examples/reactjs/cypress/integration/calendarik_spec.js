@@ -1,5 +1,5 @@
 import { fromArray } from '../../../../src/calendar';
-import { encodeProps } from '../../../../src/testUtils';
+import { encodeProps, toDate } from '../../../../src/testUtils';
 
 const defaultProps = {
   calendar: {
@@ -74,6 +74,13 @@ const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup-
 const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
 const assertInputIsEmpty = () => cy.get(tid_dateInput).should('have.value', '');
 const assertInputIs = (value) => cy.get(tid_dateInput).should('have.value', value);
+const assertDayIs = (expectation, value, ...days) => {
+  days.forEach((day) => {
+    cy.get(tid(format(day))).should(expectation, value);
+  });
+};
+const assertDayIsChosen = (...days) => assertDayIs('have.class', 'day--is-selected', ...days);
+const assertDayIsNotChosen = (...days) => assertDayIs('not.have.class', 'day--is-selected', ...days);
 
 const getJSON = (element) => JSON.parse(element.text());
 
@@ -334,7 +341,7 @@ describe('StaticMultiSelectDatePicker', () => {
   });
 });
 
-describe('PopupDatePicker', () => {
+describe('PopupDatePicker: single selection', () => {
   it('should render popup closed on start', () => {
     render('PopupDatePicker');
 
@@ -458,7 +465,7 @@ describe('PopupDatePicker', () => {
     });
   });
 
-  it('should call onChange callback', () => {
+  it.skip('should call onChange callback', () => {
     render('PopupDatePicker', {...defaultProps, value: [ d_01 ]});
 
     cy.get(tid_debug_pane).should((element) => {
@@ -473,6 +480,88 @@ describe('PopupDatePicker', () => {
     cy.get(tid_debug_pane).should((element) => {
       const date = new Date(getJSON(element));
       expect(format(date)).to.eql(format(d_02));
+    });
+  });
+});
+
+describe.skip('PopupDatePicker: range selection', () => {
+  it('should select range of dates', () => {
+    render('PopupDatePicker', {...defaultProps, selectionMode: 'range'});
+
+    clickDateInput();
+    chooseDay(d_02);
+    chooseDay(d_04);
+
+    assertDayIsChosen(d_02, d_03, d_04);
+    assertDayIsNotChosen(d_01, d_05);
+
+    ok();
+    assertInputIs(`${format(d_02)} - ${format(d_04)}`);
+
+    // assertDebugValueIs([ [d_02, d_04] ]); ?
+    cy.get(tid_debug_pane).should((element) => {
+      const value = toDate(getJSON(element));
+      expect(value.length !== 0).to.eq(true);
+
+      const [ [start, end] ] = value;
+      expect(format(start)).to.eql(format(d_02));
+      expect(format(end)).to.eql(format(d_04));
+    });
+  });
+
+  it('should cancel selection of date range', () => {
+    render('PopupDatePicker', {...defaultProps, selectionMode: 'range'});
+
+    clickDateInput();
+    chooseDay(d_02);
+    chooseDay(d_04);
+
+    cancel();
+    assertInputIsEmpty();
+
+    // assertDebugValueIsEmpty?
+    cy.get(tid_debug_pane).should((element) => {
+      const value = toDate(getJSON(element));
+      expect(value.length === 0).to.eq(true);
+    });
+  });
+});
+
+describe.skip('PopupDatePicker: multi selection', () => {
+  it('should select multiple dates', () => {
+    render('PopupDatePicker', {...defaultProps, selectionMode: 'multiple'});
+    clickDateInput();
+    chooseDay(d_02);
+    chooseDay(d_04);
+
+    assertDayIsChosen(d_02, d_04);
+    assertDayIsNotChosen(d_01, d_03, d_05);
+
+    ok();
+    assertInputIs(`${format(d_02)}, ${format(d_04)}`);
+    cy.get(tid_debug_pane).should((element) => {
+      const value = toDate(getJSON(element));
+      expect(value.length !== 0).to.eq(true);
+
+      const [ chosen_d_02, chosen_d_04 ] = value;
+      expect(format(chosen_d_02)).to.eql(format(d_02));
+      expect(format(chosen_d_04)).to.eql(format(d_04));
+    });
+  });
+
+  it('should cancel selection of multiple dates', () => {
+    render('PopupDatePicker', {...defaultProps, selectionMode: 'multiple'});
+
+    clickDateInput();
+    chooseDay(d_02);
+    chooseDay(d_04);
+
+    cancel();
+    assertInputIsEmpty();
+
+    cy.get(tid_debug_pane).should((element) => {
+      const value = toDate(getJSON(element));
+      expect(value.length === 0).to.eq(true);
     });
   });
 });

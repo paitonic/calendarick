@@ -66,11 +66,10 @@ export const PopupDatePicker = (props) => {
   const [date, setDate] = useStateDebug(props.value);
 
   return (
-    <DatePickerWithPopup {...{selectionMode: 'single', onChange: (newDate) => setDate(newDate), ...props}}/>
+    <DatePickerWithPopup {...{onChange: (newDate) => setDate(newDate), ...props}}/>
   )
 };
 
-export const PopupDateRangePicker = (props) => {};
 
 export const PopupMultiSelectPicker = (props) => {};
 
