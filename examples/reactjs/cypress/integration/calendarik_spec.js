@@ -501,7 +501,7 @@ describe('PopupDatePicker: single selection', () => {
     });
   });
 
-  it.skip('should call onChange callback', () => {
+  it('should call onChange callback', () => {
     render('PopupDatePicker', {...defaultProps, value: [ d_01 ]});
 
     cy.get(tid_debug_pane).should((element) => {
