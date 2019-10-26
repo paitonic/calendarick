@@ -370,13 +370,6 @@ function useClickAway(targetRef, onClickAway = () => {}) {
   return [isShown, setIsShown]
 }
 
-
-function DateInput(props) {
-  return (
-    <input type="text" className="date-input"/>
-  )
-}
-
 function Popup(props) {
   const popupRef = useRef(null);
   const [isShown, setIsShown] = useClickAway(popupRef, props.onClickAway);
@@ -405,7 +398,7 @@ function Popup(props) {
 // TODO: write useDraftValue hook that handles the draft
 // TODO: Idea for hook that reverts last action or series of actions? (undo)
 export function DatePickerWithPopup(props) {
-  const [isShown, setIsShown] = useState(false);
+  const [isPopupShown, setIsPopupShown] = useState(false);
   const [date, setDate] = useState(props.value);
   const [draftDate, setDraftDate] = useState(clone(props.value));
   const {isAutoClosed, ...calendarProps} = props;
@@ -426,7 +419,7 @@ export function DatePickerWithPopup(props) {
           setDraftDate(nextState.value);
 
           if (isAutoClosed) {
-            setIsShown(false);
+            setIsPopupShown(false);
             setDate(nextState.value);
             props.onChange(nextState.value);
           }
@@ -437,7 +430,7 @@ export function DatePickerWithPopup(props) {
             setDraftDate(nextState.value);
 
             if (isAutoClosed) {
-              setIsShown(false);
+              setIsPopupShown(false);
               setDate(nextState.value);
               props.onChange(nextState.value);
             }
@@ -457,21 +450,6 @@ export function DatePickerWithPopup(props) {
     }
   };
 
-  function representDate(date) {
-    // handle single date, multiple dates and range
-    if (!date || date && date.length === 0) {
-      return '';
-    } else if (date instanceof Date) {
-      return format(date);
-    } else if (date.length && date[0].length === 2) {
-      // range
-      return date[0].map(format).join(' - ');
-    } else if (date.length) {
-      // multiple
-      return date.map(format).join(', ');
-    }
-  }
-
   function handleChange(newDate) {
     setDraftDate(newDate);
   }
@@ -480,12 +458,12 @@ export function DatePickerWithPopup(props) {
     const newDate = clone(draftDate);
     setDate(newDate);
     props.onChange(newDate);
-    setIsShown(false);
+    setIsPopupShown(false);
   }
 
   function cancel() {
     revertChanges();
-    setIsShown(false);
+    setIsPopupShown(false);
   }
 
   function isFooterShown() {
@@ -494,9 +472,9 @@ export function DatePickerWithPopup(props) {
 
   return (
     <>
-      <input onClick={() => setIsShown(true)} value={representDate(draftDate)} readOnly={true} data-test-id="popup__date-input"/>
+      {props.children({setIsPopupShown: setIsPopupShown, date, draftDate})}
 
-      <Popup isShown={isShown} onChange={(change) => setIsShown(change)} onClickAway={revertChanges}>
+      <Popup isShown={isPopupShown} onChange={(change) => setIsPopupShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
                      stateReducer={calendarStateReducer}
                      onChange={(newDate) => handleChange(newDate)}
@@ -514,8 +492,76 @@ export function DatePickerWithPopup(props) {
 }
 
 DatePickerWithPopup.propTypes = {
+  /* trigger element (a button, link, input etc) to open the popup */
+  children: PropTypes.func.isRequired,
+
   onChange: PropTypes.func.isRequired,
 };
+
+
+function representDate(date) {
+    // handle single date, multiple dates and range
+    if (!date || date && date.length === 0) {
+      return '';
+    } else if (date instanceof Date) {
+      return format(date);
+    } else if (date.length && date[0].length === 2) {
+      // range
+      return date[0].map(format).join(' - ');
+    } else if (date.length) {
+      // multiple
+      return date.map(format).join(', ');
+    }
+  }
+
+function ReadOnlyDateInput({setIsPopupShown, draftDate}) {
+  return (
+    <input onClick={() => setIsPopupShown(true)}
+           value={representDate(draftDate)}
+           readOnly={true}
+           data-test-id="popup__date-input"/>
+  )
+}
+
+ReadOnlyDateInput.propTypes = {
+  setIsPopupShown: PropTypes.func.isRequired,
+  draftDate: PropTypes.array,
+};
+
+
+// TODO:
+// function DateInput({draftDate}) {
+//   return (
+//         <input value={representDate(draftDate)}
+//            data-test-id="popup__date-input"/>
+//   )
+// }
+
+
+export function DatePicker(props) {
+  return (
+    <DatePickerWithPopup {...{...props, selectionMode: 'single'}}>
+      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
+    </DatePickerWithPopup>
+  )
+}
+
+export function DateRangePicker(props) {
+  return (
+    <DatePickerWithPopup {...{...props, selectionMode: 'range'}}>
+      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
+    </DatePickerWithPopup>
+  )
+}
+
+export function DateMultiPicker(props) {
+  return (
+    <DatePickerWithPopup {...{...props, selectionMode: 'multiple'}}>
+      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
+    </DatePickerWithPopup>
+  )
+}
+
 
 export function DevelopmentPage(props) {
   const today = new Date();

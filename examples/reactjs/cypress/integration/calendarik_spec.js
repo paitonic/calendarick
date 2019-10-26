@@ -377,28 +377,28 @@ describe('StaticMultiSelectDatePicker', () => {
   });
 });
 
-describe('PopupDatePicker: single selection', () => {
+describe('DatePicker', () => {
   it('should render popup closed on start', () => {
-    render('PopupDatePicker');
+    render('DatePicker');
 
     assertPopupIsClosed();
   });
 
   it('should render input empty on start', () => {
-    render('PopupDatePicker');
+    render('DatePicker');
 
     assertInputIsEmpty();
   });
 
   it('should open popup', () => {
-    render('PopupDatePicker');
+    render('DatePicker');
 
     clickDateInput();
     assertPopupIsOpen();
   });
 
   it('should close popup when clicking on cancel button', () => {
-    render('PopupDatePicker');
+    render('DatePicker');
 
     clickDateInput();
     assertPopupIsOpen();
@@ -407,7 +407,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should select date, close popup and show the date in the input field', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: true});
+    render('DatePicker', {...defaultProps, isAutoClosed: true});
 
     clickDateInput();
     chooseDay(d_01);
@@ -417,7 +417,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should select date and save changes when OK is clicked', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+    render('DatePicker', {...defaultProps, isAutoClosed: false});
 
     clickDateInput();
     chooseDay(d_01);
@@ -429,7 +429,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should overwrite previous date', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+    render('DatePicker', {...defaultProps, isAutoClosed: false});
 
     clickDateInput();
     chooseDay(d_01);
@@ -444,7 +444,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should cancel selection', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+    render('DatePicker', {...defaultProps, isAutoClosed: false});
 
     clickDateInput();
     chooseDay(d_01);
@@ -455,7 +455,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should revert to previous date on cancel', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+    render('DatePicker', {...defaultProps, isAutoClosed: false});
 
     clickDateInput();
     chooseDay(d_01);
@@ -470,21 +470,21 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should render footer', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: false});
+    render('DatePicker', {...defaultProps, isAutoClosed: false});
 
     clickDateInput();
     cy.get(tid_footer);
   });
 
   it('should hide footer', () => {
-    render('PopupDatePicker', {...defaultProps, isAutoClosed: true});
+    render('DatePicker', {...defaultProps, isAutoClosed: true});
 
     clickDateInput();
     cy.get(tid_footer).should('not.exist');
   });
 
   it('should exit popup on click away', () => {
-    render('PopupDatePicker');
+    render('DatePicker');
 
     clickDateInput();
     cy.get('body').click({force: true});
@@ -493,7 +493,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should extract date from debug pane', () => {
-    render('PopupDatePicker', {...defaultProps, value: [ today ]});
+    render('DatePicker', {...defaultProps, value: [ today ]});
 
     cy.get(tid_debug_pane).should((element) => {
       const date = new Date(getJSON(element));
@@ -502,7 +502,7 @@ describe('PopupDatePicker: single selection', () => {
   });
 
   it('should call onChange callback', () => {
-    render('PopupDatePicker', {...defaultProps, value: [ d_01 ]});
+    render('DatePicker', {...defaultProps, value: [ d_01 ]});
 
     cy.get(tid_debug_pane).should((element) => {
       const date = new Date(getJSON(element));
@@ -520,9 +520,9 @@ describe('PopupDatePicker: single selection', () => {
   });
 });
 
-describe('PopupDatePicker: range selection', () => {
+describe('DateRangePicker:', () => {
   it('should select range of dates', () => {
-    render('PopupDatePicker', {...defaultProps, selectionMode: 'range'});
+    render('DateRangePicker', {...defaultProps, selectionMode: 'range'});
 
     clickDateInput();
     chooseDay(d_02);
@@ -546,7 +546,7 @@ describe('PopupDatePicker: range selection', () => {
   });
 
   it('should cancel selection of date range', () => {
-    render('PopupDatePicker', {...defaultProps, selectionMode: 'range'});
+    render('DateRangePicker', {...defaultProps, selectionMode: 'range'});
 
     clickDateInput();
     chooseDay(d_02);
@@ -563,9 +563,9 @@ describe('PopupDatePicker: range selection', () => {
   });
 });
 
-describe('PopupDatePicker: multi selection', () => {
+describe('DateMultiPicker', () => {
   it('should select multiple dates', () => {
-    render('PopupDatePicker', {...defaultProps, selectionMode: 'multiple'});
+    render('DateMultiPicker', {...defaultProps, selectionMode: 'multiple'});
     clickDateInput();
     chooseDay(d_02);
     chooseDay(d_04);
@@ -586,7 +586,7 @@ describe('PopupDatePicker: multi selection', () => {
   });
 
   it('should cancel selection of multiple dates', () => {
-    render('PopupDatePicker', {...defaultProps, selectionMode: 'multiple'});
+    render('DateMultiPicker', {...defaultProps, selectionMode: 'multiple'});
 
     clickDateInput();
     chooseDay(d_02);
