@@ -182,7 +182,7 @@ describe('StaticDatePicker', () => {
     );
   });
 
-  it.skip('should navigate month back when clicking on left arrow', () => {
+  it('should navigate month back when clicking on left arrow', () => {
     render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
     assertMonthIs(1);
@@ -194,7 +194,7 @@ describe('StaticDatePicker', () => {
     assertYearIs(2019);
   });
 
-  it.skip('should navigate month forward when clicking on right arrow', () => {
+  it('should navigate month forward when clicking on right arrow', () => {
     render('StaticDatePicker', {...defaultProps, value: [ d_2020_01_01 ]});
 
     assertMonthIs(1);
@@ -206,7 +206,7 @@ describe('StaticDatePicker', () => {
     assertYearIs(2020);
   });
 
-  it.skip('should navigate month back when clicking on right arrow (isRTL=true)', () => {
+  it('should navigate month back when clicking on right arrow (isRTL=true)', () => {
     render('StaticDatePicker', {
       ...defaultProps,
       value: [ d_2020_01_01 ],
@@ -222,7 +222,7 @@ describe('StaticDatePicker', () => {
     assertYearIs(2019);
   });
 
-  it.skip('should navigate month forward when clicking on left arrow (isRTL=true)', () => {
+  it('should navigate month forward when clicking on left arrow (isRTL=true)', () => {
     render('StaticDatePicker', {
       ...defaultProps,
       value: [ d_2020_01_01 ],

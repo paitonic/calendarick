@@ -120,6 +120,13 @@ function Header(props) {
   )
 }
 
+Header.propTypes = {
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+  onBackClick: PropTypes.func.isRequired,
+  onNextClick: PropTypes.func.isRequired,
+};
+
 /*
 Possible actions
 - CLICK_DAY
@@ -133,8 +140,8 @@ Possible actions
 */
 
 const ACTION_CLICK_DAY = 'CLICK_DAY';
-const ACTION_CLICK_LEFT_ARROW = 'CLICK_LEFT_ARROW';
-const ACTION_CLICK_RIGHT_ARROW = 'CLICK_RIGHT_ARROW';
+const ACTION_CLICK_PREV_MONTH = 'ACTION_CLICK_PREV_MONTH';
+const ACTION_CLICK_NEXT_MONTH = 'ACTION_CLICK_NEXT_MONTH';
 const CHANGE_VALUE = 'CHANGE_VALUE';
 
 const initialState = {
@@ -153,6 +160,7 @@ const initialState = {
    * value: [ <Date>, [<Date>, <Date>], <Date> ]
    */
   value: [],
+  view: {year: null, month: null},
 };
 
 const StateContext = React.createContext(initialState);
@@ -171,7 +179,7 @@ function useWatchChanges(fn, dependencies) {
 
 function Calendar(props) {
   const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
-  const {disableDays, value} = useContext(PreferencesContext);
+  const {disableDays, value, calendar} = useContext(PreferencesContext);
 
   useEffect(() => {
     // TODO: investigate. when using DatePickerWithPopup, CHANGE_VALUE is dispatched even though dates are equal
@@ -232,11 +240,15 @@ function Calendar(props) {
         case ACTION_CLICK_DAY:
           return handleClickDay();
 
-        case ACTION_CLICK_LEFT_ARROW:
-          return state;
+        case ACTION_CLICK_PREV_MONTH: {
+          const [year, month] = (calendar.isRTL ? getNextMonth : getPreviousMonth)(state.view.year, state.view.month);
+          return {...state, view: {year, month}};
+        }
 
-        case ACTION_CLICK_RIGHT_ARROW:
-          return state;
+        case ACTION_CLICK_NEXT_MONTH: {
+          const [year, month] = (calendar.isRTL ? getPreviousMonth : getNextMonth)(state.view.year, state.view.month);
+          return {...state, view: {year, month}};
+        }
 
         case CHANGE_VALUE:
           return {...state, value: action.value};
@@ -257,23 +269,19 @@ function Calendar(props) {
     return finalState;
   }
 
-  const [state, dispatch] = useReducer(reducer, {...initialState, value: value || initialState.value});
-
-  const [date, setDate] = useState({
-    month: getStartDate(state.value).getMonth()+1,
-    year: getStartDate(state.value).getFullYear(),
+  const initialValue = value || initialState.value;
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    value: initialValue,
+    view: {year: getStartDate(initialValue).getFullYear(), month: getStartDate(initialValue).getMonth()+1}
   });
 
-  // TODO: replace with () => dispatch({type: ACTION_CLICK_RIGHT_ARROW})
   function goNextMonth() {
-    const [year, month] = getNextMonth(date.year, date.month);
-    setDate({year, month});
+    dispatch({type: ACTION_CLICK_NEXT_MONTH});
   }
 
-  // TODO: replace with () => dispatch({type: ACTION_CLICK_LEFT_ARROW})
   function goPreviousMonth() {
-    const [year, month] = getPreviousMonth(date.year, date.month);
-    setDate({year, month});
+    dispatch({type: ACTION_CLICK_PREV_MONTH})
   }
 
   useWatchChanges(() => {
@@ -283,11 +291,11 @@ function Calendar(props) {
   return (
     <>
       <StateContext.Provider value={{state, dispatch}}>
-        <Header year={date.year}
-                month={date.month}
-                onBackClick={goNextMonth}
-                onNextClick={goPreviousMonth}/>
-        <Month year={date.year} month={date.month}/>
+        <Header year={state.view.year}
+                month={state.view.month}
+                onBackClick={goPreviousMonth}
+                onNextClick={goNextMonth}/>
+        <Month year={state.view.year} month={state.view.month}/>
       </StateContext.Provider>
     </>
   );
