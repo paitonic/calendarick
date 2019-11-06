@@ -39,6 +39,8 @@ function format(date) {
   return `${year}-${month}-${day}`;
 }
 
+const toPlainObject = (date) => ({year: date.getFullYear(), month: date.getMonth()+1, day: date.getDate()});
+
 const tid = (testId) => {
   const str = testId instanceof Date ? format(testId) : testId;
   return `[data-test-id="${str}"]`;
@@ -46,6 +48,7 @@ const tid = (testId) => {
 
 const today = new Date();
 
+const tid_today = tid(today);
 const d_01 = fromArray([today.getFullYear(), today.getMonth()+1, 1]);
 const d_02 = fromArray([today.getFullYear(), today.getMonth()+1, 2]);
 const d_03 = fromArray([today.getFullYear(), today.getMonth()+1, 3]);
@@ -85,7 +88,7 @@ const assertDayIs = (expectation, value, ...days) => {
 const assertDayIsChosen = (...days) => assertDayIs('have.class', 'day--is-selected', ...days);
 const assertDayIsNotChosen = (...days) => assertDayIs('not.have.class', 'day--is-selected', ...days);
 const assertDayIsDisabled = (...days) => assertDayIs('have.class', 'day--is-disabled', ...days);
-const assertMonthIs = (monthNumber) => cy.get(tid('month-' + monthNumber));
+const assertMonthIs = (monthNumber) => cy.get(tid('month-' + String(monthNumber).padStart(2, '0')));
 const assertYearIs = (year) => cy.get(tid('year-' + year)).should('have.text', String(year));
 const assertDayDoesNotExist = (...days) => assertDayIs('not.exist', null, ...days);
 
@@ -100,27 +103,21 @@ const getJSON = (element) => {
 // TODO: make function that accepts a value and compares it to the value in the debug pane
 
 describe('StaticDatePicker', () => {
-  let today, today_year, today_month, today_day, todayTestId;
-
-  beforeEach(() => {
-    today = new Date();
-    [today_year, today_month, today_day] = [today.getFullYear(), today.getMonth()+1, today.getDate()];
-    todayTestId = tid(`${today_year}-${today_month}-${today_day}`);
-  });
+  const {year: today_year, month: today_month} = toPlainObject(today);
 
   it('should display current month and year by default', () => {
     render('StaticDatePicker', defaultProps);
     const monthName = today.toLocaleString(defaultProps.calendar.locale, {month: 'long'});
-    cy.get(tid('month-' + today_month)).should('have.text', monthName);
+    cy.get(tid('month-' + String(today_month).padStart(2, '0'))).should('have.text', monthName);
     cy.get(tid('year-' + today_year)).should('have.text', String(today_year));
   });
 
   it('should change the style of the day when mouse is over', () => {
     render('StaticDatePicker', defaultProps);
     // transparent
-    cy.get(todayTestId).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(tid_today).should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 
-    cy.get(todayTestId).trigger('mouseenter').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+    cy.get(tid_today).trigger('mouseenter').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
   });
 
   it('should no be selected days', () => {
@@ -130,9 +127,9 @@ describe('StaticDatePicker', () => {
 
   it('should select date', () => {
     render('StaticDatePicker', defaultProps);
-    cy.get(todayTestId);
-    cy.get(todayTestId).should('not.have.class', 'day--is-selected');
-    cy.get(todayTestId).click().should('have.class', 'day--is-selected');
+    cy.get(tid_today);
+    cy.get(tid_today).should('not.have.class', 'day--is-selected');
+    cy.get(tid_today).click().should('have.class', 'day--is-selected');
   });
 
   it('should show initially selected day', () => {

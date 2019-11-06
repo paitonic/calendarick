@@ -113,7 +113,7 @@ function Header(props) {
     <div className="header">
       <span className="header__button-back" onClick={props.onBackClick} data-test-id="button-left">‹</span>
       <span className="header__date">
-        <span data-test-id={`month-${order}`}>{month}</span> <span data-test-id={`year-${props.year}`}>{props.year}</span>
+        <span data-test-id={`month-${String(order).padStart(2, '0')}`}>{month}</span> <span data-test-id={`year-${props.year}`}>{props.year}</span>
       </span>
       <span className="header__button-next" onClick={props.onNextClick} data-test-id="button-right">›</span>
     </div>
