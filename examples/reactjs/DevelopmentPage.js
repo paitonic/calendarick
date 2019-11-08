@@ -601,13 +601,7 @@ export function DevelopmentPage(props) {
                 stateReducer={stateReducer}
                 selectionMode="range"
                 disableDays={shouldDayBeDisabled}
-    />
-
-
-    <DatePickerWithPopup selectionMode="single"
-                         isAutoClosed={true}
-                         value={date}
-                         onChange={handleChange}
+                value={[new Date(2019, 0, 1)]}
     />
 
       {/*<DateInput/>*/}
