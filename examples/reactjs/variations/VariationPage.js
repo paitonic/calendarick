@@ -7,12 +7,14 @@ import { decodeProps } from '../../../src/testUtils';
 
 const mapVariations = (fn) => Object.keys(Variations).map(fn);
 
-export const Index = () => {
+export const VariationList = () => {
+  const match = useRouteMatch();
+
   return (
     <ul>
       {
         mapVariations((variation) => {
-          return <li key={variation}><Link to={variation}>{variation}</Link></li>
+          return <li key={variation}><Link to={`${match.path}/${variation}`}>{variation}</Link></li>
         })
       }
     </ul>
