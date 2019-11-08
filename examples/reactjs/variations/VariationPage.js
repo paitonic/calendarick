@@ -21,7 +21,7 @@ export const VariationList = () => {
   )
 };
 
-export const WithURLProps = (Component) => {
+export const withURLProps = (Component) => {
   const queryProps = new URLSearchParams(location.search).get('props');
   let urlProps = {};
   if (queryProps) {
@@ -34,7 +34,7 @@ export const WithURLProps = (Component) => {
   }
 };
 
-export const WithPropsDebug = (Component) => {
+export const withPropsDebug = (Component) => {
   return (props) => {
     return (
       <>
@@ -45,7 +45,7 @@ export const WithPropsDebug = (Component) => {
   }
 };
 
-export const WithComponentSourceCode = (Component) => {
+export const withComponentSourceCode = (Component) => {
   // TODO: experiment with replacing prop names in component source code with the actual props
   return (props) => {
     return (
@@ -64,13 +64,12 @@ export const VariationPage = () => {
     <div>
       <Switch>
         <Route path={`${match.path}`} exact={true}>
-          <Index/>
+          <VariationList/>
         </Route>
 
         {
           mapVariations((variation) => {
-            const Variation = WithURLProps(WithPropsDebug(WithComponentSourceCode(Variations[variation])));
-
+            const Variation = withURLProps(withPropsDebug(withComponentSourceCode(Variations[variation])));
             return (
               <Route path={`${match.path}/${variation}`} key={variation}>
                 <Variation/>
