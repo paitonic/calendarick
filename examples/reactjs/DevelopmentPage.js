@@ -537,28 +537,53 @@ ReadOnlyDateInput.propTypes = {
 //   )
 // }
 
+// TODO: write a function that handles masked input.
+//       the module should accept previous string, current string and a pattern (yyyy/mm/dd), it should return:
+//        - new string after transformation (if needed).
+//          -- mask('', '2', 'yyyy/mm/dd') -> {value: '2 _ _ _ / _ _ / _ _', caretIndex: 1}
+//        - cursor position index - so that users of that function can set cursor to correct position
+
+// TODO: implement MaskedInput component that uses the above mask function
+// function MaskedInput() {}
+
+// TODO: This needs more work.
+//        Splitting components like that (single, range, multiple) might not be a good idea especially
+//        when there might be another variations (e.g static, that does not use popup)
+//
+function BaseDatePickerWithPopup(props) {
+    let {customInputComponent: CustomInputComponent, ...datePickerProps} = props;
+
+  return (
+    <DatePickerWithPopup {...datePickerProps}>
+      {(datePickerWithPopupProps) => <CustomInputComponent {...datePickerWithPopupProps}/>}
+    </DatePickerWithPopup>
+  )
+}
+
+BaseDatePickerWithPopup.propTypes = {
+  customInputComponent: PropTypes.node.isRequired,
+};
+
+BaseDatePickerWithPopup.defaultProps = {
+  customInputComponent: ReadOnlyDateInput,
+};
+
 
 export function DatePicker(props) {
   return (
-    <DatePickerWithPopup {...{...props, selectionMode: 'single'}}>
-      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
-    </DatePickerWithPopup>
+    <BaseDatePickerWithPopup {...{...props, selectionMode: 'single'}}/>
   )
 }
 
 export function DateRangePicker(props) {
   return (
-    <DatePickerWithPopup {...{...props, selectionMode: 'range'}}>
-      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
-    </DatePickerWithPopup>
+    <BaseDatePickerWithPopup {...{...props, selectionMode: 'range'}}/>
   )
 }
 
 export function DateMultiPicker(props) {
   return (
-    <DatePickerWithPopup {...{...props, selectionMode: 'multiple'}}>
-      {(pickerProps) => <ReadOnlyDateInput {...pickerProps}/>}
-    </DatePickerWithPopup>
+    <BaseDatePickerWithPopup {...{...props, selectionMode: 'multiple'}}/>
   )
 }
 
