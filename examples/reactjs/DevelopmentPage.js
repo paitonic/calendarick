@@ -550,6 +550,39 @@ ReadOnlyDateInput.propTypes = {
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
 //        when there might be another variations (e.g static, that does not use popup)
 //
+function DateInput(props) {
+  const [displayValue, setDisplayValue] = useState('');
+  const [date, setDate] = useState(null);
+
+  const toDate = (input) => {
+    const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const match = input.match(regexp);
+    if (!match) {
+      return null;
+    }
+
+    const [_, year, month, day] = match;
+    return new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0);
+  };
+
+  const handleChange = (event) => {
+    const parse = props.dateParserFn ? props.dateParserFn : toDate;
+    const date = parse(event.target.value);
+
+    setDisplayValue(event.target.value);
+    setDate(date);
+  };
+
+  return (
+    <input value={displayValue} onChange={handleChange} data-test-id="date-input"/>
+  )
+}
+
+DateInput.propTypes = {
+  dateParserFn: PropTypes.func,
+};
+
+
 function BaseDatePickerWithPopup(props) {
     let {customInputComponent: CustomInputComponent, ...datePickerProps} = props;
 
@@ -629,7 +662,7 @@ export function DevelopmentPage(props) {
                 value={[new Date(2019, 0, 1)]}
     />
 
-      {/*<DateInput/>*/}
+      <DateInput/>
     </>
   );
 }
