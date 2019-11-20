@@ -408,6 +408,10 @@ export function DatePickerWithPopup(props) {
     setDraftDate(props.value);
   }, [props.value]);
 
+  useEffect(() => {
+    setDraftDate(clone(date));
+  }, [date]);
+
   function revertChanges() {
     setDraftDate(clone(date));
   }
@@ -472,7 +476,7 @@ export function DatePickerWithPopup(props) {
 
   return (
     <>
-      {props.children({setIsPopupShown: setIsPopupShown, date, draftDate})}
+      {props.children({setIsPopupShown: setIsPopupShown, date, setDate, draftDate})}
 
       <Popup isShown={isPopupShown} onChange={(change) => setIsPopupShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
@@ -550,11 +554,22 @@ ReadOnlyDateInput.propTypes = {
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
 //        when there might be another variations (e.g static, that does not use popup)
 //
-function DateInput(props) {
+function DateInput({setIsPopupShown, date, setDate, dateParserFn}) {
   const [displayValue, setDisplayValue] = useState('');
-  const [date, setDate] = useState(null);
 
-  const toDate = (input) => {
+  useEffect(() => {
+    const parse = dateParserFn ? dateParserFn : toDate;
+    const parsedDate = parse(displayValue);
+    if (parsedDate) {
+      setDate([parsedDate]);
+    }
+  }, [displayValue]);
+
+  useEffect(() => {
+    setDisplayValue(representDate(date));
+  }, [date]);
+
+  function toDate(input) {
     const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2})$/);
     const match = input.match(regexp);
     if (!match) {
@@ -563,42 +578,45 @@ function DateInput(props) {
 
     const [_, year, month, day] = match;
     return new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0);
-  };
+  }
 
-  const handleChange = (event) => {
-    const parse = props.dateParserFn ? props.dateParserFn : toDate;
-    const date = parse(event.target.value);
-
+  function handleChange(event) {
     setDisplayValue(event.target.value);
-    setDate(date);
-  };
+  }
 
   return (
-    <input value={displayValue} onChange={handleChange} data-test-id="date-input"/>
+    <>
+      <input value={displayValue} onChange={handleChange}/>
+      <span onClick={() => setIsPopupShown(true)}>open</span>
+    </>
   )
 }
 
 DateInput.propTypes = {
   dateParserFn: PropTypes.func,
+  testId: PropTypes.string,
 };
 
+DateInput.defaultProps = {
+  testId: 'date-input'
+};
 
 function BaseDatePickerWithPopup(props) {
-    let {customInputComponent: CustomInputComponent, ...datePickerProps} = props;
+    let {inputComponent: InputComponent, ...datePickerProps} = props;
 
   return (
     <DatePickerWithPopup {...datePickerProps}>
-      {(datePickerWithPopupProps) => <CustomInputComponent {...datePickerWithPopupProps}/>}
+      {(datePickerWithPopupProps) => <InputComponent {...datePickerWithPopupProps}/>}
     </DatePickerWithPopup>
   )
 }
 
 BaseDatePickerWithPopup.propTypes = {
-  customInputComponent: PropTypes.node.isRequired,
+  inputComponent: PropTypes.elementType.isRequired,
 };
 
 BaseDatePickerWithPopup.defaultProps = {
-  customInputComponent: ReadOnlyDateInput,
+  inputComponent: ReadOnlyDateInput,
 };
 
 
@@ -662,7 +680,8 @@ export function DevelopmentPage(props) {
                 value={[new Date(2019, 0, 1)]}
     />
 
-      <DateInput/>
+      {/*<DateInput/>*/}
+      <DatePicker onChange={handleChange} inputComponent={DateInput}/>
     </>
   );
 }
