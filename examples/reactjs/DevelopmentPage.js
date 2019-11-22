@@ -476,7 +476,7 @@ export function DatePickerWithPopup(props) {
 
   return (
     <>
-      {props.children({setIsPopupShown: setIsPopupShown, date, setDate, draftDate})}
+      {props.children({setIsPopupShown: setIsPopupShown, date, setDate, draftDate, onChange: props.onChange})}
 
       <Popup isShown={isPopupShown} onChange={(change) => setIsPopupShown(change)} onClickAway={revertChanges}>
          <Calendarik {...calendarProps}
@@ -554,7 +554,7 @@ ReadOnlyDateInput.propTypes = {
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
 //        when there might be another variations (e.g static, that does not use popup)
 //
-function DateInput({setIsPopupShown, date, setDate, dateParserFn}) {
+export function DateInput({setIsPopupShown, date, setDate, dateParserFn, onChange}) {
   const [displayValue, setDisplayValue] = useState('');
 
   useEffect(() => {
@@ -562,6 +562,7 @@ function DateInput({setIsPopupShown, date, setDate, dateParserFn}) {
     const parsedDate = parse(displayValue);
     if (parsedDate) {
       setDate([parsedDate]);
+      onChange([parsedDate]);
     }
   }, [displayValue]);
 
