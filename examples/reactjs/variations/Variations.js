@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef, useReducer } from 'react';
-import { Calendarik, DatePicker as TheDatePicker, DateRangePicker as TheDateRangePicker, DateMultiPicker as TheDateMultiPicker, DatePickerWithDateInput, DatePickerWithPopup } from '../DevelopmentPage';
+import {
+  Calendarik,
+  DatePicker as TheDatePicker,
+  DateRangePicker as TheDateRangePicker,
+  DateMultiPicker as TheDateMultiPicker,
+  DateInput
+} from '../DevelopmentPage';
 import { fromArray, isSame, nextDayOf } from '../../../src/calendar';
 
 const today = new Date();
@@ -85,6 +91,10 @@ export const DateMultiPicker = (props) => {
   )
 };
 
+export const DatePickerWithDateInput = (props) => {
+  const [date, setDate] = useStateDebug(props.value);
+  return <DatePicker onChange={(newDate) => setDate(newDate)} inputComponent={DateInput}/>
+};
 
 export const PopupMultiSelectPicker = (props) => {};
 
