@@ -61,6 +61,7 @@ const tid_02 = tid(d_02);
 const tid_03 = tid(d_03);
 const tid_04 = tid(d_04);
 const tid_05 = tid(d_05);
+const tid_2020_01_01 = tid(d_2020_01_01);
 
 const tid_popup = tid('popup');
 const tid_okButton = tid('popup__action--ok');
@@ -596,5 +597,42 @@ describe('DateMultiPicker', () => {
       const value = getJSON(element);
       expect(value).to.eq(undefined);
     });
+  });
+});
+
+describe('DatePickerWithDateInput', () => {
+  const dateInput = tid('date-input');
+  const openButton = tid('date-input-open-button');
+  const clickOpenButton = () => cy.get(openButton).click();
+
+  it('should open the popup on "open" button click', () => {
+    render('DatePickerWithDateInput');
+
+    assertPopupIsClosed();
+    clickOpenButton();
+    assertPopupIsOpen();
+  });
+
+  it('should synchronize input value with the popup', () => {
+    render('DatePickerWithDateInput');
+    cy.get(dateInput).type('2020-01-01');
+    clickOpenButton();
+    assertDayIsChosen(d_2020_01_01);
+  });
+
+  it('should synchronize value selected in the popup with the input field', () => {
+    render('DatePickerWithDateInput');
+    clickOpenButton();
+    chooseDay(d_01);
+    ok();
+    cy.get(dateInput).should('have.value', format(d_01));
+  });
+
+  it('should cancel date selection', () => {
+    render('DatePickerWithDateInput');
+    clickOpenButton();
+    chooseDay(d_01);
+    cancel();
+    cy.get(dateInput).should('have.value', '');
   });
 });
