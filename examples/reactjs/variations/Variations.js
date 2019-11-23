@@ -93,7 +93,7 @@ export const DateMultiPicker = (props) => {
 
 export const DatePickerWithDateInput = (props) => {
   const [date, setDate] = useStateDebug(props.value);
-  return <DatePicker onChange={(newDate) => setDate(newDate)} inputComponent={DateInput}/>
+  return <DatePicker {...{onChange: (newDate) => setDate(newDate), inputComponent: DateInput, ...props}}/>
 };
 
 export const PopupMultiSelectPicker = (props) => {};
