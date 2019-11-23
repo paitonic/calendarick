@@ -591,8 +591,8 @@ export function DateInput({setIsPopupShown, date, setDate, dateParserFn, onChang
 
   return (
     <>
-      <input value={displayValue} onChange={handleChange}/>
-      <span onClick={() => setIsPopupShown(true)}>open</span>
+      <input value={displayValue} onChange={handleChange} data-test-id="date-input"/>
+      <button onClick={() => setIsPopupShown(true)} data-test-id="date-input-open-button">open</button>
     </>
   )
 }
