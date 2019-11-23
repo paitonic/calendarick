@@ -198,6 +198,10 @@ function Calendar(props) {
     return Array.isArray(obj) ? obj[0] : obj;
   };
 
+  const getViewDate = (value) => {
+    return {year: getStartDate(value).getFullYear(), month: getStartDate(value).getMonth()+1}
+  };
+
   function reducer(state, action) {
     function reduce(state, action) {
       console.log(action);
@@ -251,7 +255,7 @@ function Calendar(props) {
         }
 
         case CHANGE_VALUE:
-          return {...state, value: action.value};
+          return {...state, view: getViewDate(action.value), value: action.value};
 
         default:
           return state;
@@ -273,7 +277,7 @@ function Calendar(props) {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     value: initialValue,
-    view: {year: getStartDate(initialValue).getFullYear(), month: getStartDate(initialValue).getMonth()+1}
+    view: getViewDate(initialValue),
   });
 
   function goNextMonth() {
