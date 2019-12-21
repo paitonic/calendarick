@@ -1,25 +1,11 @@
 // TODO: replace Int.DateFormat with toLocaleString?
 
-/*
- TODO issues:
-- configuration parameters must be passed to each function that needs them. there is no shared state
-- repetition of defaults (e.g isRTL=false)
- */
-
 const DAY_IN_MS = 60 * 60 * 24 * 1000; // 86,400,000 ms
 
 export function countDaysInMonth(year, month) {
     // 0 in day returns total days in a previous month
     // month are zero-based.
     return new Date(year, month, 0).getDate();
-}
-
-function getWeekDay(year, month, day) {
-  return new Date(year, month, day)
-}
-
-function getWeekdayDiff(weekDayA, weekDayB) {
-  new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(new Date(year, month-1, i))
 }
 
 export function getNextMonth(year, month) {
@@ -38,33 +24,9 @@ export function getPreviousMonth(year, month) {
   }
 }
 
-// getWeekDayDiff('Mon', 'Sun') -> 1
-// getWeekDayDiff('Sun', 'Sun') -> 0
-// getWeekDayDiff('Sun', 'Fri') -> 6
-//  0   1   2   3   4   5   6
-// Sun Mon Tue Wed Thu Fri Sat
-const weekDays = new Map([
-  ['Sun', 0],
-  ['Mon', 1],
-  ['Tue', 2],
-  ['Wed', 3],
-  ['Thu', 4],
-  ['Fri', 5],
-  ['Sat', 6]
-]);
-
 export function getWeekDayIndex(firstDayOfWeek, weekDay) {
   const ordered = orderWeekDays(firstDayOfWeek);
   return ordered.findIndex(day => day.getDay() === weekDay.getDay())
-}
-
-function getDayRepresentation(date, {locale = 'en-US', weekday = 'short'} = {}) {
-  return {
-    weekDay: new Intl.DateTimeFormat(locale, {weekday}).format(date),
-    dayOfMonth: date.getDate(),
-    year: date.getFullYear(),
-    month: date.getMonth() + 1
-  }
 }
 
 export function isFirstDayOfWeek(firstDayOfWeek, date) {
@@ -75,17 +37,6 @@ export function isLastDayOfWeek(firstDayOfWeek, date, {isRTL=false} = {}) {
   const ordered = orderWeekDays(firstDayOfWeek, {isRTL});
   return ordered[isRTL ? 0 : ordered.length-1].getDay() === date.getDay();
 }
-
-
-// export const WEEKDAY_NAMES = {
-//   sunday: 0,
-//   monday: 1,
-//   tuesday: 2,
-//   wednesday: 3,
-//   thursday: 4,
-//   friday: 5,
-//   saturday: 6
-// };
 
 export const WEEKDAYS = [
   new Date(1970, 0, 4, 0, 0, 0, 0), // 0 - sunday
@@ -129,8 +80,6 @@ export function rotate(collection, n) {
 
   return shift(0);
 }
-
-// function* calendar() { yield 1; yield 2; yield 3; yield 4 }
 
 export function take(n, generator, ...rest) {
   const iterator = generator(...rest);
@@ -350,36 +299,6 @@ export function nextDayOf(date) {
 export function prevDayOf(date) {
   return new Date(date.getTime() - DAY_IN_MS);
 }
-
-/**
-[
-    {weekDay: 'Sunday', dayOfMonth: 1, year: 2019, month: 12},
-    {weekDay: 'Sunday', dayOfMonth: 2, year: 2019, month: 12},
-    ...
-]
-**/
-
-// format(new Date(), )
-// function format(day, formatting) {
-//
-// }
-function toRaw(day) {
-  return [day.getFullYear(), day.getMonth(), day.getDate()];
-}
-
-
-// const calendar = new Calendar('en-Us', weekdays.sunday);
-// calendar.next();
-// calendar.previous();
-// calendar.groupByWeeks();
-// calendar.days
-
-/*
-
-const calendar = calendar('en-US')
-calendar.getMonth()
-
- */
 
 export function clone(date) {
   if (date instanceof Date) {

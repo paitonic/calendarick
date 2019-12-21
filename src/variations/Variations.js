@@ -6,7 +6,7 @@ import {
   DateMultiPicker as TheDateMultiPicker,
   DateInput
 } from '../DevelopmentPage';
-import { fromArray, isSame, nextDayOf } from '../../../src/calendar';
+import { fromArray, isSame, nextDayOf } from '../calendar/calendar';
 
 const today = new Date();
 const d_01 = fromArray([today.getFullYear(), today.getMonth()+1, 1]);

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import './calendar.sass';
 
-import { calendar } from '../../src';
+import { calendar } from './calendar/index';
 import clsx from 'clsx';
-import { isSame, prevDayOf, clone, nextDayOf } from '../../src/calendar';
+import { isSame, prevDayOf, clone, nextDayOf } from './calendar/calendar';
 
 
 function format(date) {

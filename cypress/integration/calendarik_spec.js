@@ -1,5 +1,5 @@
-import { fromArray } from '../../../../src/calendar';
-import { encodeProps, toDate } from '../../../../src/testUtils';
+import { fromArray } from '../../src/calendar/calendar';
+import { encodeProps, toDate } from '../../src/testUtils';
 
 const defaultProps = {
   calendar: {

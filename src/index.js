@@ -1,114 +1,42 @@
-import {
-  getCalendar,
-  getMonths,
-  getNextMonth,
-  getWeekDays,
-  groupByWeeks,
-  getPreviousMonth,
-  isFirstDayOfWeek,
-  isLastDayOfWeek,
-  WEEKDAYS,
-  isOutsideMonth,
-  isBetween,
-  isSame,
-  minDate,
-  maxDate,
-  isIn,
-  nextDayOf,
-  prevDayOf,
-  clone
-} from '../src/calendar';
+import ReactDOM from 'react-dom';
+import React from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
+import { DevelopmentPage } from './DevelopmentPage';
+import { VariationPage } from './variations/VariationPage';
 
-export function calendar({
-                    locale='en-US',
-                    weekday='short',
-                    month='long',
-                    firstDayOfWeek=WEEKDAYS[0],
-                    withOutsideDays=false,
-                    isRTL=false
-                    } = {}
-                  ) {
-  return {
-    getCalendar(...args) {
-      return getCalendar(...args, {locale, withOutsideDays, weekday, firstDayOfWeek})
-    },
+function Index(props) {
+  return (
+    <ul>
+      <li>
+        <Link to="/development">Development</Link>
+      </li>
 
-    getMonths() {
-      return getMonths({locale, month});
-    },
-
-    getNextMonth(...args) {
-      return getNextMonth(...args);
-    },
-
-    getWeekDays() {
-      return getWeekDays({locale, firstDayOfWeek, weekday, isRTL});
-    },
-
-    groupByWeeks(days, {fillMissingDaysWithNull = false} = {}) {
-      return groupByWeeks(firstDayOfWeek, days, {isRTL, fillMissingDaysWithNull});
-    },
-
-    getPreviousMonth(...args) {
-      return getPreviousMonth(...args);
-    },
-
-    isFirstDayOfWeek(...args) {
-      return isFirstDayOfWeek(firstDayOfWeek, ...args);
-    },
-
-    isLastDayOfWeek(...args) {
-      return isLastDayOfWeek(firstDayOfWeek, ...args, {isRTL});
-    },
-
-    isOutsideMonth(month, date) {
-      return isOutsideMonth(month, date);
-    },
-
-    isSame(...args) {
-      return isSame(...args);
-    },
-
-    isBetween(...args) {
-      return isBetween(...args);
-    },
-
-    minDate(...args) {
-      return minDate(...args);
-    },
-
-    maxDate(...args) {
-      return maxDate(...args);
-    },
-
-    isIn(...args) {
-      return isIn(...args);
-    },
-
-    nextDayOf(...args) {
-      return nextDayOf(...args);
-    },
-
-    prevDayOf(...args) {
-      return prevDayOf(...args);
-    },
-
-    clone(...args) {
-      return clone(...args);
-    }
-  }
+      <li>
+        <Link to="/variations">Variations</Link>
+      </li>
+    </ul>
+  )
 }
 
+const Playground = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" exact={true}>
+          <Index/>
+        </Route>
 
-/*
-  calendar = createCalendar('en-US')(() => {});
-  calendar.getCalendar();
+        <Route path="/development">
+          <DevelopmentPage/>
+        </Route>
 
-  withCalendar('en-US')((getCalendar, getMonths, getNextMonth, getWeekDays) => {
-    getMonths
-  });
+        <Route path="/variations">
+          <VariationPage/>
+        </Route>
+      </Switch>
+    </Router>
+  )
+};
 
-  const {getCalendar, getMonths, getNextMonth, getWeekDays} = configureCalendar({'en-US');
- */
-// const {getCalendar, getMonths, getNextMonth, getWeekDays} = calendar({locale: 'en-US', firstDayOfWeek: WEEKDAYS[0], withOutsideDays: false});
+ReactDOM.render(<Playground/>, document.getElementById('root'));

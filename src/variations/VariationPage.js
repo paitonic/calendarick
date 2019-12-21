@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import * as Variations from './Variations';
-import { decodeProps } from '../../../src/testUtils';
+import { decodeProps } from '../testUtils';
 
 
 const mapVariations = (fn) => Object.keys(Variations).map(fn);
