@@ -636,3 +636,47 @@ describe('DatePickerWithDateInput', () => {
     cy.get(dateInput).should('have.value', '');
   });
 });
+
+describe('DateRangePickerWithDateInput', () => {
+  const dateRangeInput = tid('date-range-input');
+  const openButton = tid('date-input-open-button');
+  const clickOpenButton = () => cy.get(openButton).click();
+
+  it('should open the popup on "open" button click', () => {
+    render('DateRangePickerWithDateInput');
+
+    assertPopupIsClosed();
+    clickOpenButton();
+    assertPopupIsOpen();
+  });
+
+  it('should synchronize input value with the date picker', () => {
+    render('DateRangePickerWithDateInput');
+
+    cy.get(dateRangeInput).type(`${format(d_01)} - ${format(d_03)}`);
+    clickOpenButton();
+    assertDayIsChosen(d_01, d_02, d_03);
+  });
+
+  it('should synchronize value selected in the date picker with the input field', () => {
+    render('DateRangePickerWithDateInput');
+
+    clickOpenButton();
+    chooseDay(d_01);
+    chooseDay(d_03);
+    ok();
+
+    cy.get(dateRangeInput).should('have.value', `${format(d_01)} - ${format(d_03)}`);
+  });
+
+    it('should cancel date selection', () => {
+      render('DateRangePickerWithDateInput');
+
+      clickOpenButton();
+      chooseDay(d_01);
+      chooseDay(d_03);
+      cancel();
+
+      cy.get(dateRangeInput).should('have.value', '');
+  });
+});

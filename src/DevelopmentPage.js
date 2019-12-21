@@ -507,7 +507,7 @@ DatePickerWithPopup.propTypes = {
 };
 
 
-function representDate(date) {
+function formatDate(date) {
     // handle single date, multiple dates and range
     if (!date || date && date.length === 0) {
       return '';
@@ -520,12 +520,12 @@ function representDate(date) {
       // multiple
       return date.map(format).join(', ');
     }
-  }
+}
 
 function ReadOnlyDateInput({setIsPopupShown, draftDate}) {
   return (
     <input onClick={() => setIsPopupShown(true)}
-           value={representDate(draftDate)}
+           value={formatDate(draftDate)}
            readOnly={true}
            data-test-id="popup__date-input"/>
   )
@@ -540,32 +540,47 @@ ReadOnlyDateInput.propTypes = {
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
 //        when there might be another variations (e.g static, that does not use popup)
 //
-export function DateInput({setIsPopupShown, date, setDate, dateParserFn, onChange}) {
+function toDate(input) {
+  const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const match = input.match(regexp);
+  if (!match) {
+    return null;
+  }
+
+  const [_, year, month, day] = match;
+  return new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0);
+}
+
+function toDateRange(input) {
+  const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2}) - (\d{4})-(\d{2})-(\d{2})$/);
+  const match = input.match(regexp);
+  if (!match) {
+    return null;
+  }
+
+  const [_, fromYear, fromMonth, fromDay, toYear, toMonth, toDay] = match;
+
+  return [
+    new Date(parseInt(fromYear, 10), parseInt(fromMonth)-1, parseInt(fromDay), 0, 0, 0, 0),
+    new Date(parseInt(toYear, 10), parseInt(toMonth)-1, parseInt(toDay), 0, 0, 0, 0),
+  ];
+}
+
+export function DateInput(props) {
   const [displayValue, setDisplayValue] = useState('');
 
   useEffect(() => {
-    const parse = dateParserFn ? dateParserFn : toDate;
+    const parse = props.dateParserFn ? props.dateParserFn : toDate;
     const parsedDate = parse(displayValue);
     if (parsedDate) {
-      setDate([parsedDate]);
-      onChange([parsedDate]);
+      props.setDate([parsedDate]);
+      props.onChange([parsedDate]);
     }
   }, [displayValue]);
 
   useEffect(() => {
-    setDisplayValue(representDate(date));
-  }, [date]);
-
-  function toDate(input) {
-    const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2})$/);
-    const match = input.match(regexp);
-    if (!match) {
-      return null;
-    }
-
-    const [_, year, month, day] = match;
-    return new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0);
-  }
+    setDisplayValue(props.dateFormatterFn(props.date));
+  }, [props.date]);
 
   function handleChange(event) {
     setDisplayValue(event.target.value);
@@ -573,20 +588,31 @@ export function DateInput({setIsPopupShown, date, setDate, dateParserFn, onChang
 
   return (
     <>
-      <input value={displayValue} onChange={handleChange} data-test-id="date-input" placeholder="yyyy/mm/dd"/>
-      <button onClick={() => setIsPopupShown(true)} data-test-id="date-input-open-button">open</button>
+      <input value={displayValue} onChange={handleChange} data-test-id={props.testId} placeholder={props.placeholder}/>
+      <button onClick={() => props.setIsPopupShown(true)} data-test-id="date-input-open-button">open</button>
     </>
   )
 }
 
 DateInput.propTypes = {
   dateParserFn: PropTypes.func,
+  dateFormatterFn: PropTypes.func,
   testId: PropTypes.string,
 };
 
 DateInput.defaultProps = {
-  testId: 'date-input'
+  testId: 'date-input',
+  dateParserFn: toDate,
+  dateFormatterFn: formatDate,
 };
+
+
+export function DateRangeInput(props) {
+  return (
+    <DateInput {...{...props, dateParserFn: toDateRange, placeholder: 'YYYY-MM-DD - YYYY-MM-DD', testId: 'date-range-input'}}/>
+  )
+}
+
 
 function BaseDatePickerWithPopup(props) {
     let {inputComponent: InputComponent, ...datePickerProps} = props;

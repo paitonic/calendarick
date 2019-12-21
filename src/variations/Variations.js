@@ -4,7 +4,7 @@ import {
   DatePicker as TheDatePicker,
   DateRangePicker as TheDateRangePicker,
   DateMultiPicker as TheDateMultiPicker,
-  DateInput
+  DateInput, DateRangeInput
 } from '../DevelopmentPage';
 import { fromArray, isSame, nextDayOf } from '../calendar/calendar';
 
@@ -98,3 +98,7 @@ export const DatePickerWithDateInput = (props) => {
 
 export const PopupMultiSelectPicker = (props) => {};
 
+export const DateRangePickerWithDateInput = (props) => {
+  const [date, setDate] = useStateDebug(props.value);
+  return <TheDateRangePicker {...{onChange: (newDate) => setDate(newDate), inputComponent: DateRangeInput, ...props}}/>
+};

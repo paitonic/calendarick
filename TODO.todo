@@ -2,22 +2,22 @@
     ☐ How date range selection should behave when there is unselectable date?
         ☐ Allow selection?
             ☐ Represent the range differently e.g two ranges instead of one?
-☐ Add range selection @started(19-09-21 14:48)
+✔ Add range selection @started(19-09-21 14:48) @done (21/12/2019, 12:50:31)
     ✔ swap start/end if one later than another @done(19-09-28 15:05)
     ✔ write function that checks if given date is included in list of dates @started(19-09-28 15:47) @done(19-09-28 21:06) @lasted(5h19m7s)
         ✔ examples: @done(19-09-28 21:06)
             ✔ isDateIn(date, [ new Date(2019, 0, 1) ]) @done(19-09-28 21:06)
             ✔ isDateIn(date, [ new Date(2019, 0, 1), [new Date(2019, 0, 10), new Date(2019, 0, 15)] ]) @done(19-09-28 21:06)
         ✔ after implemented, replace `isSelected(selected, day)` function with it @done(19-09-28 21:06)
-    ☐ handleClickDay() is too complicated
-☐ Add date input
-    ☐ Variation #1 - clicking on an input should open calendar in a popup
-    ☐ Variation #2 - allow user to enter date manually (calendar opens on clicking icon/button)
-    ☐ Add ability to provide custom Day component (maybe using `dayComponent` as prop name?)
+☐ handleClickDay() is too complicated?
+✔ Add date input @done (21/12/2019, 12:51:25)
+    ✔ Variation #1 - clicking on an input should open calendar in a popup @done (21/12/2019, 12:51:17)
+    ✔ Variation #2 - allow user to enter date manually (calendar opens on clicking icon/button) @done (21/12/2019, 12:51:18)
+☐ Add ability to provide custom Day component (maybe using `dayComponent` as prop name?)
 ☐ Hover trail (for range selection)
 ☐ Keyboard navigation
-☐ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers
-    ☐ i.e clicking on left arrow should go forward
+✔ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers @done (21/12/2019, 12:54:09)
+    ✔ i.e clicking on left arrow should go forward @done (21/12/2019, 12:54:10)
 ☐ Mark today's day
     ☐ border: 1px dashed #000
 ☐ Week selection
@@ -47,3 +47,4 @@
 ✔ Implement `nextDayOf(day)` in calendar.js @done(19-09-30 18:09)
     ✔ function should accept Date object and return Date object representing next day @done(19-09-30 18:09)
 ✔ Implement `prevDayOf(day)` @done(19-09-30 18:09)
+✔ Implement date range input component @started(19-12-21 13:03) @done(19-12-21 19:02) @lasted(5h59m42s)
