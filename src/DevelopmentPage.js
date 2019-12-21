@@ -536,24 +536,6 @@ ReadOnlyDateInput.propTypes = {
   draftDate: PropTypes.array,
 };
 
-
-// TODO:
-// function DateInput({draftDate}) {
-//   return (
-//         <input value={representDate(draftDate)}
-//            data-test-id="popup__date-input"/>
-//   )
-// }
-
-// TODO: write a function that handles masked input.
-//       the module should accept previous string, current string and a pattern (yyyy/mm/dd), it should return:
-//        - new string after transformation (if needed).
-//          -- mask('', '2', 'yyyy/mm/dd') -> {value: '2 _ _ _ / _ _ / _ _', caretIndex: 1}
-//        - cursor position index - so that users of that function can set cursor to correct position
-
-// TODO: implement MaskedInput component that uses the above mask function
-// function MaskedInput() {}
-
 // TODO: This needs more work.
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
 //        when there might be another variations (e.g static, that does not use popup)
@@ -591,7 +573,7 @@ export function DateInput({setIsPopupShown, date, setDate, dateParserFn, onChang
 
   return (
     <>
-      <input value={displayValue} onChange={handleChange} data-test-id="date-input"/>
+      <input value={displayValue} onChange={handleChange} data-test-id="date-input" placeholder="yyyy/mm/dd"/>
       <button onClick={() => setIsPopupShown(true)} data-test-id="date-input-open-button">open</button>
     </>
   )
