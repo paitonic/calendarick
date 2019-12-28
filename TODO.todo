@@ -1,7 +1,4 @@
-☐ Disable selection of dates conditionally
-    ☐ How date range selection should behave when there is unselectable date?
-        ☐ Allow selection?
-            ☐ Represent the range differently e.g two ranges instead of one?
+✔ Disable selection of dates conditionally @done(19-12-28 09:53)
 ✔ Add range selection @started(19-09-21 14:48) @done (21/12/2019, 12:50:31)
     ✔ swap start/end if one later than another @done(19-09-28 15:05)
     ✔ write function that checks if given date is included in list of dates @started(19-09-28 15:47) @done(19-09-28 21:06) @lasted(5h19m7s)
@@ -25,7 +22,7 @@
 ☐ Experiment with state reducer pattern
 ☐ Tests
     ☐ Think of adding UI (knobs, options etc) for controlling calendar properties so they can be tested
-☐ If date is selected, make calendar show the month of the date
+✔ If date is selected, make calendar show the month of the date @done(19-12-28 09:56)
 ☐ Add ability to control currently viewed month
 ☐ Should selection of dates outside of current month be prevented?
 ☐ Should `nextDayOf` & `prevDayOf` reset time to 0h 0m 0s 0ms?
@@ -48,10 +45,10 @@
     ✔ function should accept Date object and return Date object representing next day @done(19-09-30 18:09)
 ✔ Implement `prevDayOf(day)` @done(19-09-30 18:09)
 ✔ Implement date range input component @started(19-12-21 13:03) @done(19-12-21 19:02) @lasted(5h59m42s)
-☐ [bug] Passing value to <DatePicker> causes infinite rerender
-    ☐ CHANGE_VALUE printed in console
+✔ [bug] Passing value to <DatePicker> causes infinite rerender @done(19-12-28 09:49)
+    ✔ CHANGE_VALUE printed in console @done(19-12-28 09:49)
         const [date, setDate] = useState([ new Date(2020, 0, 1) ]);
         <DatePicker value={date} onChange={handleChange} inputComponent={DateInput}/>
 ☐ Change range logic
     ☐ If user selects second date which is earlier than the start date, then it should become the new start date
-✔ [bug] DatePickerWithPopup looks bad on small viewport size @done(19-12-28 09:48)
+☐ [bug] DatePickerWithPopup looks bad on small viewport size
