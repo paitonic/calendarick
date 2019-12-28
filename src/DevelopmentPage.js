@@ -548,7 +548,9 @@ function toDate(input) {
   }
 
   const [_, year, month, day] = match;
-  return new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0);
+  return [
+    new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0),
+  ]
 }
 
 function toDateRange(input) {
@@ -567,14 +569,14 @@ function toDateRange(input) {
 }
 
 export function DateInput(props) {
-  const [displayValue, setDisplayValue] = useState('');
+  const [displayValue, setDisplayValue] = useState(props.dateFormatterFn(props.date));
 
-  useEffect(() => {
+  useWatchChanges(() => {
     const parse = props.dateParserFn ? props.dateParserFn : toDate;
     const parsedDate = parse(displayValue);
     if (parsedDate) {
-      props.setDate([parsedDate]);
-      props.onChange([parsedDate]);
+      props.setDate(parsedDate);
+      props.onChange(parsedDate);
     }
   }, [displayValue]);
 
@@ -598,6 +600,7 @@ DateInput.propTypes = {
   dateParserFn: PropTypes.func,
   dateFormatterFn: PropTypes.func,
   testId: PropTypes.string,
+  date: PropTypes.array,
 };
 
 DateInput.defaultProps = {
@@ -694,7 +697,7 @@ export function DevelopmentPage(props) {
     />
 
       {/*<DateInput/>*/}
-      <DatePicker onChange={handleChange} inputComponent={DateInput}/>
+      <DatePicker value={date} onChange={handleChange} inputComponent={DateInput}/>
     </>
   );
 }

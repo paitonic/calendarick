@@ -1,4 +1,4 @@
-☐ Disable selection of dates conditionally @started(19-09-29 18:55)
+☐ Disable selection of dates conditionally
     ☐ How date range selection should behave when there is unselectable date?
         ☐ Allow selection?
             ☐ Represent the range differently e.g two ranges instead of one?
@@ -48,3 +48,10 @@
     ✔ function should accept Date object and return Date object representing next day @done(19-09-30 18:09)
 ✔ Implement `prevDayOf(day)` @done(19-09-30 18:09)
 ✔ Implement date range input component @started(19-12-21 13:03) @done(19-12-21 19:02) @lasted(5h59m42s)
+☐ [bug] Passing value to <DatePicker> causes infinite rerender
+    ☐ CHANGE_VALUE printed in console
+        const [date, setDate] = useState([ new Date(2020, 0, 1) ]);
+        <DatePicker value={date} onChange={handleChange} inputComponent={DateInput}/>
+☐ Change range logic
+    ☐ If user selects second date which is earlier than the start date, then it should become the new start date
+✔ [bug] DatePickerWithPopup looks bad on small viewport size @done(19-12-28 09:48)
