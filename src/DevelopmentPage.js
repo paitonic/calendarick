@@ -267,10 +267,7 @@ function Calendar(props) {
     const stateOverride = props.stateReducer ? props.stateReducer(action, state, nextState) : nextState;
 
     // merge states
-    const finalState = Object.assign({}, nextState, stateOverride);
-    console.debug(finalState);
-
-    return finalState;
+    return Object.assign({}, nextState, stateOverride);
   }
 
   const initialValue = value || initialState.value;
