@@ -16,7 +16,8 @@ import {
   isIn,
   nextDayOf,
   prevDayOf,
-  clone
+  clone,
+  isToday
 } from './calendar';
 
 
@@ -96,6 +97,10 @@ export function calendar({
 
     clone(...args) {
       return clone(...args);
+    },
+
+    isToday(...args) {
+      return isToday(...args);
     }
   }
 }

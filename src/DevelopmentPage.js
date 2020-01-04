@@ -17,7 +17,7 @@ function format(date) {
 
 function Day(props) {
   const {onDayClick, disableDays} = useContext(PreferencesContext);
-  const {isIn} = useContext(CalendarContext);
+  const {isIn, isToday} = useContext(CalendarContext);
   const {state: {value}, dispatch} = useContext(StateContext);
   const isDisabled = disableDays(props.day.date);
 
@@ -40,6 +40,7 @@ function Day(props) {
         'day--is-outside-month': props.day.isOutsideMonth,
         'day--is-selected': isIn(props.day.date, value),
         'day--is-disabled': disableDays(props.day.date),
+        'day--is-today': isToday(props.day.date),
     })}
         onClick={handleClick}
         data-test-id={format(props.day.date)}>
@@ -690,7 +691,7 @@ export function DevelopmentPage(props) {
                 stateReducer={stateReducer}
                 selectionMode="range"
                 disableDays={shouldDayBeDisabled}
-                value={[new Date(2019, 0, 1)]}
+                value={[new Date(2020, 0, 1)]}
     />
 
       {/*<DateInput/>*/}

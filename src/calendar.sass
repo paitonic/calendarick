@@ -13,6 +13,7 @@ $width: 350px
   text-align: center
   height: $cell-width
   cursor: pointer
+  border: 1px solid transparent
 
   &:hover:not(&--is-disabled)
     background-color: #000
@@ -25,6 +26,9 @@ $width: 350px
   &--is-disabled
     cursor: not-allowed
     background-color: #e2e2e2
+
+  &--is-today
+    border: 1px dashed #000
 
 .day--with-border
   border: 1px solid #e2e2e2
@@ -44,7 +48,6 @@ $width: 350px
 
 .month
   border-spacing: 0
-  border-collapse: collapse
   background-color: #ffffff
 
 .header

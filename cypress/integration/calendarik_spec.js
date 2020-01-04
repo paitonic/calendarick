@@ -255,6 +255,11 @@ describe('StaticDatePicker', () => {
 
     cy.get(tid('week-day-1')).should('have.text', 'Sat');
   });
+
+  it('should have today\'s day marked', () => {
+    render('StaticDatePicker', defaultProps);
+    cy.get(tid_today).should('have.class', 'day--is-today');
+  });
 });
 
 describe('StaticDateRangePicker', () => {
