@@ -674,7 +674,7 @@ describe('DateRangePickerWithDateInput', () => {
     cy.get(dateRangeInput).should('have.value', `${format(d_01)} - ${format(d_03)}`);
   });
 
-    it('should cancel date selection', () => {
+  it('should cancel date selection', () => {
       render('DateRangePickerWithDateInput');
 
       clickOpenButton();

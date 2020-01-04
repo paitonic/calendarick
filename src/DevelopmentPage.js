@@ -8,6 +8,13 @@ import clsx from 'clsx';
 import { isSame, prevDayOf, clone, nextDayOf } from './calendar/calendar';
 
 
+function createDate(date) { return [date]; }
+
+function createDateRange(date1, date2) { return [ [date1, date2]] }
+
+function createMultipleDates(...args) { return [...args]; }
+
+
 function format(date) {
   const year = date.getFullYear();
   const month = `${(date.getMonth()+1)}`.padStart(2, '0');
@@ -511,12 +518,15 @@ function formatDate(date) {
       return '';
     } else if (date instanceof Date) {
       return format(date);
-    } else if (date.length && date[0].length === 2) {
-      // range
-      return date[0].map(format).join(' - ');
-    } else if (date.length) {
-      // multiple
+    } else if (date.every((day => day instanceof Date))) {
+      // multiple selected days
       return date.map(format).join(', ');
+    } else if (date.length === 1) {
+      // range
+      const range = date[0];
+      return range.map(format).join(' - ');
+    } else {
+      throw new Error('formatDate: could not handle: ' + date);
     }
 }
 
@@ -546,9 +556,7 @@ function toDate(input) {
   }
 
   const [_, year, month, day] = match;
-  return [
-    new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0),
-  ]
+  return createDate(new Date(parseInt(year, 10), parseInt(month)-1, parseInt(day), 0, 0, 0, 0));
 }
 
 function toDateRange(input) {
@@ -560,10 +568,10 @@ function toDateRange(input) {
 
   const [_, fromYear, fromMonth, fromDay, toYear, toMonth, toDay] = match;
 
-  return [
+  return createDateRange(
     new Date(parseInt(fromYear, 10), parseInt(fromMonth)-1, parseInt(fromDay), 0, 0, 0, 0),
-    new Date(parseInt(toYear, 10), parseInt(toMonth)-1, parseInt(toDay), 0, 0, 0, 0),
-  ];
+    new Date(parseInt(toYear, 10), parseInt(toMonth)-1, parseInt(toDay), 0, 0, 0, 0)
+  );
 }
 
 export function DateInput(props) {
