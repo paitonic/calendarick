@@ -15,8 +15,8 @@
 ☐ Keyboard navigation
 ✔ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers @done (21/12/2019, 12:54:09)
     ✔ i.e clicking on left arrow should go forward @done (21/12/2019, 12:54:10)
-☐ Mark today's day
-    ☐ border: 1px dashed #000
+✔ Mark today's day @done(20-01-07 22:29)
+    ✔ border: 1px dashed #000 @done(20-01-07 22:29)
 ☐ Week selection
 ☐ Locale configuration
 ☐ Experiment with state reducer pattern
@@ -49,6 +49,6 @@
     ✔ CHANGE_VALUE printed in console @done(19-12-28 09:49)
         const [date, setDate] = useState([ new Date(2020, 0, 1) ]);
         <DatePicker value={date} onChange={handleChange} inputComponent={DateInput}/>
-☐ Change range logic
-    ☐ If user selects second date which is earlier than the start date, then it should become the new start date
+✔ Change range logic @WIP @started(20-01-07 22:29) @done(20-01-11 10:03) @lasted(3d11h34m41s)
+    ✔ If user selects second date which is earlier than the start date, then it should become the new start date @done(20-01-11 10:03)
 ☐ [bug] DatePickerWithPopup looks bad on small viewport size
