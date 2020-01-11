@@ -5,7 +5,7 @@ import './calendar.sass';
 
 import { calendar } from './calendar/index';
 import clsx from 'clsx';
-import {isSame, prevDayOf, clone, nextDayOf, isBefore} from './calendar/calendar';
+import {isSame, prevDayOf, clone, nextDayOf, isBefore, isBetween} from './calendar/calendar';
 
 
 function createDate(date) { return [date]; }
@@ -23,9 +23,9 @@ function format(date) {
 }
 
 function Day(props) {
-  const {onDayClick, disableDays} = useContext(PreferencesContext);
+  const {onDayClick, disableDays, selectionMode} = useContext(PreferencesContext);
   const {isIn, isToday} = useContext(CalendarContext);
-  const {state: {value}, dispatch} = useContext(StateContext);
+  const {state: {value, mouseOverDay}, dispatch} = useContext(StateContext);
   const isDisabled = disableDays(props.day.date);
 
   function handleClick() {
@@ -42,15 +42,28 @@ function Day(props) {
     return <td className='day--placeholder'></td>
   }
 
+  function isHighlighted() {
+    if (selectionMode !== 'range') {
+      return false;
+    }
+
+    const [start, _] = value;
+    return start !== undefined && mouseOverDay !== null && isBetween(props.day.date, start, mouseOverDay);
+  }
+
+
   return (
     <td className={clsx('day', {
         'day--is-outside-month': props.day.isOutsideMonth,
         'day--is-selected': isIn(props.day.date, value),
         'day--is-disabled': disableDays(props.day.date),
         'day--is-today': isToday(props.day.date),
+        'day--is-highlighted': isHighlighted(),
     })}
         onClick={handleClick}
-        data-test-id={format(props.day.date)}>
+        data-test-id={format(props.day.date)}
+        onMouseEnter={() => dispatch({type: MOUSE_ENTER_DAY, payload: props.day.date})}
+        onMouseLeave={() => dispatch({type: MOUSE_LEAVE_DAY, payload: props.day.date})}>
       <span>{props.day.date ? props.day.date.getDate() : null}</span>
     </td>
   )
@@ -151,6 +164,8 @@ const ACTION_CLICK_DAY = 'CLICK_DAY';
 const ACTION_CLICK_PREV_MONTH = 'ACTION_CLICK_PREV_MONTH';
 const ACTION_CLICK_NEXT_MONTH = 'ACTION_CLICK_NEXT_MONTH';
 const CHANGE_VALUE = 'CHANGE_VALUE';
+const MOUSE_ENTER_DAY = 'MOUSE_ENTER_DAY';
+const MOUSE_LEAVE_DAY = 'MOUSE_LEAVE_DAY';
 
 const initialState = {
   date: new Date(),
@@ -169,6 +184,7 @@ const initialState = {
    */
   value: [],
   view: {year: null, month: null},
+  mouseOverDay: null,
 };
 
 const StateContext = React.createContext(initialState);
@@ -210,6 +226,7 @@ function Calendar(props) {
     return {year: getStartDate(value).getFullYear(), month: getStartDate(value).getMonth()+1}
   };
 
+  // TODO: each action should contain `payload` field
   function reducer(state, action) {
     function reduce(state, action) {
       console.log(action);
@@ -266,6 +283,12 @@ function Calendar(props) {
 
         case CHANGE_VALUE:
           return {...state, view: getViewDate(action.value), value: action.value};
+
+        case MOUSE_ENTER_DAY:
+          return {...state, mouseOverDay: action.payload};
+
+        case MOUSE_LEAVE_DAY:
+          return {...state, mouseOverDay: null};
 
         default:
           return state;

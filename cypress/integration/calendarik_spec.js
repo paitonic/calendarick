@@ -76,14 +76,15 @@ const cancel = () => cy.get(tid_cancelButton).click();
 const chooseDay = (day) => cy.get(tid(format(day))).click();
 const clickLeftArrow = () => cy.get(tid('button-left')).click();
 const clickRightArrow = () => cy.get(tid('button-right')).click();
+const mouseOver = (day) => cy.get(tid(format(day))).trigger('mouseover');
 
 const assertPopupIsClosed = () => cy.get(tid_popup).should('have.class', 'popup--closed');
 const assertPopupIsOpen = () => cy.get(tid_popup).should('not.have.class', 'popup--closed');
 const assertInputIsEmpty = () => cy.get(tid_dateInput).should('have.value', '');
 const assertInputIs = (value) => cy.get(tid_dateInput).should('have.value', value);
-const assertDayIs = (expectation, value, ...days) => {
+const assertDayIs = (expectation, expectationResult, ...days) => {
   days.forEach((day) => {
-    cy.get(tid(format(day))).should(expectation, value);
+    cy.get(tid(format(day))).should(expectation, expectationResult);
   });
 };
 const assertDayIsChosen = (...days) => assertDayIs('have.class', 'day--is-selected', ...days);
@@ -92,6 +93,8 @@ const assertDayIsDisabled = (...days) => assertDayIs('have.class', 'day--is-disa
 const assertMonthIs = (monthNumber) => cy.get(tid('month-' + String(monthNumber).padStart(2, '0')));
 const assertYearIs = (year) => cy.get(tid('year-' + year)).should('have.text', String(year));
 const assertDayDoesNotExist = (...days) => assertDayIs('not.exist', null, ...days);
+const assertDayIsHighlighted = (...days) => assertDayIs('have.class', 'day--is-highlighted', ...days);
+const assertDayIsNotHighlighted = (...days) => assertDayIs('not.have.class', 'day--is-highlighted', ...days);
 
 const getJSON = (element) => {
   try {
@@ -259,6 +262,15 @@ describe('StaticDatePicker', () => {
   it('should have today\'s day marked', () => {
     render('StaticDatePicker', defaultProps);
     cy.get(tid_today).should('have.class', 'day--is-today');
+  });
+
+  it('should not have selection trail after selecting date', () => {
+    render('StaticDatePicker', defaultProps);
+
+    chooseDay(d_02);
+    mouseOver(d_05);
+
+    assertDayIsNotHighlighted(d_03, d_04);
   });
 });
 
@@ -550,11 +562,6 @@ describe('DateRangePicker:', () => {
     });
   });
 
-  it.skip('should select range of dates', () => {
-    // TODO: what happens if user enters 2020-01-03 - 2020-01-01
-    // should dates be switched? should date picker know how to work with this?
-  });
-
   it('should cancel selection of date range', () => {
     render('DateRangePicker', {...defaultProps, selectionMode: 'range'});
 
@@ -570,6 +577,23 @@ describe('DateRangePicker:', () => {
       const value = getJSON(element);
       expect(value).to.eq(undefined);
     });
+  });
+
+  it('should show trail when selecting end date', () => {
+    render('DateRangePicker', {...defaultProps, selectionMode: 'range'});
+
+    clickDateInput();
+
+    chooseDay(d_02);
+    mouseOver(d_04);
+    assertDayIsHighlighted(d_03);
+
+    mouseOver(d_05);
+    assertDayIsHighlighted(d_03, d_04);
+
+    mouseOver(d_04);
+    assertDayIsHighlighted(d_03);
+    assertDayIsNotHighlighted(d_05);
   });
 });
 
@@ -646,6 +670,11 @@ describe('DatePickerWithDateInput', () => {
     chooseDay(d_01);
     cancel();
     cy.get(dateInput).should('have.value', '');
+  });
+
+  it.skip('should select range of dates', () => {
+    // TODO: what happens if user enters 2020-01-03 - 2020-01-01
+    // should dates be switched? should date picker know how to work with this?
   });
 });
 
