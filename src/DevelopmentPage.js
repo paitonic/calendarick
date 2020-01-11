@@ -5,7 +5,7 @@ import './calendar.sass';
 
 import { calendar } from './calendar/index';
 import clsx from 'clsx';
-import { isSame, prevDayOf, clone, nextDayOf } from './calendar/calendar';
+import {isSame, prevDayOf, clone, nextDayOf, isBefore} from './calendar/calendar';
 
 
 function createDate(date) { return [date]; }
@@ -235,11 +235,13 @@ function Calendar(props) {
         } else if (props.selectionMode === 'range') {
           // selectDays might be [ <Date> ] (only start date selected)
           // or [ [<Date>, <Date>] ] when start & end selected
-          const [ content ] = state.value;
-          const [start, end] = Array.isArray(content) ? content : [content, undefined];
+          const [value] = state.value;
+          const [start, end] = Array.isArray(value) ? value : [value, undefined];
 
-          if (start && !end) {
-            return {...state, value: [ [minDate([start, action.day]), maxDate([start, action.day])] ]};
+          if (!start) {
+            return {...state, value: [action.day]};
+          } else if (start && !end && isBefore(start, action.day)) {
+            return {...state, value: createDateRange(start, action.day)};
           } else {
             return {...state, value: [action.day]};
           }

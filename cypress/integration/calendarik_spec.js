@@ -316,13 +316,15 @@ describe('StaticDateRangePicker', () => {
     cy.get(tid_04).click().should('have.class', 'day--is-selected');
   });
 
-  it('should allow selecting late date before early date (e.g first 2020-01-03, then 2020-01-01)', () => {
+  it('should reset range selection if late date selected before early date (e.g first 2020-01-03, then 2020-01-01)', () => {
     render('StaticRangeDatePicker');
 
-    cy.get(tid_03).click().should('have.class', 'day--is-selected');
-    cy.get(tid_01).click().should('have.class', 'day--is-selected');
+    chooseDay(d_03);
+    chooseDay(d_01);
+    assertDayIsNotChosen(d_02, d_03);
 
-    cy.get(tid_02).should('have.class', 'day--is-selected');
+    chooseDay(d_03);
+    assertDayIsChosen(d_02, d_03);
   });
 
   it('should select range of one day', () => {
@@ -546,6 +548,11 @@ describe('DateRangePicker:', () => {
       expect(format(start)).to.eql(format(d_02));
       expect(format(end)).to.eql(format(d_04));
     });
+  });
+
+  it.skip('should select range of dates', () => {
+    // TODO: what happens if user enters 2020-01-03 - 2020-01-01
+    // should dates be switched? should date picker know how to work with this?
   });
 
   it('should cancel selection of date range', () => {
