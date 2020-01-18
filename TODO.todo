@@ -10,7 +10,7 @@
 ✔ Add date input @done (21/12/2019, 12:51:25)
     ✔ Variation #1 - clicking on an input should open calendar in a popup @done (21/12/2019, 12:51:17)
     ✔ Variation #2 - allow user to enter date manually (calendar opens on clicking icon/button) @done (21/12/2019, 12:51:18)
-☐ Add ability to provide custom Day component (maybe using `dayComponent` as prop name?)
+✔ Add ability to provide custom Day component (maybe using `dayComponent` as prop name?) @started(20-01-18 10:55) @done(20-01-18 13:36) @lasted(2h41m32s)
 ✔ Hover trail (for range selection) @started(20-01-11 13:30) @done(20-01-11 16:34) @lasted(3h4m35s)
 ☐ Keyboard navigation
 ✔ if isRTL=true, swap between `onBackClick` and `onNextClick` handlers @done (21/12/2019, 12:54:09)
@@ -18,7 +18,10 @@
 ✔ Mark today's day @done(20-01-07 22:29)
     ✔ border: 1px dashed #000 @done(20-01-07 22:29)
 ☐ Week selection
-☐ Locale configuration
+✔ Locale configuration @done(20-01-18 10:40)
+    ✔ ``` @done(20-01-18 10:40)
+        <DatePicker calendar={{isRTL: true, locale: 'he-IL', weekday: 'narrow'}} .../>
+        ```
 ☐ Experiment with state reducer pattern
 ☐ Tests
     ☐ Think of adding UI (knobs, options etc) for controlling calendar properties so they can be tested

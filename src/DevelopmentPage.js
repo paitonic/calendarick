@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect, useRef, useReducer } from 'reac
 import PropTypes from 'prop-types';
 
 import './calendar.sass';
+import './custom.sass';
 
 import { calendar } from './calendar/index';
 import clsx from 'clsx';
@@ -22,12 +23,54 @@ function format(date) {
   return `${year}-${month}-${day}`;
 }
 
+function DayView(props) {
+    return (
+      <td className={clsx('day', {
+          'day--is-outside-month': props.day.isOutsideMonth,
+          'day--is-selected': props.isSelected,
+          'day--is-disabled': props.isDisabled,
+          'day--is-today': props.isToday,
+          'day--is-highlighted': props.isHighlighted,
+          })}
+          onClick={props.onClick}
+          data-test-id={format(props.day.date)}
+          onMouseEnter={props.onMouseEnter}
+          onMouseLeave={props.onMouseLeave}>
+        <span>{props.day.date ? props.day.date.getDate() : null}</span>
+      </td>
+    )
+}
+
+DayView.propTypes = {
+  day: PropTypes.shape({
+    isOutsideMonth: PropTypes.bool,
+    date: PropTypes.instanceOf(Date),
+  }),
+
+  isSelected: PropTypes.bool,
+  isHighlighted: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+  isToday: PropTypes.bool,
+  onClick: PropTypes.func,
+  onMouseLeave: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+};
+
 function Day(props) {
-  const {onDayClick, disableDays, selectionMode} = useContext(PreferencesContext);
+  const {onDayClick, disableDays, selectionMode, dayComponent: CustomDay} = useContext(PreferencesContext);
   const {isIn, isToday} = useContext(CalendarContext);
   const {state: {value, mouseOverDay}, dispatch} = useContext(StateContext);
   const isDisabled = disableDays(props.day.date);
-
+  const dayProps = {
+    day: props.day,
+    isSelected: isIn(props.day.date, value),
+    isDisabled: disableDays(props.day.date),
+    isToday: isToday(props.day.date),
+    isHighlighted: isHighlighted(),
+    onMouseEnter: () => dispatch({type: MOUSE_ENTER_DAY, payload: props.day.date}),
+    onMouseLeave: () => dispatch({type: MOUSE_LEAVE_DAY, payload: props.day.date}),
+    onClick: handleClick,
+  };
   function handleClick() {
     if (isDisabled) {
       return;
@@ -51,22 +94,7 @@ function Day(props) {
     return start !== undefined && mouseOverDay !== null && isBetween(props.day.date, start, mouseOverDay);
   }
 
-
-  return (
-    <td className={clsx('day', {
-        'day--is-outside-month': props.day.isOutsideMonth,
-        'day--is-selected': isIn(props.day.date, value),
-        'day--is-disabled': disableDays(props.day.date),
-        'day--is-today': isToday(props.day.date),
-        'day--is-highlighted': isHighlighted(),
-    })}
-        onClick={handleClick}
-        data-test-id={format(props.day.date)}
-        onMouseEnter={() => dispatch({type: MOUSE_ENTER_DAY, payload: props.day.date})}
-        onMouseLeave={() => dispatch({type: MOUSE_LEAVE_DAY, payload: props.day.date})}>
-      <span>{props.day.date ? props.day.date.getDate() : null}</span>
-    </td>
-  )
+  return CustomDay ? <CustomDay {...dayProps}/> : <DayView {...dayProps}/>
 }
 
 function WeekDayNames(props) {
@@ -345,6 +373,7 @@ export function Calendarik(props) {
       selectionMode: props.selectionMode,
       disableDays: props.disableDays,
       value: props.value,
+      dayComponent: props.dayComponent,
   };
 
   return (
@@ -685,6 +714,63 @@ export function DateMultiPicker(props) {
   )
 }
 
+export function EventDetails(props) {
+  return (
+    <div className="event-details">
+      <h5 className="event-details__title">Event</h5>
+      <p>wow. such day.</p>
+    </div>
+  )
+}
+
+export function CustomDayExample(props) {
+  const [isMouseOverDay, setIsMouseOverDay] = useState(false);
+
+  const showEventDetails = () => {
+    props.onMouseEnter();
+    setIsMouseOverDay(true);
+  };
+
+  const hideEventDetails = () => {
+    props.onMouseLeave();
+    setIsMouseOverDay(false);
+  };
+
+  return (
+    <td className={clsx('day-custom', 'day', {
+        'day--is-outside-month': props.day.isOutsideMonth,
+        'day--is-selected': props.isSelected,
+        'day--is-disabled': props.isDisabled,
+        'day--is-today': props.isToday,
+        'day--is-highlighted': props.isHighlighted,
+        })}
+        onClick={props.onClick}
+        data-test-id={format(props.day.date)}
+        onMouseEnter={showEventDetails}
+        onMouseLeave={hideEventDetails}>
+      <span>{props.day.date ? props.day.date.getDate() : null}</span>
+      {
+        isMouseOverDay &&
+        <EventDetails date={props.day.date}/>
+      }
+    </td>
+  )
+}
+
+CustomDayExample.propTypes = {
+  day: PropTypes.shape({
+    isOutsideMonth: PropTypes.bool,
+    date: PropTypes.instanceOf(Date),
+  }),
+
+  isSelected: PropTypes.bool,
+  isHighlighted: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+  isToday: PropTypes.bool,
+  onClick: PropTypes.func,
+  onMouseLeave: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+};
 
 export function DevelopmentPage(props) {
   const today = new Date();
@@ -728,7 +814,11 @@ export function DevelopmentPage(props) {
     />
 
       {/*<DateInput/>*/}
-      <DatePicker value={date} onChange={handleChange} inputComponent={DateInput}/>
+      <DatePicker
+        value={date}
+        onChange={handleChange}
+        inputComponent={DateInput}
+      />
     </>
   );
 }
