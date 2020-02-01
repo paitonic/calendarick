@@ -121,7 +121,7 @@ export function getCalendar(year, month, {locale = 'en-US', weekday = 'short', w
         [1, daysInMonthCount+1, inc];  // iterate 1 -> daysInMonthCount+1 (exclusive);
 
       while (dayOfMonth !== end) {
-        yield new Date(year, month-1, dayOfMonth);
+        yield new Date(year, month-1, dayOfMonth, 0, 0, 0, 0);
         dayOfMonth = next(dayOfMonth);
       }
     }
@@ -276,14 +276,23 @@ export function isSame(date, otherDate) {
   });
 }
 
-export function toArray(date) {
-  return date instanceof Date ? [date.getFullYear(), date.getMonth() + 1, date.getDate()] : date;
+export function toArray(datetime) {
+  return datetime instanceof Date ?
+    [
+      datetime.getFullYear(),
+      datetime.getMonth() + 1,
+      datetime.getDate(),
+      datetime.getHours(),
+      datetime.getMinutes(),
+      datetime.getSeconds(),
+      datetime.getMilliseconds(),
+    ] :
+    datetime;
 }
 
-export function fromArray(date, time=[0, 0, 0, 0]) {
-  const [year, month, day] = date;
-  const [hour=0, minute=0, second=0, milliseconds=0] = time;
-  return new Date(year, month-1, day, hour, minute, second, milliseconds);
+export function fromArray(datetime) {
+  const [year, month, day, hour=0, minute=0, second=0, millisecond=0] = datetime;
+  return new Date(year, month-1, day, hour, minute, second, millisecond);
 }
 
 export function isIn(date, listOfDates) {

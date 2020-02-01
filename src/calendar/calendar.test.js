@@ -53,40 +53,40 @@ describe('getCalendar', () => {
     const december = getCalendar(2019, 12);
     const [firstDay, lastDay] = [december[0], december[december.length-1]];
 
-    expect(toArray(firstDay)).toEqual([2019, 12, 1]);
-    expect(toArray(lastDay)).toEqual([2019, 12, 31]);
+    expect(toArray(firstDay)).toEqual([2019, 12, 1, 0, 0, 0, 0]);
+    expect(toArray(lastDay)).toEqual([2019, 12, 31, 0, 0, 0, 0]);
   });
 
   test('should not return outside days when withOutsideDays is false (default)', () => {
     const july = getCalendar(2019, 7);
     const [firstDay, lastDay] = [july[0], july[july.length-1]];
 
-    expect(toArray(firstDay)).toEqual([2019, 7, 1]);
-    expect(toArray(lastDay)).toEqual([2019, 7, 31]);
+    expect(toArray(firstDay)).toEqual([2019, 7, 1, 0, 0, 0, 0]);
+    expect(toArray(lastDay)).toEqual([2019, 7, 31, 0, 0, 0, 0]);
   });
 
   test('should return outside days of current month when withOutsideDays=true', () => {
     const calendar = getCalendar(2019, 7, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(toArray(firstDay)).toEqual([2019, 6, 30]);
-    expect(toArray(lastDay)).toEqual([2019, 8, 3]);
+    expect(toArray(firstDay)).toEqual([2019, 6, 30, 0, 0, 0, 0]);
+    expect(toArray(lastDay)).toEqual([2019, 8, 3, 0, 0, 0, 0]);
   });
 
   test('should return outside days for December calendar', () => {
     const calendar = getCalendar(2019, 12, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(toArray(firstDay)).toEqual([2019, 12, 1]);
-    expect(toArray(lastDay)).toEqual([2020, 1, 4]);
+    expect(toArray(firstDay)).toEqual([2019, 12, 1, 0, 0, 0, 0]);
+    expect(toArray(lastDay)).toEqual([2020, 1, 4, 0, 0, 0, 0]);
   });
 
   test('should return outside days for January calendar', () => {
     const calendar = getCalendar(2020, 1, {withOutsideDays: true});
     const [firstDay, lastDay] = [calendar[0], calendar[calendar.length-1]];
 
-    expect(toArray(firstDay)).toEqual([2019, 12, 29]);
-    expect(toArray(lastDay)).toEqual([2020, 2, 1]);
+    expect(toArray(firstDay)).toEqual([2019, 12, 29, 0, 0, 0, 0]);
+    expect(toArray(lastDay)).toEqual([2020, 2, 1, 0, 0, 0, 0]);
   });
 
 });
@@ -118,10 +118,10 @@ describe('groupByWeeks', () => {
     expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(5);
-    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1]);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1, 0, 0, 0, 0]);
 
     expect(lastWeek.length).toBe(5);
-    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31]);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31, 0, 0, 0, 0]);
   });
 
   test('should group days into weeks with isRTL=true', () => {
@@ -135,10 +135,10 @@ describe('groupByWeeks', () => {
     expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(5);
-    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1]);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 10, 1, 0, 0, 0, 0]);
 
     expect(lastWeek.length).toBe(5);
-    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31]);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 10, 31, 0, 0, 0, 0]);
   });
 
   test('should work with outsideDays', () => {
@@ -151,10 +151,10 @@ describe('groupByWeeks', () => {
     expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(7);
-    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29]);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29, 0, 0, 0, 0]);
 
     expect(lastWeek.length).toBe(7);
-    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2]);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2, 0, 0, 0, 0]);
   });
 
   test('should work with outsideDays and isRTL=true', () => {
@@ -167,10 +167,10 @@ describe('groupByWeeks', () => {
     expect(weeks.length).toBe(5);
 
     expect(firstWeek.length).toBe(7);
-    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29]);
+    expect(toArray(firstDayOfMonth)).toEqual([2019, 9, 29, 0, 0, 0, 0]);
 
     expect(lastWeek.length).toBe(7);
-    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2]);
+    expect(toArray(lastDayOfMonth)).toEqual([2019, 11, 2, 0, 0, 0, 0]);
   });
 
   test('should fill missing days in week with null', () => {
@@ -182,19 +182,19 @@ describe('groupByWeeks', () => {
     expect(firstWeek).toEqual([
       null,
       null,
-      [2019, 10, 1],
-      [2019, 10, 2],
-      [2019, 10, 3],
-      [2019, 10, 4],
-      [2019, 10, 5],
+      [2019, 10, 1, 0, 0, 0, 0],
+      [2019, 10, 2, 0, 0, 0, 0],
+      [2019, 10, 3, 0, 0, 0, 0],
+      [2019, 10, 4, 0, 0, 0, 0],
+      [2019, 10, 5, 0, 0, 0, 0],
     ]);
 
     expect(lastWeek).toEqual([
-      [2019, 10, 27],
-      [2019, 10, 28],
-      [2019, 10, 29],
-      [2019, 10, 30],
-      [2019, 10, 31],
+      [2019, 10, 27, 0, 0, 0, 0],
+      [2019, 10, 28, 0, 0, 0, 0],
+      [2019, 10, 29, 0, 0, 0, 0],
+      [2019, 10, 30, 0, 0, 0, 0],
+      [2019, 10, 31, 0, 0, 0, 0],
       null,
       null,
     ]);
@@ -206,11 +206,11 @@ describe('groupByWeeks', () => {
     const [firstWeek, lastWeek] = [weeks[0].map(toArray), weeks[weeks.length-1].map(toArray)];
 
     expect(firstWeek).toEqual([
-      [2019, 10, 5],
-      [2019, 10, 4],
-      [2019, 10, 3],
-      [2019, 10, 2],
-      [2019, 10, 1],
+      [2019, 10, 5, 0, 0, 0, 0],
+      [2019, 10, 4, 0, 0, 0, 0],
+      [2019, 10, 3, 0, 0, 0, 0],
+      [2019, 10, 2, 0, 0, 0, 0],
+      [2019, 10, 1, 0, 0, 0, 0],
       null,
       null,
     ]);
@@ -218,11 +218,11 @@ describe('groupByWeeks', () => {
     expect(lastWeek).toEqual([
       null,
       null,
-      [2019, 10, 31],
-      [2019, 10, 30],
-      [2019, 10, 29],
-      [2019, 10, 28],
-      [2019, 10, 27],
+      [2019, 10, 31, 0, 0, 0, 0],
+      [2019, 10, 30, 0, 0, 0, 0],
+      [2019, 10, 29, 0, 0, 0, 0],
+      [2019, 10, 28, 0, 0, 0, 0],
+      [2019, 10, 27, 0, 0, 0, 0],
     ]);
   });
 });
@@ -511,19 +511,22 @@ describe('isSame', () => {
 });
 
 describe('toArray', () => {
-  test('convert Date object to array [yyyy, mm, dd]', () => {
+  test('convert Date object to array [yyyy, mm, dd, hh, mm, ss, ms]', () => {
     const date = new Date(2019, 9-1, 1);
-    expect(toArray(date)).toEqual([2019, 9, 1]);
+    expect(toArray(date)).toEqual([2019, 9, 1, 0, 0, 0, 0]);
+
+    const withTime = new Date(2019, 9-1, 1, 2, 3, 4, 5);
+    expect(toArray(withTime)).toEqual([2019, 9, 1, 2, 3, 4, 5]);
   });
 });
 
 describe('fromArray', () => {
   test('convert array [yyyy, mm, dd] to Date object', () => {
-    expect(toArray(fromArray([2019, 9, 1]))).toEqual([2019, 9, 1]);
+    expect(toArray(fromArray([2019, 9, 1]))).toEqual([2019, 9, 1, 0, 0, 0, 0]);
   });
 
-  test('create Date object from [yyyy, mm, dd] and [hh, mm, ss]', () => {
-    const date = fromArray([2019, 9, 1], [18, 1, 2, 3]);
+  test('create Date object from [yyyy, mm, dd, hh, mm, ss, ms]', () => {
+    const date = fromArray([2019, 9, 1, 18, 1, 2, 3]);
     expect(date.getFullYear()).toBe(2019);
     expect(date.getMonth()).toBe(9-1);
     expect(date.getDate()).toBe(1);
