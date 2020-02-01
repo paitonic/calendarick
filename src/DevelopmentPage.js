@@ -57,6 +57,11 @@ DayView.propTypes = {
 };
 
 function Day(props) {
+  // props.day.date might be null if groupByWeeks called with fillMissingDaysWithNull=true
+  if (props.day.date === null) {
+    return <td className='day--placeholder'></td>
+  }
+
   const {onDayClick, disableDays, selectionMode, dayComponent: CustomDay} = useContext(PreferencesContext);
   const {isIn, isToday} = useContext(CalendarContext);
   const {state: {value, mouseOverDay}, dispatch} = useContext(StateContext);
@@ -78,11 +83,6 @@ function Day(props) {
 
     onDayClick(props.day);
     dispatch({type: ACTION_CLICK_DAY, day: props.day.date});
-  }
-
-  // props.day.date might be null if groupByWeeks called with fillMissingDaysWithNull=true
-  if (props.day.date === null) {
-    return <td className='day--placeholder'></td>
   }
 
   function isHighlighted() {
