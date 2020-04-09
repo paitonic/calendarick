@@ -288,8 +288,7 @@ describe('StaticDatePicker', () => {
     assertYearIs(2021);
   });
 
-  // TODO: on navigation, update the view
-  it.only('should update view when navigating back', () => {
+  it('should update view when navigating back', () => {
     render('StaticDatePickerWithViewProgrammaticallyChanged', {...defaultProps, view: {month: 1, year: 2020}});
 
     assertMonthIs(1);

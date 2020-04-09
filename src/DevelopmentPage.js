@@ -312,7 +312,7 @@ function Calendar(props) {
         }
 
         case CHANGE_VALUE:
-          return {...state, /*view: getViewDate(action.value), */value: action.value};
+          return {...state, value: action.value};
 
         case MOUSE_ENTER_DAY:
           return {...state, mouseOverDay: action.payload};
@@ -340,20 +340,21 @@ function Calendar(props) {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     value: initialValue,
-    view: getViewDate(initialValue),
+    view: view ? view : getViewDate(initialValue),
   });
 
   useEffect(() => {
-    if (!view) {
-      return;
+    if (view && state.view !== view) {
+      changeView(view);
     }
+  }, [view]);
 
-    if (onViewChange) {
-      onViewChange(view);
+  useEffect(() => {
+    if (onViewChange && state.view !== view) {
+      onViewChange(state.view);
     }
+  }, [state.view]);
 
-    changeView(view);
-  }, [view, state.view]);
 
   function goNextMonth() {
     dispatch({type: ACTION_CLICK_NEXT_MONTH});

@@ -54,7 +54,7 @@ export const StaticDatePickerWithViewProgrammaticallyChanged = (props) => {
     ...props,
     selectionMode: 'single',
     view,
-    onViewChange: (toView) => { console.log('toView: ', toView); setView(toView) }
+    onViewChange: (toView) => setView(toView),
   };
 
   return (
