@@ -47,6 +47,26 @@ export const StaticDatePickerWithDisabledDays = (props) => {
   )
 };
 
+export const StaticDatePickerWithViewProgrammaticallyChanged = (props) => {
+  const [view, setView] = useStateDebug(props.view);
+
+  const calendarikProps = {
+    ...props,
+    selectionMode: 'single',
+    view,
+    onViewChange: (toView) => { console.log('toView: ', toView); setView(toView) }
+  };
+
+  return (
+    <div>
+      <Calendarik {...calendarikProps} value={props.value}/>
+      <div>{view ? `view: ${view.year}-${view.month}` : 'view: undefined'}</div>
+      <button data-test-id="button-2020-02" type="button" onClick={() => setView({month: 2, year: 2020})}>View 2020-02</button>
+      <button data-test-id="button-2021-03" type="button" onClick={() => setView({month: 3, year: 2021})}>View 2021-03</button>
+    </div>
+  )
+};
+
 export const StaticRangeDatePicker = (props) => <Calendarik {...{selectionMode: 'range', ...props}}/>;
 
 export const StaticRangeDatePickerWithDisabledDays = (props) => {

@@ -18,6 +18,14 @@ const render = (variationName, props=defaultProps) => {
   }
 };
 
+const getJSON = (element) => {
+  try {
+    return JSON.parse(element.text());
+  } catch (error) {
+    return undefined;
+  }
+};
+
 // const defaultProps = {
 //   onDayClick: () => {},
 //   onChange: () => {},
@@ -95,14 +103,6 @@ const assertYearIs = (year) => cy.get(tid('year-' + year)).should('have.text', S
 const assertDayDoesNotExist = (...days) => assertDayIs('not.exist', null, ...days);
 const assertDayIsHighlighted = (...days) => assertDayIs('have.class', 'day--is-highlighted', ...days);
 const assertDayIsNotHighlighted = (...days) => assertDayIs('not.have.class', 'day--is-highlighted', ...days);
-
-const getJSON = (element) => {
-  try {
-    return JSON.parse(element.text());
-  } catch (error) {
-    return undefined;
-  }
-};
 
 // TODO: make function that accepts a value and compares it to the value in the debug pane
 
@@ -271,6 +271,67 @@ describe('StaticDatePicker', () => {
     mouseOver(d_05);
 
     assertDayIsNotHighlighted(d_03, d_04);
+  });
+
+  it('should allow changing month & year programmatically', () => {
+    render('StaticDatePickerWithViewProgrammaticallyChanged', {...defaultProps, view: {month: 1, year: 2019}});
+
+    assertMonthIs(1);
+    assertYearIs(2019);
+
+    cy.get(tid('button-2020-02')).click();
+    assertMonthIs(2);
+    assertYearIs(2020);
+
+    cy.get(tid('button-2021-03')).click();
+    assertMonthIs(3);
+    assertYearIs(2021);
+  });
+
+  // TODO: on navigation, update the view
+  it.only('should update view when navigating back', () => {
+    render('StaticDatePickerWithViewProgrammaticallyChanged', {...defaultProps, view: {month: 1, year: 2020}});
+
+    assertMonthIs(1);
+    assertYearIs(2020);
+    cy.get(tid_debug_pane).should((element) => {
+      const view = getJSON(element);
+      expect(view.month).to.eql(1);
+      expect(view.year).to.eql(2020);
+    });
+
+    clickLeftArrow();
+    assertMonthIs(12);
+    assertYearIs(2019);
+
+    cy.get(tid_debug_pane).should((element) => {
+      const view = getJSON(element);
+      expect(view.month).to.eql(12);
+      expect(view.year).to.eql(2019);
+    });
+  });
+
+  it('should update view when navigating forward', () => {
+    render('StaticDatePickerWithViewProgrammaticallyChanged', {...defaultProps, view: {month: 1, year: 2020}});
+
+    assertMonthIs(1);
+    assertYearIs(2020);
+    cy.get(tid_debug_pane).should((element) => {
+      const view = getJSON(element);
+      expect(view.month).to.eql(1);
+      expect(view.year).to.eql(2020);
+    });
+
+    clickRightArrow();
+    assertMonthIs(2);
+    assertYearIs(2020);
+
+    cy.get(tid_debug_pane).should((element) => {
+      const view = getJSON(element);
+      expect(view.month).to.eql(2);
+      expect(view.year).to.eql(2020);
+    });
+
   });
 });
 

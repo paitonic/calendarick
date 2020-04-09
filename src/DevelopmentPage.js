@@ -194,6 +194,7 @@ const ACTION_CLICK_NEXT_MONTH = 'ACTION_CLICK_NEXT_MONTH';
 const CHANGE_VALUE = 'CHANGE_VALUE';
 const MOUSE_ENTER_DAY = 'MOUSE_ENTER_DAY';
 const MOUSE_LEAVE_DAY = 'MOUSE_LEAVE_DAY';
+const CHANGE_VIEW = 'CHANGE_VIEW';
 
 const initialState = {
   date: new Date(),
@@ -230,13 +231,14 @@ function useWatchChanges(fn, dependencies) {
 }
 
 function Calendar(props) {
-  const {getNextMonth, getPreviousMonth, isSame, minDate, maxDate} = useContext(CalendarContext);
-  const {disableDays, value, calendar} = useContext(PreferencesContext);
+  const {getNextMonth, getPreviousMonth, isSame} = useContext(CalendarContext);
+  const {disableDays, value, calendar, view, onViewChange} = useContext(PreferencesContext);
 
   useEffect(() => {
     // TODO: investigate. when using DatePickerWithPopup, CHANGE_VALUE is dispatched even though dates are equal
     if (value !== state.value) {
       dispatch({type: CHANGE_VALUE, value});
+      dispatch({type: CHANGE_VIEW, payload: getViewDate(value)});
     }
   }, [value]);
 
@@ -310,13 +312,16 @@ function Calendar(props) {
         }
 
         case CHANGE_VALUE:
-          return {...state, view: getViewDate(action.value), value: action.value};
+          return {...state, /*view: getViewDate(action.value), */value: action.value};
 
         case MOUSE_ENTER_DAY:
           return {...state, mouseOverDay: action.payload};
 
         case MOUSE_LEAVE_DAY:
           return {...state, mouseOverDay: null};
+
+        case CHANGE_VIEW:
+          return {...state, view: action.payload};
 
         default:
           return state;
@@ -338,12 +343,28 @@ function Calendar(props) {
     view: getViewDate(initialValue),
   });
 
+  useEffect(() => {
+    if (!view) {
+      return;
+    }
+
+    if (onViewChange) {
+      onViewChange(view);
+    }
+
+    changeView(view);
+  }, [view, state.view]);
+
   function goNextMonth() {
     dispatch({type: ACTION_CLICK_NEXT_MONTH});
   }
 
   function goPreviousMonth() {
-    dispatch({type: ACTION_CLICK_PREV_MONTH})
+    dispatch({type: ACTION_CLICK_PREV_MONTH});
+  }
+
+  function changeView(toView) {
+    dispatch({type: CHANGE_VIEW, payload: toView});
   }
 
   useWatchChanges(() => {
@@ -367,6 +388,7 @@ const CalendarContext = React.createContext({});
 const PreferencesContext = React.createContext({});
 
 export function Calendarik(props) {
+  // TODO: can preferences & preferences.calendar be improved?
     const preferences = {
       calendar: props.calendar,
       onDayClick: props.onDayClick,
@@ -374,6 +396,8 @@ export function Calendarik(props) {
       disableDays: props.disableDays,
       value: props.value,
       dayComponent: props.dayComponent,
+      view: props.view,
+      onViewChange: props.onViewChange,
   };
 
   return (
@@ -396,6 +420,11 @@ Calendarik.propTypes = {
   stateReducer: PropTypes.func,
   calendar: PropTypes.object,
   value: PropTypes.array,
+  view: PropTypes.shape({
+    year: PropTypes.number,
+    month: PropTypes.number,
+  }),
+  onViewChange: PropTypes.func,
 };
 
 Calendarik.defaultProps = {
