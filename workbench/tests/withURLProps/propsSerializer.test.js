@@ -1,4 +1,4 @@
-import { decodeProps, encodeProps } from './testUtils';
+import { decodeProps, encodeProps } from './propsSerializer';
 
 const isSame = (date1, date2) => date1.getTime() === date2.getTime();
 

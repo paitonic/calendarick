@@ -20,7 +20,7 @@ import {
   isToday
 } from './calendar';
 
-
+// TODO: make it better.
 export function calendar({
                     locale='en-US',
                     weekday='short',

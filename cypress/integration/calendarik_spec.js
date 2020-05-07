@@ -1,5 +1,5 @@
 import { fromArray } from '../../src/calendar/calendar';
-import { encodeProps, toDate } from '../../src/testUtils';
+import {encodeProps, toDate} from '../../workbench/tests/withURLProps/propsSerializer';
 
 const defaultProps = {
   calendar: {
@@ -10,11 +10,11 @@ const defaultProps = {
   }
 };
 
-const render = (variationName, props=defaultProps) => {
+const render = (fixtureName, props=defaultProps) => {
   if (props) {
-    cy.visit(`/${variationName}?props=${encodeProps(props)}`);
+    cy.visit(`/${fixtureName}?props=${encodeProps(props)}`);
   } else {
-    cy.visit('/' + variationName);
+    cy.visit('/' + fixtureName);
   }
 };
 

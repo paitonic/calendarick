@@ -1,2 +1,2 @@
 # calendarick
-Date picker built with React.
+Date picker for React.

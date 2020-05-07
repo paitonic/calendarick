@@ -1,12 +1,11 @@
-import React, { useState, useContext, useEffect, useRef, useReducer } from 'react';
+import React, {useContext, useEffect, useReducer, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
-import './calendar.sass';
-import './custom.sass';
+import './calendarick.sass';
 
-import { calendar } from './calendar/index';
+import {calendar} from './calendar/index';
 import clsx from 'clsx';
-import {isSame, prevDayOf, clone, nextDayOf, isBefore, isBetween} from './calendar/calendar';
+import {clone, isBefore, isBetween} from './calendar/calendar';
 
 
 function createDate(date) { return [date]; }
@@ -16,7 +15,7 @@ function createDateRange(date1, date2) { return [ [date1, date2]] }
 function createMultipleDates(...args) { return [...args]; }
 
 
-function format(date) {
+export function format(date) {
   const year = date.getFullYear();
   const month = `${(date.getMonth()+1)}`.padStart(2, '0');
   const day = `${(date.getDate())}`.padStart(2, '0');
@@ -388,7 +387,7 @@ function Calendar(props) {
 const CalendarContext = React.createContext({});
 const PreferencesContext = React.createContext({});
 
-export function Calendarik(props) {
+export function Calendarick(props) {
   // TODO: can preferences & preferences.calendar be improved?
     const preferences = {
       calendar: props.calendar,
@@ -413,7 +412,7 @@ export function Calendarik(props) {
   );
 }
 
-Calendarik.propTypes = {
+Calendarick.propTypes = {
   onDayClick: PropTypes.func,
   onChange: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple', 'range']),
@@ -428,7 +427,7 @@ Calendarik.propTypes = {
   onViewChange: PropTypes.func,
 };
 
-Calendarik.defaultProps = {
+Calendarick.defaultProps = {
   onDayClick: () => {},
   onChange: () => {},
   selectionMode: 'single',
@@ -572,10 +571,10 @@ export function DatePickerWithPopup(props) {
       {props.children({setIsPopupShown: setIsPopupShown, date, setDate, draftDate, onChange: props.onChange})}
 
       <Popup isShown={isPopupShown} onChange={(change) => setIsPopupShown(change)} onClickAway={revertChanges}>
-         <Calendarik {...calendarProps}
-                     stateReducer={calendarStateReducer}
-                     onChange={(newDate) => handleChange(newDate)}
-                     value={draftDate}/>
+         <Calendarick {...calendarProps}
+                      stateReducer={calendarStateReducer}
+                      onChange={(newDate) => handleChange(newDate)}
+                      value={draftDate}/>
         {
           isFooterShown() &&
            <div className="popup__footer" data-test-id="popup__footer">
@@ -630,7 +629,7 @@ ReadOnlyDateInput.propTypes = {
 
 // TODO: This needs more work.
 //        Splitting components like that (single, range, multiple) might not be a good idea especially
-//        when there might be another variations (e.g static, that does not use popup)
+//        when there might be another tests (e.g static, that does not use popup)
 //
 function toDate(input) {
   const regexp = new RegExp(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -744,111 +743,3 @@ export function DateMultiPicker(props) {
   )
 }
 
-export function EventDetails(props) {
-  return (
-    <div className="event-details">
-      <h5 className="event-details__title">Event</h5>
-      <p>wow. such day.</p>
-    </div>
-  )
-}
-
-export function CustomDayExample(props) {
-  const [isMouseOverDay, setIsMouseOverDay] = useState(false);
-
-  const showEventDetails = () => {
-    props.onMouseEnter();
-    setIsMouseOverDay(true);
-  };
-
-  const hideEventDetails = () => {
-    props.onMouseLeave();
-    setIsMouseOverDay(false);
-  };
-
-  return (
-    <td className={clsx('day-custom', 'day', {
-        'day--is-outside-month': props.day.isOutsideMonth,
-        'day--is-selected': props.isSelected,
-        'day--is-disabled': props.isDisabled,
-        'day--is-today': props.isToday,
-        'day--is-highlighted': props.isHighlighted,
-        })}
-        onClick={props.onClick}
-        data-test-id={format(props.day.date)}
-        onMouseEnter={showEventDetails}
-        onMouseLeave={hideEventDetails}>
-      <span>{props.day.date ? props.day.date.getDate() : null}</span>
-      {
-        isMouseOverDay &&
-        <EventDetails date={props.day.date}/>
-      }
-    </td>
-  )
-}
-
-CustomDayExample.propTypes = {
-  day: PropTypes.shape({
-    isOutsideMonth: PropTypes.bool,
-    date: PropTypes.instanceOf(Date),
-  }),
-
-  isSelected: PropTypes.bool,
-  isHighlighted: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-  isToday: PropTypes.bool,
-  onClick: PropTypes.func,
-  onMouseLeave: PropTypes.func,
-  onMouseEnter: PropTypes.func,
-};
-
-export function DevelopmentPage(props) {
-  const today = new Date();
-  const tomorrow = nextDayOf(today);
-
-  // single select
-  const [date, setDate] = useState([ today ]);
-
-  // multi select
-  // const [date, setDate] = useState([today, tomorrow]);
-
-  // range
-  // const [date, setDate] = useState([ [today, tomorrow] ]);
-
-  // TODO: implement custom state reducer for the calendar
-  // TODO: see reducer function in Calendar
-  const stateReducer = (action, previousState, nextState) => {
-    switch (action.type) {
-      default:
-        return nextState;
-    }
-  };
-
-  const yesterday = prevDayOf(new Date());
-  function shouldDayBeDisabled(day) {
-    return isSame(day, yesterday);
-  }
-
-  function handleChange(date) {
-    setDate(date);
-  }
-
-  return (
-    <>
-    <Calendarik onDayClick={(day) => {}}
-                onChange={(day) => {console.log('onChange: ', day)}}
-                stateReducer={stateReducer}
-                selectionMode="range"
-                disableDays={shouldDayBeDisabled}
-                value={[new Date(2020, 0, 1)]}
-    />
-
-      {/*<DateInput/>*/}
-      <DatePicker
-        value={date}
-        onChange={handleChange}
-        inputComponent={DateInput}
-      />
-    </>
-  );
-}
