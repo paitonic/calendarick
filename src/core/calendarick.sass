@@ -1,0 +1,116 @@
+$cell-width: 50px
+$width: 350px
+
+.calendarick
+  font-family: monospace
+
+.calendarick,
+.calendarick *,
+.calendarick *::before,
+.calendarick *::after
+  box-sizing: border-box
+
+.calendarick-day
+  padding: 5px
+  text-align: center
+  height: $cell-width
+  cursor: pointer
+  border: 1px solid transparent
+
+  &:hover:not(&--is-disabled),
+  &--is-highlighted
+    background-color: #000
+    color: #fff
+
+  &--is-selected
+      background-color: #000
+      color: #fff
+
+  &--is-disabled
+    cursor: not-allowed
+    background-color: #e2e2e2
+
+  &--is-today
+    border: 1px dashed #000
+
+  &--with-border
+    border: 1px solid #e2e2e2
+
+  &--placeholder
+    visibility: hidden
+
+  &--is-outside-month
+    color: #9e9e9e
+    &:hover
+      color: #fff
+
+
+.calendarick-weekday
+  text-align: center
+  padding: 5px
+  width: $cell-width
+
+
+.calendarick-month
+  border-spacing: 0
+  background-color: #ffffff
+
+.calendarick-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  max-width: $width
+  background-color: #ffffff
+
+  &__button-next, &__button-back
+    font-size: 26px
+    cursor: pointer
+    padding: 5px
+    width: 40px
+    text-align: center
+
+    &:hover
+      background-color: #e2e2e2
+
+.calendarick-dialog
+  font-family: monospace
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  z-index: 1
+
+  &__backdrop
+    position: absolute
+    top: 0
+    left: 0
+    height: 100%
+    width: 100%
+    background-color: rgba(0, 0, 0, 0.5)
+
+  &--closed
+    visibility: hidden
+
+  &__footer
+    display: flex
+    justify-content: flex-end
+    margin-left: auto
+    background-color: #ffffff
+    padding: 8px
+
+  &__action
+    display: inline-block
+    padding: 8px
+    min-width: 80px
+    text-align: center
+    border: 1px solid #000000
+    margin-left: 8px
+
+    &:hover
+      cursor: pointer
+      background-color: #000000
+      color: #ffffff
+
+    &--ok:hover
+      background-color: #43A047
+

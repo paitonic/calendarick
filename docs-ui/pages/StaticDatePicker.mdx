@@ -1,0 +1,20 @@
+import { CodeBlock } from '../components/CodeBlock';
+import { StaticDatePickerExample } from '../../examples/StaticDatePicker';
+
+# StaticDatePicker
+
+```jsx
+import React, { useState } from 'react';
+import { StaticDatePicker } from 'calendarick';
+
+
+export const StaticDatePickerExample = () => {
+  const [date, setDate] = useState([ new Date() ]);
+
+  return (
+    <StaticDatePicker value={date} onChange={(newDate) => setDate(newDate)}/>
+  );
+}
+```
+
+<StaticDatePickerExample/>

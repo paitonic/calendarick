@@ -1,30 +1,43 @@
 {
-  "name": "datepicker",
+  "name": "calendarick",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "parcel workbench/index.html",
+    "start:ui": "parcel --port 1234 --out-dir dist/ui ui/index.html",
+    "start:docs": "parcel --port 1235 --out-dir dist/docs docs-ui/index.html",
+    "build:docs": "parcel build --out-dir docs docs-ui/index.html",
     "test": "jest",
     "test:watch": "jest --watch",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "build:lib": "parcel build ./src/index.js --out-dir lib --out-file calendarick"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "calendar": "^0.1.1",
-    "clsx": "^1.0.4",
-    "parcel": "^1.12.3",
-    "prop-types": "^15.7.2",
-    "react": "^16.10.2",
-    "react-dom": "^16.9.0",
-    "react-router-dom": "^5.1.2"
+    "clsx": "^1.0.4"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",
+    "@babel/preset-react": "^7.10.4",
+    "@mdx-js/parcel-plugin-mdx": "^1.6.14",
+    "@mdx-js/react": "^2.0.0-next.6",
     "babel-jest": "24.9.0",
     "babel-preset-env": "^1.7.0",
-    "jest": "24.9.0",
     "cypress": "3.4.1",
+    "jest": "24.9.0",
+    "parcel": "^1.12.4",
+    "prism-react-renderer": "^1.1.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.10.2",
+    "react-dom": "^16.9.0",
+    "react-router-dom": "^5.1.2",
     "sass": "^1.22.10"
+  },
+  "peerDependencies": {
+    "react": "^16.10.2",
+    "react-dom": "^16.9.0"
+  },
+  "alias": {
+    "calendarick": "./src"
   }
 }

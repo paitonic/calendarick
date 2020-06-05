@@ -1,0 +1,43 @@
+# Dialog
+
+- when: user clicks on the input
+    - open popup containing the date picker
+        - if date was selected previously
+            - clone the date
+            - show it being selected
+
+        - if popup shouldn't close automatically
+            - show confirmation and cancel buttons
+
+        - when: user clicks on a date
+            - if its single date selection mode
+                - overwrite cloned date with selected date
+                - if popup should close automatically
+                    - close the popup
+
+            - else if its range selection mode and start date is not selected yet
+                - overwrite cloned date with selected date
+
+            - else if its range selection mode and end date is not selected yet
+                - overwrite cloned date with date range
+                - if popup should close automatically
+                    - close the popup
+
+        - when: user clicks away
+            - close the popup
+
+        - when: user clicks on confirmation button
+            - close the popup
+
+        - when: user clicks on cancel button
+            - close the popup
+
+        - when: popup is closing
+            - if its because user clicked away or user clicked on cancel button
+                - revert changes made
+
+            - else
+                - commit the changes
+                - format selected date (e.g YYYY-MM-DD)
+                - set the formatted date to be the input value
+

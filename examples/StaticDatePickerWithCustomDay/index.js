@@ -1,0 +1,1 @@
+export { StaticDatePickerWithCustomDay } from './StaticDatePickerWithCustomDay';

@@ -1,0 +1,93 @@
+import { CodeBlock } from '../components/CodeBlock';
+import { StaticDatePickerWithCustomDay } from '../../examples/StaticDatePickerWithCustomDay';
+import { Box } from '../components/Box';
+
+# Examples
+
+## Custom day
+<StaticDatePickerWithCustomDay/>
+
+```jsx
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import clsx from "clsx";
+
+import {StaticDatePicker} from "calendarick";
+import './styles.sass';
+
+
+export const StaticDatePickerWithCustomDay = (props) => {
+  const config = {
+    selectionMode: 'single',
+    dayComponent: CustomDay,
+    ...props,
+  };
+
+  return <StaticDatePicker {...config}/>
+};
+
+function EventDetails() {
+  return (
+    <div className="event-details">
+      <h5 className="event-details__title">Event</h5>
+      <p>wow. such day.</p>
+    </div>
+  )
+}
+
+function CustomDay(props) {
+  const [isMouseOverDay, setIsMouseOverDay] = useState(false);
+
+  const showEventDetails = () => {
+    props.onMouseEnter();
+    setIsMouseOverDay(true);
+  };
+
+  const hideEventDetails = () => {
+    props.onMouseLeave();
+    setIsMouseOverDay(false);
+  };
+
+  return (
+    <td className={clsx('day-custom', 'day', {
+      'day--is-outside-month': props.day.isOutsideMonth,
+      'day--is-selected': props.isSelected,
+      'day--is-disabled': props.isDisabled,
+      'day--is-today': props.isToday,
+      'day--is-highlighted': props.isHighlighted,
+    })}
+        onClick={props.onClick}
+        onMouseEnter={showEventDetails}
+        onMouseLeave={hideEventDetails}>
+      <span>{props.day.date ? props.day.date.getDate() : null}</span>
+      {
+        isMouseOverDay &&
+        <EventDetails date={props.day.date}/>
+      }
+    </td>
+  )
+}
+```
+
+```css
+.day-custom
+  position: relative
+
+.event-details
+  position: absolute
+  top: calc(100% + 10px)
+  left: 50%
+  transform: translate(-50%, 0)
+  text-align: left
+  min-width: 100px
+  border: 1px solid black
+  background-color: #fff
+  color: #000
+  z-index: 1
+  padding: 5px 10px
+
+  &__title
+    margin: 0
+
+```
+

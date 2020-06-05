@@ -1,0 +1,13 @@
+.inspector {
+  display: block;
+}
+
+.inspector__tab {
+  display: inline-block;
+  padding: 15px;
+  cursor: pointer;
+}
+
+.inspector__tab--selected {
+  border-bottom: 1px solid #000;
+}

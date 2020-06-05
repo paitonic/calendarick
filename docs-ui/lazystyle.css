@@ -1,0 +1,76 @@
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+:root {
+    --link-color: #AA00FF;
+    --link-bg-color: #AA00FF;
+    --mark-bg-color: #ECEFF1;
+    --font-color: #212121;
+}
+
+body {
+    font-family: "Ubuntu Mono", monospace;
+    display: flex;
+    padding: 0 30px;
+    font-size: 18px;
+    max-width: 720px;
+    margin: 0 auto;
+    flex-direction: column;
+    color: var(--font-color);
+}
+
+body.w-960 {
+    max-width: 960px;
+}
+
+main {
+    flex: 1;
+    margin: 0 auto;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+h1:before {
+    content: "# ";
+    white-space: nowrap;
+}
+
+h2:before {
+    content: '~ '
+}
+
+h2:after {
+    content: ' ~'
+}
+
+li {
+    padding: 5px;
+}
+
+li + ul {
+    margin-bottom: 10px;
+}
+
+a {
+    color: var(--link-color);
+    border-bottom: 1px solid;
+    text-decoration: none;
+    transition: color 250ms ease, background-color 250ms ease;
+}
+
+a:hover, a:focus {
+    background-color: var(--link-bg-color);
+    color: #FFF;
+}
+
+mark {
+    background-color: var(--mark-bg-color);
+    padding: 3px;
+}
+
+pre {
+  overflow-x: auto;
+}

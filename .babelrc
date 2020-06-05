@@ -5,6 +5,7 @@
         "node": "current",
         "browsers": ["last 2 Chrome versions"]
       }
-    }]
+    }],
+    ["@babel/react"]
   ]
 }
