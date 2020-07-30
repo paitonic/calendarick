@@ -1,2 +1,2 @@
 # calendarick
-An experimental date picker component for React. Demo [https://vladimirze.github.io/calendarick/](Demo).
+An experimental date picker component for React. [Demo](https://vladimirze.github.io/calendarick/).
