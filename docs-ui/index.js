@@ -18,7 +18,7 @@ const UI = () => {
 
   return (
     <MDXProvider components={components}>
-      <Router>
+      <Router basename='/calendarick'>
         <Switch>
           <Route path="/" exact={true}>
             <Index/>

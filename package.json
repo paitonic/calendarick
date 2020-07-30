@@ -5,7 +5,7 @@
   "scripts": {
     "start:ui": "parcel --port 1234 --out-dir dist/ui ui/index.html",
     "start:docs": "parcel --port 1235 --out-dir dist/docs docs-ui/index.html",
-    "build:docs": "parcel build --out-dir docs docs-ui/index.html",
+    "build:docs": "parcel build --public-url https://vladimirze.github.io/calendarick/ --out-dir docs docs-ui/index.html",
     "test": "jest",
     "test:watch": "jest --watch",
     "cypress": "cypress open",
